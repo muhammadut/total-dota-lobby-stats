@@ -257,6 +257,33 @@
         {"name": ".......... [UGI]", "side": "dire", "hero": "Primal Beast", "hero_level": 18, "kills": 4, "deaths": 12, "assists": 8, "net_worth": 11982, "last_hits": 148, "denies": 2, "gpm": 315, "bounty_runes": 0, "xpm": 437, "healing": 0},
         {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 16, "kills": 2, "deaths": 11, "assists": 19, "net_worth": 8738, "last_hits": 40, "denies": 2, "gpm": 274, "bounty_runes": 1, "xpm": 335, "healing": 122}
       ]
+    },
+    {
+      "source_ref": "scoreboard-2026-07-25-b",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 16:29",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 46,
+      "dire_score": 42,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab from UT's own client, full column set captured. The Radiant carries an explicit WINNER badge. No match id or duration -- the scoreboard tab shows no match header; played_at is the on-screen system clock at capture (4:29 PM), i.e. just after the game ended, not the start time, and the date is assumed from the upload. Checksums exact on both sides with no gaps: radiant 46 kills = score 46 = dire deaths 46; dire 42 kills = score 42 = radiant deaths 42. New player 'SpArtAAAAAAAA [WEPAK]'; the run of A's is approximate, but a future capture with a different count will prefix-match and auto-merge.",
+      "players": [
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Axe", "hero_level": 26, "kills": 18, "deaths": 11, "assists": 13, "net_worth": 21347, "last_hits": 273, "denies": 10, "gpm": 596, "bounty_runes": 2, "xpm": 897, "healing": 0, "outposts": 0, "hero_damage": 39169, "building_damage": 326, "damage_received_raw": 80812, "damage_reduced_pct": 45.7},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Lina", "hero_level": 27, "kills": 13, "deaths": 9, "assists": 11, "net_worth": 29041, "last_hits": 453, "denies": 12, "gpm": 716, "bounty_runes": 4, "xpm": 1038, "healing": 0, "outposts": 0, "hero_damage": 33499, "building_damage": 9757, "damage_received_raw": 60493, "damage_reduced_pct": 56.7},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Hoodwink", "hero_level": 20, "kills": 5, "deaths": 7, "assists": 31, "net_worth": 12838, "last_hits": 81, "denies": 1, "gpm": 339, "bounty_runes": 1, "xpm": 516, "healing": 288, "outposts": 0, "hero_damage": 19224, "building_damage": 303, "damage_received_raw": 34750, "damage_reduced_pct": 35.4},
+        {"name": "Downlander", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 27, "kills": 6, "deaths": 5, "assists": 13, "net_worth": 31094, "last_hits": 542, "denies": 9, "gpm": 728, "bounty_runes": 3, "xpm": 979, "healing": 0, "outposts": 0, "hero_damage": 22416, "building_damage": 3287, "damage_received_raw": 41746, "damage_reduced_pct": 40.9},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Winter Wyvern", "hero_level": 20, "kills": 4, "deaths": 10, "assists": 21, "net_worth": 12247, "last_hits": 46, "denies": 4, "gpm": 327, "bounty_runes": 3, "xpm": 509, "healing": 6934, "outposts": 0, "hero_damage": 15933, "building_damage": 222, "damage_received_raw": 39053, "damage_reduced_pct": 44.9},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Ember Spirit", "hero_level": 26, "kills": 7, "deaths": 8, "assists": 22, "net_worth": 21524, "last_hits": 312, "denies": 1, "gpm": 534, "bounty_runes": 6, "xpm": 953, "healing": 0, "outposts": 0, "hero_damage": 28549, "building_damage": 87, "damage_received_raw": 59558, "damage_reduced_pct": 53.5},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Phoenix", "hero_level": 22, "kills": 9, "deaths": 10, "assists": 28, "net_worth": 16184, "last_hits": 165, "denies": 0, "gpm": 449, "bounty_runes": 5, "xpm": 594, "healing": 4224, "outposts": 0, "hero_damage": 27189, "building_damage": 0, "damage_received_raw": 17671, "damage_reduced_pct": 33.6},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Spectre", "hero_level": 24, "kills": 9, "deaths": 10, "assists": 15, "net_worth": 22143, "last_hits": 374, "denies": 9, "gpm": 561, "bounty_runes": 0, "xpm": 714, "healing": 474, "outposts": 0, "hero_damage": 38671, "building_damage": 1747, "damage_received_raw": 46198, "damage_reduced_pct": 48.4},
+        {"name": "UT", "side": "dire", "hero": "Underlord", "hero_level": 24, "kills": 12, "deaths": 10, "assists": 16, "net_worth": 22362, "last_hits": 285, "denies": 1, "gpm": 551, "bounty_runes": 0, "xpm": 736, "healing": 0, "outposts": 0, "hero_damage": 27386, "building_damage": 1137, "damage_received_raw": 69049, "damage_reduced_pct": 40.7},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Snapfire", "hero_level": 22, "kills": 5, "deaths": 8, "assists": 23, "net_worth": 10534, "last_hits": 48, "denies": 0, "gpm": 285, "bounty_runes": 0, "xpm": 637, "healing": 194, "outposts": 0, "hero_damage": 16918, "building_damage": 444, "damage_received_raw": 28985, "damage_reduced_pct": 37.9}
+      ]
     }
   ]
 }
