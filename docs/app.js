@@ -46,16 +46,21 @@
         ? "A single evening — " + prettyDate(m.sessionFrom)
         : prettyDate(m.sessionFrom) + " – " + prettyDate(m.sessionTo);
 
+    // "Player-games", not "games": 7 matches x 10 players = 70 scoreboard
+    // lines. Sitting next to "Matches 7", anything vaguer reads as though
+    // seventy games were played.
     var tally = [
-      ["Matches",  m.matches],
-      ["Players",  m.players],
-      ["Games logged", m.appearances],
-      ["Heroes drafted", D.heroes.length],
-      ["Kills", num(m.totalKills)]
+      ["Matches",  m.matches,      "Matches played in this lobby"],
+      ["Players",  m.players,      "Distinct people, after merging renamed accounts"],
+      ["Player-games", m.appearances,
+        m.matches + " matches × 10 players — one scoreboard line each"],
+      ["Heroes drafted", D.heroes.length, "Distinct heroes picked at least once"],
+      ["Kills", num(m.totalKills), "Hero kills across every match"]
     ];
     var wrap = $("#tally");
     tally.forEach(function (t) {
       var d = el("div");
+      d.title = t[2];
       d.appendChild(el("dt", null, esc(t[0])));
       d.appendChild(el("dd", null, esc(t[1])));
       wrap.appendChild(d);
