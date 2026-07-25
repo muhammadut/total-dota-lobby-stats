@@ -98,7 +98,43 @@ def main() -> int:
     print(f"  wrote {OUT.relative_to(ROOT)}  ({kb:.1f} KB)")
     print(f"  {len(matches)} matches | years: {', '.join(years)} | "
           f"{len(parts)} player-games | {len(aliases)} merges")
+
+    stamp_assets()
     return 0
+
+
+def stamp_assets() -> None:
+    """
+    Rewrite index.html's asset links as `app.js?v=<hash>`.
+
+    Without this, a returning visitor can end up holding a CACHED copy of
+    one file and a fresh copy of another -- e.g. the previous app.js with
+    the current data.js. The two disagree about the shape of the data and
+    the page renders blank, which is exactly what happened on the first
+    redesign deploy. Hashing the content means any change to any asset
+    produces new URLs, so the browser can never mix versions.
+    """
+    import hashlib
+    import re
+
+    docs = ROOT / "docs"
+    assets = ["style.css", "app.js", "data.js", "heroes.js"]
+    h = hashlib.sha1()
+    for a in assets:
+        p = docs / a
+        if p.exists():
+            h.update(p.read_bytes())
+    ver = h.hexdigest()[:8]
+
+    idx = docs / "index.html"
+    html = idx.read_text(encoding="utf-8")
+    before = html
+    for a in assets:
+        html = re.sub(r'(href|src)="' + re.escape(a) + r'(\?v=[0-9a-f]+)?"',
+                      lambda m: f'{m.group(1)}="{a}?v={ver}"', html)
+    if html != before:
+        idx.write_text(html, encoding="utf-8")
+    print(f"  stamped assets ?v={ver}")
 
 
 if __name__ == "__main__":
