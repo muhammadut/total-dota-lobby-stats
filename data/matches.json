@@ -311,6 +311,33 @@
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 10, "kills": 0, "deaths": 12, "assists": 7, "net_worth": 4355, "last_hits": 21, "denies": 2, "gpm": 199, "bounty_runes": 0, "xpm": 260, "healing": 125},
         {"name": "Downlander", "side": "dire", "hero": "Morphling", "hero_level": 14, "kills": 3, "deaths": 3, "assists": 2, "net_worth": 10915, "last_hits": 172, "denies": 16, "gpm": 415, "bounty_runes": 2, "xpm": 456, "healing": 191}
       ]
+    },
+    {
+      "source_ref": "scoreboard-2026-07-25-d",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 18:42",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 58,
+      "dire_score": 42,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab (source file Screenshot_9.png), from the same client as Screenshot_6/_7. The Radiant carries an explicit WINNER badge; Dire played under the party name 'Frantic Fan Boys'. No match id or duration -- the scoreboard tab shows no match header, and this file has no timestamp in its name. played_at is the file's arrival time on UT's machine and is an UPPER BOUND, not the match start: the two earlier captures from this client arrived 2-3 hours after their games. Columns past HEAL are off the right edge at 1920x1080 and remain NULL; the HEAL values themselves right-align at x=1919, inside the frame, so they are complete. Checksums: radiant 58 kills = score 58 = dire deaths 58 (exact); dire 42 kills = score 42 <= radiant deaths 43, i.e. one death to neutrals/Roshan/self crediting nobody.",
+      "players": [
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Keeper of the Light", "hero_level": 26, "kills": 8, "deaths": 6, "assists": 32, "net_worth": 22640, "last_hits": 243, "denies": 6, "gpm": 528, "bounty_runes": 0, "xpm": 916, "healing": 22963},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Tusk", "hero_level": 24, "kills": 6, "deaths": 11, "assists": 28, "net_worth": 14075, "last_hits": 74, "denies": 1, "gpm": 398, "bounty_runes": 4, "xpm": 714, "healing": 17},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Spectre", "hero_level": 28, "kills": 17, "deaths": 8, "assists": 23, "net_worth": 33727, "last_hits": 472, "denies": 16, "gpm": 777, "bounty_runes": 4, "xpm": 1085, "healing": 0},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Death Prophet", "hero_level": 27, "kills": 23, "deaths": 7, "assists": 16, "net_worth": 28346, "last_hits": 309, "denies": 9, "gpm": 667, "bounty_runes": 1, "xpm": 984, "healing": 0},
+        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Underlord", "hero_level": 23, "kills": 4, "deaths": 11, "assists": 26, "net_worth": 16697, "last_hits": 220, "denies": 11, "gpm": 413, "bounty_runes": 4, "xpm": 620, "healing": 0},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Night Stalker", "hero_level": 21, "kills": 6, "deaths": 13, "assists": 16, "net_worth": 12900, "last_hits": 174, "denies": 2, "gpm": 358, "bounty_runes": 3, "xpm": 520, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 22, "kills": 6, "deaths": 12, "assists": 27, "net_worth": 12209, "last_hits": 45, "denies": 0, "gpm": 362, "bounty_runes": 2, "xpm": 591, "healing": 0},
+        {"name": "vAnzO", "side": "dire", "hero": "Techies", "hero_level": 23, "kills": 8, "deaths": 12, "assists": 19, "net_worth": 15421, "last_hits": 133, "denies": 6, "gpm": 441, "bounty_runes": 1, "xpm": 630, "healing": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Lifestealer", "hero_level": 28, "kills": 20, "deaths": 6, "assists": 15, "net_worth": 32325, "last_hits": 387, "denies": 14, "gpm": 727, "bounty_runes": 2, "xpm": 1117, "healing": 2761},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Magnus", "hero_level": 24, "kills": 2, "deaths": 15, "assists": 25, "net_worth": 18736, "last_hits": 203, "denies": 4, "gpm": 453, "bounty_runes": 4, "xpm": 703, "healing": 0}
+      ]
     }
   ]
 }
