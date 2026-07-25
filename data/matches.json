@@ -229,6 +229,33 @@
         {"name": "-Oden", "side": "dire", "hero": "Dark Willow", "kills": 6, "deaths": 8, "assists": 14, "net_worth": 6529, "hero_level": 15, "last_hits": 17, "denies": 2, "gpm": 257, "bounty_runes": 3, "xpm": 428, "healing": 0, "outposts": 0, "hero_damage": 12207, "building_damage": 300, "damage_received_raw": 18650, "damage_reduced_pct": 32.2},
         {"name": "Kael™", "side": "dire", "hero": "Dark Seer", "kills": 11, "deaths": 4, "assists": 19, "net_worth": 16632, "hero_level": 17, "last_hits": 205, "denies": 3, "gpm": 558, "bounty_runes": 5, "xpm": 542, "healing": 2852, "outposts": 0, "hero_damage": 15771, "building_damage": 435, "damage_received_raw": 28371, "damage_reduced_pct": 50.8}
       ]
+    },
+    {
+      "source_ref": "scoreboard-2026-07-25-a",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": null,
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 43,
+      "dire_score": 31,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, 1080p. The Radiant carries an explicit WINNER badge. No match id, start time or duration -- the scoreboard tab does not show the match header; played_on is ASSUMED from the upload date and should be corrected if the game was played earlier. Columns past HEAL are off the right edge at 1920x1080 and remain NULL. Checksums: radiant 43 kills = score 43 = dire deaths 43 (exact); dire 31 kills = score 31 <= radiant deaths 32, i.e. one death to neutrals/Roshan/self crediting nobody. Player '.......... [UGI]' actually renders as 14 dots with tag [UGI|]; the stored spelling is kept so the identity does not split.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Pangolier", "hero_level": 26, "kills": 11, "deaths": 3, "assists": 17, "net_worth": 27299, "last_hits": 391, "denies": 6, "gpm": 691, "bounty_runes": 3, "xpm": 977, "healing": 0},
+        {"name": "sesto [M.C]", "side": "radiant", "hero": "Drow Ranger", "hero_level": 26, "kills": 17, "deaths": 3, "assists": 12, "net_worth": 33502, "last_hits": 471, "denies": 20, "gpm": 835, "bounty_runes": 3, "xpm": 972, "healing": 0},
+        {"name": "dotagerm [LIB0G]", "side": "radiant", "hero": "Mirana", "hero_level": 22, "kills": 2, "deaths": 6, "assists": 25, "net_worth": 13038, "last_hits": 98, "denies": 2, "gpm": 351, "bounty_runes": 4, "xpm": 649, "healing": 6121},
+        {"name": "MODE:IG.BASHIRA™", "side": "radiant", "hero": "Lich", "hero_level": 20, "kills": 1, "deaths": 9, "assists": 22, "net_worth": 12196, "last_hits": 33, "denies": 18, "gpm": 330, "bounty_runes": 0, "xpm": 539, "healing": 125},
+        {"name": "Thekra [UGI]", "side": "radiant", "hero": "Axe", "hero_level": 21, "kills": 12, "deaths": 11, "assists": 7, "net_worth": 18391, "last_hits": 173, "denies": 6, "gpm": 483, "bounty_runes": 1, "xpm": 601, "healing": 0},
+        {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Leshrac", "hero_level": 21, "kills": 8, "deaths": 4, "assists": 9, "net_worth": 19760, "last_hits": 292, "denies": 1, "gpm": 507, "bounty_runes": 5, "xpm": 614, "healing": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Anti-Mage", "hero_level": 25, "kills": 7, "deaths": 7, "assists": 11, "net_worth": 21992, "last_hits": 429, "denies": 11, "gpm": 609, "bounty_runes": 4, "xpm": 825, "healing": 0},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Rubick", "hero_level": 19, "kills": 10, "deaths": 9, "assists": 12, "net_worth": 12385, "last_hits": 137, "denies": 3, "gpm": 381, "bounty_runes": 1, "xpm": 494, "healing": 0},
+        {"name": ".......... [UGI]", "side": "dire", "hero": "Primal Beast", "hero_level": 18, "kills": 4, "deaths": 12, "assists": 8, "net_worth": 11982, "last_hits": 148, "denies": 2, "gpm": 315, "bounty_runes": 0, "xpm": 437, "healing": 0},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 16, "kills": 2, "deaths": 11, "assists": 19, "net_worth": 8738, "last_hits": 40, "denies": 2, "gpm": 274, "bounty_runes": 1, "xpm": 335, "healing": 122}
+      ]
     }
   ]
 }

@@ -123,9 +123,11 @@
   var cur = { matches: [], players: [], heroes: [] };
 
   function applyYear() {
+    // A match with no recorded date has no year, and must not silently
+    // vanish from every view — show it under whichever year is selected.
     cur.matches = state.year === "all"
       ? D.matches.slice()
-      : D.matches.filter(function (m) { return m.year === state.year; });
+      : D.matches.filter(function (m) { return !m.year || m.year === state.year; });
     var agg = aggregate(cur.matches);
     cur.players = agg.players;
     cur.heroes  = agg.heroes;
