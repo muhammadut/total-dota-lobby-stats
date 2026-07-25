@@ -37,7 +37,8 @@
     {"canonical": "¤GerM¤ [LIB0G]", "alias": "dotagerm [LIB0G]", "note": "same player; shared clan tag and name root"},
     {"canonical": "Mandark [<MC>]", "alias": "cpx22 [<MC>]", "note": "same player, user-asserted; shared clan tag but unrelated name"},
     {"canonical": "samundar khan", "alias": "rtz [FUBU]", "note": "same player, user-asserted; no shared name root or clan tag"},
-    {"canonical": "Kael™", "alias": "Dawn of War", "note": "same player, user-asserted; no shared name root or clan tag. Kael™ is the more recent name (match 8912312189 vs 8912258476)"}
+    {"canonical": "Kael™", "alias": "Dawn of War", "note": "same player, user-asserted; no shared name root or clan tag. Kael™ is the more recent name (match 8912312189 vs 8912258476)"},
+    {"canonical": "TigerX [GB]", "alias": "____Tiger X____ [GB]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"}
   ],
 
   "matches": [

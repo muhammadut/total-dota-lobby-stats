@@ -95,17 +95,40 @@ misread letter. Zoom on any player name you are not certain of.
 ## 5. Check identities
 
 New spellings of an existing player split one human into two rows and make both
-win rates wrong.
+win rates wrong. Run this after every ingest:
 
 ```bash
-python stats.py aliases
+python tools/automerge.py --dry-run   # see what it would do
+python tools/automerge.py             # apply, then report
 ```
 
-Report candidates to the user and **ask** — never merge on your own judgement.
-Half the merges in this project share no name root at all (`cpx22`/`Mandark`,
-`samundar khan`/`rtz`, `Kael™`/`Dawn of War`); no heuristic finds those. When
-the user confirms, add to the `aliases` array in `data/matches.json` as
-`{"canonical": "...", "alias": "...", "note": "..."}` and re-run `load.py`.
+**Near-certain matches merge automatically; the user is told, not asked.**
+Anything weaker is listed for them to decide. The bar is:
+
+| | Verdict |
+|---|---|
+| Identical once case, punctuation and clan tag are stripped (`TigerX` / `____Tiger X____`) | auto |
+| One stem is a prefix of the other, ≥4 chars (`vAnzO` / `vAnzOr`) | auto |
+| One stem contained in the other, ≥4 chars, **same clan tag** (`¤GerM¤` / `dotagerm`) | auto |
+| ≥85% similar | auto |
+| Same clan tag but only 30–85% similar | **ask** |
+| Anything else | ignore |
+
+**Absolute precondition, never overridden:** the two names must never appear in
+the same match. One person cannot hold two slots in one game, so co-occurrence
+proves they are different people no matter how alike the names look — that is
+what keeps `Thekra [UGI]` separate from `.......... [UGI]`.
+
+Auto-merges are written into the `aliases` array of `data/matches.json`, so they
+are durable, visible in the diff, and undone by deleting one line. They are never
+applied straight to the database.
+
+**Report every auto-merge in your summary.** A merge the user does not know about
+is a silent change to someone's win rate.
+
+Some real merges are unreachable by any string rule — `cpx22`/`Mandark`,
+`samundar khan`/`rtz`, `Kael™`/`Dawn of War` share no characters at all. If the
+user names a pair, add it to `aliases` by hand and re-run `load.py`.
 
 ## 6. Ingest
 
