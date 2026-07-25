@@ -155,16 +155,26 @@
   }
 
   function drawTally() {
-    var kills = 0, pg = 0;
+    // Deliberately NOT showing the player-game count (matches x 10). It is
+    // an internal integrity figure -- the loader checks that every player's
+    // wins and losses sum to it -- and next to "Matches 7" a second, larger
+    // count just reads as a contradiction.
+    var kills = 0, longest = 0, played = 0;
     cur.matches.forEach(function (m) {
-      m.radiant.concat(m.dire).forEach(function (r) { kills += r.k; pg++; });
+      m.radiant.concat(m.dire).forEach(function (r) { kills += r.k; });
+      if (m.duration_seconds) {
+        played += m.duration_seconds;
+        if (m.duration_seconds > longest) longest = m.duration_seconds;
+      }
     });
+    var hrs = played / 3600;
     var items = [
       ["Matches", cur.matches.length, "Matches played in this lobby"],
       ["Players", cur.players.length, "Distinct people, after merging renamed accounts"],
-      ["Player-games", pg, cur.matches.length + " matches × 10 players — one scoreboard line each"],
       ["Heroes", cur.heroes.length, "Distinct heroes picked at least once"],
-      ["Kills", num(kills), "Hero kills across every match"]
+      ["Kills", num(kills), "Hero kills across every match"],
+      ["Longest", longest ? dur(longest) : "—", "Longest match of the season"],
+      ["Hours", hrs ? hrs.toFixed(1) : "—", "Total time in game, where duration was captured"]
     ];
     var wrap = $("#tally");
     wrap.innerHTML = "";

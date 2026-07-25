@@ -26,11 +26,45 @@ map in `docs/heroes.js` is HEAD-verified against that CDN at build time.
 No installs needed — Python's bundled `sqlite3` module does the work, and the
 dashboard is three static files with no build step.
 
-## Publishing an update
+## Adding matches
+
+**Just say "add these" and point at the screenshots.** The `add-match` skill
+(`.claude/skills/add-match/`) runs the whole pipeline: read the screenshots,
+extract the fields, verify the arithmetic, check for duplicates and renamed
+players, write, rebuild, and publish.
+
+The split is deliberate:
+
+| Step | Who | Why |
+|---|---|---|
+| Read the screenshot | model | judgement — reading digits off game art |
+| Verify + write + deploy | `tools/ingest.py` | mechanical — must behave identically every time |
+
+```bash
+python tools/ingest.py --from new.json --dry-run   # validate only
+python tools/ingest.py --from new.json --deploy    # write, rebuild, commit, push
+```
+
+Ingest writes **nothing** if any match fails. It refuses on a roster that
+isn't 5-a-side, an arithmetically impossible kill/score/death ordering, a
+duplicate `source_ref` or `dota_match_id`, or a **content fingerprint** matching
+a match already recorded — the guard against logging the same game twice from
+a re-capture. Its rules are `import`ed from `load.py` rather than reimplemented,
+so the two can never drift apart.
+
+`tools/crop.py` magnifies regions for reading ambiguous digits:
+
+```bash
+python tools/crop.py shot.png --rows --tab scoreboard   # standard bands
+python tools/crop.py shot.png --grid                    # find coordinates
+python tools/crop.py shot.png 3080 1370 360 70 --scale 6
+```
+
+### Publishing by hand
 
 ```bash
 python load.py        # JSON  -> dota_stats.db
-python export_web.py  # DB    -> docs/data.js
+python export_web.py  # DB    -> docs/data.js, and re-stamps the asset hash
 git add -A && git commit -m "Add matches" && git push
 ```
 

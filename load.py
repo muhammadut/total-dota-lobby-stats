@@ -78,14 +78,22 @@ def validate(match: dict) -> list[str]:
         t, e = tally[side], tally[other[side]]
         if t["score"] is None:
             continue
+        broken = False
         if t["kills"] > t["score"]:
+            broken = True
             problems.append(
                 f"{ref}: ERROR {side} player kills ({t['kills']}) EXCEED the team "
                 f"score ({t['score']}) -- impossible, a kill digit is wrong")
         if t["score"] > e["deaths"]:
+            broken = True
             problems.append(
                 f"{ref}: ERROR {side} score ({t['score']}) EXCEEDS {other[side]} "
                 f"deaths ({e['deaths']}) -- impossible, a death digit is wrong")
+        # Only describe the gaps once the ordering is known to hold. On broken
+        # input the arithmetic yields negatives and the note would cheerfully
+        # report "-40 tower-credited kills ... Legal." next to its own error.
+        if broken:
+            continue
         gap_l, gap_r = t["score"] - t["kills"], e["deaths"] - t["score"]
         if gap_l or gap_r:
             problems.append(
