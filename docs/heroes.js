@@ -3,6 +3,7 @@
 window.HERO_SLUG = {
 "Anti-Mage": "antimage",
 "Axe": "axe",
+"Bane": "bane",
 "Centaur Warrunner": "centaur",
 "Dark Seer": "dark_seer",
 "Dark Willow": "dark_willow",
@@ -27,6 +28,7 @@ window.HERO_SLUG = {
 "Lion": "lion",
 "Luna": "luna",
 "Mars": "mars",
+"Medusa": "medusa",
 "Mirana": "mirana",
 "Morphling": "morphling",
 "Necrophos": "necrolyte",
@@ -38,6 +40,7 @@ window.HERO_SLUG = {
 "Phoenix": "phoenix",
 "Primal Beast": "primal_beast",
 "Puck": "puck",
+"Pudge": "pudge",
 "Ringmaster": "ringmaster",
 "Rubick": "rubick",
 "Shadow Demon": "shadow_demon",

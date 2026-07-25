@@ -187,9 +187,15 @@
       wrap.appendChild(d);
     });
 
+    // Don't hardcode the game mode — the lobby plays Captains Mode and All
+    // Pick, and a mode named in the tagline that isn't universal is a lie.
     var label = state.year === "all" ? "All time" : state.year;
+    var modes = {};
+    cur.matches.forEach(function (m) { if (m.game_mode) modes[m.game_mode] = 1; });
+    var names = Object.keys(modes);
+    var suffix = names.length === 1 ? " of " + names[0] : "";
     $("#tagline").textContent = cur.matches.length
-      ? label + " · " + cur.matches.length + " matches of Captains Mode"
+      ? label + " · " + cur.matches.length + " matches" + suffix
       : label + " · nothing recorded yet";
   }
 

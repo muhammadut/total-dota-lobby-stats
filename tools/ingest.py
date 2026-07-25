@@ -133,6 +133,9 @@ def main() -> int:
     ap.add_argument("--from", dest="src", help="JSON file; omit to read stdin")
     ap.add_argument("--dry-run", action="store_true", help="validate only")
     ap.add_argument("--deploy", action="store_true", help="git commit and push after rebuild")
+    ap.add_argument("--amend", action="store_true",
+                    help="merge fields into EXISTING matches, matched on source_ref, "
+                         "instead of adding new ones")
     args = ap.parse_args()
 
     raw = Path(args.src).read_text(encoding="utf-8") if args.src else sys.stdin.read()
@@ -141,6 +144,57 @@ def main() -> int:
 
     payload = json.loads(DATA.read_text(encoding="utf-8"))
     existing = payload["matches"]
+
+    # Amending happens when a match's other post-game tab turns up later and
+    # supplies the header it was missing -- match id, duration, game mode.
+    # It is a merge, not a replace, so a patch can name three fields and
+    # leave the roster alone.
+    if args.amend:
+        by_ref = {m["source_ref"]: m for m in existing}
+        merged = []
+        for patch in new:
+            ref = patch.get("source_ref")
+            if ref not in by_ref:
+                print(f"\n  REFUSED — no match with source_ref {ref!r}")
+                return 1
+            target = by_ref[ref]
+            changed = {k: (target.get(k), v) for k, v in patch.items()
+                       if k != "source_ref" and target.get(k) != v}
+            target.update({k: v for k, v in patch.items() if k != "source_ref"})
+            merged.append((ref, changed))
+
+        errs = []
+        for ref, _ in merged:
+            errs += [p for p in loader.validate(by_ref[ref]) if "ERROR" in p]
+        if errs:
+            print("\n  REFUSED — amended match no longer validates:")
+            for e in errs:
+                print(f"    x {e}")
+            return 1
+
+        print(f"\n  amending {len(merged)} match(es)")
+        for ref, changed in merged:
+            print(f"    {ref}")
+            for k, (old, val) in changed.items():
+                shown = str(old)[:38] + ("..." if len(str(old)) > 38 else "")
+                newv = str(val)[:38] + ("..." if len(str(val)) > 38 else "")
+                print(f"      {k}: {shown!r} -> {newv!r}")
+        if args.dry_run:
+            print("\n  dry run — nothing written.")
+            return 0
+        DATA.write_text(dump_matches(payload), encoding="utf-8")
+        json.loads(DATA.read_text(encoding="utf-8"))
+        print(f"\n  updated {DATA.relative_to(ROOT)}")
+        py = sys.executable
+        if not run([py, "load.py"]):        return 2
+        if not run([py, "export_web.py"]):  return 3
+        if args.deploy:
+            refs = ", ".join(r for r, _ in merged)
+            run(["git", "add", "-A"])
+            run(["git", "commit", "-m", f"Amend match(es): {refs}\n\n"
+                 f"Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"])
+            run(["git", "push", "origin", "main"])
+        return 0
 
     print(f"\n  validating {len(new)} match(es) against {len(existing)} already recorded")
     errs = check(new, existing)

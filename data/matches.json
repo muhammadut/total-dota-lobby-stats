@@ -235,7 +235,7 @@
       "source_ref": "scoreboard-2026-07-25-a",
       "dota_match_id": null,
       "played_on": "2026-07-25",
-      "played_at": null,
+      "played_at": "2026-07-25 15:14",
       "duration_seconds": null,
       "game_mode": null,
       "radiant_team_name": null,
@@ -244,7 +244,7 @@
       "dire_score": 31,
       "winning_side": "radiant",
       "result_confidence": "confirmed",
-      "notes": "SCOREBOARD tab, 1080p. The Radiant carries an explicit WINNER badge. No match id, start time or duration -- the scoreboard tab does not show the match header; played_on is ASSUMED from the upload date and should be corrected if the game was played earlier. Columns past HEAL are off the right edge at 1920x1080 and remain NULL. Checksums: radiant 43 kills = score 43 = dire deaths 43 (exact); dire 31 kills = score 31 <= radiant deaths 32, i.e. one death to neutrals/Roshan/self crediting nobody. Player '.......... [UGI]' actually renders as 14 dots with tag [UGI|]; the stored spelling is kept so the identity does not split.",
+      "notes": "SCOREBOARD tab from another player's client (source file Dota_2_2026.07.26-00.14.png). The Radiant carries an explicit WINNER badge. No match id or duration -- the scoreboard tab shows no match header. TIME: the capturing client's clock reads 2026-07-26 00:14, but the file landed on UT's machine at 2026-07-25 15:14 local, a constant +9h01m offset also seen on that client's other capture. UT-local time is stored so the log stays coherent with UT's own client timestamps. Columns past HEAL are off the right edge at 1920x1080 and remain NULL. Checksums: radiant 43 kills = score 43 = dire deaths 43 (exact); dire 31 kills = score 31 <= radiant deaths 32, i.e. one death to neutrals/Roshan/self crediting nobody. Player '.......... [UGI]' actually renders as 14 dots with tag [UGI|]; the stored spelling is kept so the identity does not split.",
       "players": [
         {"name": "Stoic", "side": "radiant", "hero": "Pangolier", "hero_level": 26, "kills": 11, "deaths": 3, "assists": 17, "net_worth": 27299, "last_hits": 391, "denies": 6, "gpm": 691, "bounty_runes": 3, "xpm": 977, "healing": 0},
         {"name": "sesto [M.C]", "side": "radiant", "hero": "Drow Ranger", "hero_level": 26, "kills": 17, "deaths": 3, "assists": 12, "net_worth": 33502, "last_hits": 471, "denies": 20, "gpm": 835, "bounty_runes": 3, "xpm": 972, "healing": 0},
@@ -260,18 +260,18 @@
     },
     {
       "source_ref": "scoreboard-2026-07-25-b",
-      "dota_match_id": null,
+      "dota_match_id": "8913641023",
       "played_on": "2026-07-25",
-      "played_at": "2026-07-25 16:29",
-      "duration_seconds": null,
-      "game_mode": null,
+      "played_at": "2026-07-25 15:38",
+      "duration_seconds": 2672,
+      "game_mode": "All Pick",
       "radiant_team_name": null,
       "dire_team_name": null,
       "radiant_score": 46,
       "dire_score": 42,
       "winning_side": "radiant",
       "result_confidence": "confirmed",
-      "notes": "SCOREBOARD tab from UT's own client, full column set captured. The Radiant carries an explicit WINNER badge. No match id or duration -- the scoreboard tab shows no match header; played_at is the on-screen system clock at capture (4:29 PM), i.e. just after the game ended, not the start time, and the date is assumed from the upload. Checksums exact on both sides with no gaps: radiant 46 kills = score 46 = dire deaths 46; dire 42 kills = score 42 = radiant deaths 42. New player 'SpArtAAAAAAAA [WEPAK]'; the run of A's is approximate, but a future capture with a different count will prefix-match and auto-merge.",
+      "notes": "SCOREBOARD tab from UT's own client, full column set captured. The Radiant carries an explicit WINNER badge. Match header backfilled from the OVERVIEW tab of the same game (Screenshot (17).png): match 8913641023, started 25/7/2026 15:38, duration 44:32, ALL PICK -- the scoreboard capture alone carried none of that. Checksums exact on both sides with no gaps: radiant 46 kills = score 46 = dire deaths 46; dire 42 kills = score 42 = radiant deaths 42. New player 'SpArtAAAAAAAA [WEPAK]'; the run of A's is approximate, but a future capture with a different count will prefix-match and auto-merge.",
       "players": [
         {"name": "HURR [PK_]", "side": "radiant", "hero": "Axe", "hero_level": 26, "kills": 18, "deaths": 11, "assists": 13, "net_worth": 21347, "last_hits": 273, "denies": 10, "gpm": 596, "bounty_runes": 2, "xpm": 897, "healing": 0, "outposts": 0, "hero_damage": 39169, "building_damage": 326, "damage_received_raw": 80812, "damage_reduced_pct": 45.7},
         {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Lina", "hero_level": 27, "kills": 13, "deaths": 9, "assists": 11, "net_worth": 29041, "last_hits": 453, "denies": 12, "gpm": 716, "bounty_runes": 4, "xpm": 1038, "healing": 0, "outposts": 0, "hero_damage": 33499, "building_damage": 9757, "damage_received_raw": 60493, "damage_reduced_pct": 56.7},
@@ -283,6 +283,33 @@
         {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Spectre", "hero_level": 24, "kills": 9, "deaths": 10, "assists": 15, "net_worth": 22143, "last_hits": 374, "denies": 9, "gpm": 561, "bounty_runes": 0, "xpm": 714, "healing": 474, "outposts": 0, "hero_damage": 38671, "building_damage": 1747, "damage_received_raw": 46198, "damage_reduced_pct": 48.4},
         {"name": "UT", "side": "dire", "hero": "Underlord", "hero_level": 24, "kills": 12, "deaths": 10, "assists": 16, "net_worth": 22362, "last_hits": 285, "denies": 1, "gpm": 551, "bounty_runes": 0, "xpm": 736, "healing": 0, "outposts": 0, "hero_damage": 27386, "building_damage": 1137, "damage_received_raw": 69049, "damage_reduced_pct": 40.7},
         {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Snapfire", "hero_level": 22, "kills": 5, "deaths": 8, "assists": 23, "net_worth": 10534, "last_hits": 48, "denies": 0, "gpm": 285, "bounty_runes": 0, "xpm": 637, "healing": 194, "outposts": 0, "hero_damage": 16918, "building_damage": 444, "damage_received_raw": 28985, "damage_reduced_pct": 37.9}
+      ]
+    },
+    {
+      "source_ref": "scoreboard-2026-07-25-c",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 17:22",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 29,
+      "dire_score": 15,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab from another player's client (source file Dota_2_2026.07.26-02.21.png). The Radiant carries an explicit WINNER badge. No match id or duration -- the scoreboard tab shows no match header. TIME: the capturing client's clock reads 2026-07-26 02:21, but the file landed on UT's machine at 2026-07-25 17:22 local, the same +9h01m offset seen on that client's other capture; UT-local time is stored so the log stays coherent. Columns past HEAL are off the right edge at 1920x1080 and remain NULL. Checksums: radiant 28 kills <= score 29 <= dire deaths 29, i.e. one tower-credited kill; dire 15 kills = score 15 = radiant deaths 15 (exact). The clan tag on 'Rogue Agent' is a run of I/l/pipe glyphs that cannot be told apart in this font; identity resolution ignores clan tags, so a future variant will still match.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Ember Spirit", "hero_level": 18, "kills": 15, "deaths": 2, "assists": 5, "net_worth": 15201, "last_hits": 196, "denies": 4, "gpm": 624, "bounty_runes": 3, "xpm": 709, "healing": 0},
+        {"name": "rtz [FUBU]", "side": "radiant", "hero": "Tidehunter", "hero_level": 15, "kills": 4, "deaths": 1, "assists": 11, "net_worth": 11165, "last_hits": 133, "denies": 7, "gpm": 417, "bounty_runes": 0, "xpm": 520, "healing": 308},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Medusa", "hero_level": 20, "kills": 4, "deaths": 1, "assists": 7, "net_worth": 18999, "last_hits": 371, "denies": 9, "gpm": 714, "bounty_runes": 2, "xpm": 811, "healing": 0},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Rubick", "hero_level": 12, "kills": 3, "deaths": 6, "assists": 13, "net_worth": 6130, "last_hits": 17, "denies": 0, "gpm": 265, "bounty_runes": 0, "xpm": 309, "healing": 0},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Pudge", "hero_level": 13, "kills": 2, "deaths": 5, "assists": 16, "net_worth": 6861, "last_hits": 31, "denies": 7, "gpm": 288, "bounty_runes": 3, "xpm": 396, "healing": 0},
+        {"name": "Rogue Agent [ITIzI]", "side": "dire", "hero": "Night Stalker", "hero_level": 15, "kills": 2, "deaths": 5, "assists": 6, "net_worth": 9776, "last_hits": 160, "denies": 1, "gpm": 385, "bounty_runes": 2, "xpm": 476, "healing": 0},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Bane", "hero_level": 12, "kills": 2, "deaths": 4, "assists": 7, "net_worth": 4949, "last_hits": 15, "denies": 3, "gpm": 219, "bounty_runes": 1, "xpm": 324, "healing": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Storm Spirit", "hero_level": 16, "kills": 8, "deaths": 5, "assists": 3, "net_worth": 12425, "last_hits": 174, "denies": 1, "gpm": 494, "bounty_runes": 1, "xpm": 556, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 10, "kills": 0, "deaths": 12, "assists": 7, "net_worth": 4355, "last_hits": 21, "denies": 2, "gpm": 199, "bounty_runes": 0, "xpm": 260, "healing": 125},
+        {"name": "Downlander", "side": "dire", "hero": "Morphling", "hero_level": 14, "kills": 3, "deaths": 3, "assists": 2, "net_worth": 10915, "last_hits": 172, "denies": 16, "gpm": 415, "bounty_runes": 2, "xpm": 456, "healing": 191}
       ]
     }
   ]
