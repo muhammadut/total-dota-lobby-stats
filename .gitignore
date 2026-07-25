@@ -1,0 +1,6 @@
+# Build artifacts -- rebuild with `python load.py`
+*.db
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ancients' Ledger — Inhouse Lobby Record</title>
+<meta name="description" content="Win/loss standings, match history and hero records for our Dota 2 inhouse lobby.">
+<meta name="theme-color" content="#08090c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=JetBrains+Mono:wght@400;500;700&family=Spectral:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2308090c'/%3E%3Cpath d='M16 4l10 12-10 12L6 16z' fill='none' stroke='%23c8a44d' stroke-width='2'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="aura aura--radiant" aria-hidden="true"></div>
+<div class="aura aura--dire" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead__sigil" aria-hidden="true">
+    <svg viewBox="0 0 64 64" width="52" height="52">
+      <path d="M32 3l29 29-29 29L3 32z" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+      <path d="M32 13l19 19-19 19-19-19z" fill="none" stroke="currentColor" stroke-width="1"  opacity=".8"/>
+      <circle cx="32" cy="32" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="32" cy="32" r="1.8" fill="currentColor"/>
+    </svg>
+  </div>
+  <p class="masthead__eyebrow">Inhouse Lobby &middot; Captains Mode</p>
+  <h1 class="masthead__title">The Ancients&rsquo; Ledger</h1>
+  <p class="masthead__dates" id="sessionDates">&nbsp;</p>
+
+  <dl class="tally" id="tally"></dl>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab is-active" role="tab" aria-selected="true"  data-view="standings">Standings</button>
+  <button class="tab"           role="tab" aria-selected="false" data-view="matches">Matches</button>
+  <button class="tab"           role="tab" aria-selected="false" data-view="heroes">Heroes</button>
+  <span class="tabs__rule" aria-hidden="true"></span>
+</nav>
+
+<main>
+
+  <!-- ─────────────────────────── STANDINGS ─────────────────────────── -->
+  <section id="view-standings" class="view is-active">
+    <div class="section-head">
+      <h2>Standings</h2>
+      <p class="section-head__note">
+        Every win and loss is <em>derived</em> from which side the player was on —
+        never stored twice. Sort by any column.
+      </p>
+    </div>
+
+    <div class="table-wrap frame">
+      <table class="ledger" id="standings">
+        <thead>
+          <tr>
+            <th class="col-rank"  scope="col"><span>#</span></th>
+            <th class="col-name"  scope="col" data-sort="name"   ><span>Player</span></th>
+            <th class="col-num"   scope="col" data-sort="games"  aria-sort="descending"><span>GP</span></th>
+            <th class="col-num"   scope="col" data-sort="wins"   ><span>W</span></th>
+            <th class="col-num"   scope="col" data-sort="losses" ><span>L</span></th>
+            <th class="col-bar"   scope="col" data-sort="win_pct"><span>Radiant &mdash; Dire line</span></th>
+            <th class="col-num"   scope="col" data-sort="win_pct"><span>Win&nbsp;%</span></th>
+            <th class="col-kda"   scope="col"><span>K / D / A</span></th>
+            <th class="col-num"   scope="col" data-sort="kda"    ><span>KDA</span></th>
+            <th class="col-num col-opt" scope="col" data-sort="avg_gpm"><span>GPM</span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="fineprint">
+      <strong>KDA</strong> is (kills + assists) &divide; deaths; <em>&infin;</em> marks an
+      undefined ratio — a player who has never died, or never lost.
+      Rows with one or two games are noise, not skill.
+    </p>
+  </section>
+
+  <!-- ──────────────────────────── MATCHES ──────────────────────────── -->
+  <section id="view-matches" class="view">
+    <div class="section-head">
+      <h2>Match Log</h2>
+      <p class="section-head__note">
+        Ordered by match ID — globally sequential, and therefore the true
+        chronology even when clocks from different clients disagree.
+        Select a match to open its full scoreboard.
+      </p>
+    </div>
+    <div class="matches" id="matches"></div>
+  </section>
+
+  <!-- ───────────────────────────── HEROES ──────────────────────────── -->
+  <section id="view-heroes" class="view">
+    <div class="section-head">
+      <h2>Hero Record</h2>
+      <p class="section-head__note">
+        Every hero drafted, and how it fared. Hero names come from the
+        scoreboard tab, which prints them as text.
+      </p>
+    </div>
+    <div class="heroes" id="heroes"></div>
+  </section>
+
+</main>
+
+<footer class="colophon frame">
+  <h2>On the record</h2>
+  <div class="colophon__grid">
+    <p>
+      Transcribed by hand from post-game screenshots into a SQLite database,
+      then exported here. Nothing is scraped — these are private lobby games and
+      they do not appear in any public API.
+    </p>
+    <p>
+      Every match is checksummed on entry against the rule
+      <code>team kills &le; team score &le; enemy deaths</code>. A violation of that
+      ordering is arithmetically impossible and flags a misread digit before it can
+      skew a win rate.
+    </p>
+    <p>
+      Players who renamed themselves mid-session are merged by hand, never by
+      string-matching. <span id="aliasNote"></span>
+    </p>
+  </div>
+  <p class="colophon__mark">
+    <span id="generated"></span>
+    &nbsp;&middot;&nbsp;
+    <a href="https://github.com/muhammadut/total-dota-lobby-stats">source</a>
+  </p>
+</footer>
+
+<!-- ───────────────────────── PLAYER DRAWER ───────────────────────── -->
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerName" hidden>
+  <button class="drawer__close" id="drawerClose" aria-label="Close">&times;</button>
+  <div class="drawer__body" id="drawerBody"></div>
+</aside>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
