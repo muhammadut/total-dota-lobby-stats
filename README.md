@@ -1,10 +1,15 @@
-# Dota 2 Inhouse Stats Tracker
+# Total Dota Lobby Stats
 
-### → **[The Ancients' Ledger](https://muhammadut.github.io/total-dota-lobby-stats/)** — live dashboard
+### → **[Live dashboard](https://muhammadut.github.io/total-dota-lobby-stats/)**
 
 SQLite database tracking win/loss records per player across inhouse matches,
 transcribed from post-game screenshots, with a static dashboard published to
 GitHub Pages.
+
+The dashboard filters by year, so each season stands on its own — standings,
+averages and hero records are all recomputed in the browser from whichever
+matches are in scope. Hero portraits come from Valve's Dota 2 CDN; the slug
+map in `docs/heroes.js` is HEAD-verified against that CDN at build time.
 
 ## Files
 
