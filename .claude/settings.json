@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python load.py)",
+      "Bash(python export_web.py)",
+      "Bash(python stats.py:*)",
+      "Bash(python tools/ingest.py:*)",
+      "Bash(python tools/automerge.py:*)",
+      "Bash(python tools/crop.py:*)",
+      "Bash(python tools/discord_pull.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git check-ignore:*)"
+    ],
+    "deny": [
+      "Read(./tools/discord.local.json)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ]
+  }
+}
