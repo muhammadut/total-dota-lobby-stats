@@ -163,14 +163,29 @@ def main() -> int:
             target.update({k: v for k, v in patch.items() if k != "source_ref"})
             merged.append((ref, changed))
 
+        # Amend used to run a weaker check than append: only "ERROR" lines,
+        # skipping roster-size and duplicate-name problems, and never the
+        # fingerprint or id checks at all. Since players, scores and
+        # winning_side are all amendable, that let one match be edited into
+        # a copy of another -- or a winner flipped -- with no objection.
+        # Validate the amended match exactly as a new one, against all the
+        # others.
         errs = []
         for ref, _ in merged:
-            errs += [p for p in loader.validate(by_ref[ref]) if "ERROR" in p]
+            others = [m for m in existing if m["source_ref"] != ref]
+            errs += check([by_ref[ref]], others)
         if errs:
-            print("\n  REFUSED — amended match no longer validates:")
+            print("\n  REFUSED — nothing was written; the amended match "
+                  "does not validate:")
             for e in errs:
                 print(f"    x {e}")
             return 1
+
+        flips = [(ref, ch) for ref, ch in merged if "winning_side" in ch]
+        for ref, ch in flips:
+            old, new = ch["winning_side"]
+            print(f"\n  !! {ref}: winning_side {old!r} -> {new!r} — this inverts "
+                  f"win/loss for all ten players in that match.")
 
         print(f"\n  amending {len(merged)} match(es)")
         for ref, changed in merged:

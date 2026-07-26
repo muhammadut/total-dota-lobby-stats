@@ -152,37 +152,56 @@ def apply_aliases(cur, aliases: list[dict]) -> None:
     ids = dict(cur.execute("SELECT display_name, id FROM players").fetchall())
     canon_names = {a["canonical"] for a in aliases}
     applied = 0
+    claimed: set = set()          # alias names already pointed somewhere
+    # canonical id -> every player id folded into it so far, itself included.
+    groups: dict = {}
 
     for a in aliases:
         c_name, a_name = a["canonical"], a["alias"]
-        for n in (c_name, a_name):
-            if n not in ids:
-                print(f"  [alias] SKIP {c_name!r} <- {a_name!r}: "
-                      f"no player named {n!r} in the data")
-                break
-        else:
-            # A merge chain (A -> B -> C) would break the single-level
-            # resolution in v_player, silently dropping a player's games.
-            if a_name in canon_names:
-                print(f"  [alias] REFUSED {c_name!r} <- {a_name!r}: "
-                      f"{a_name!r} is itself a canonical name (merge chain)")
-                continue
+        missing = [n for n in (c_name, a_name) if n not in ids]
+        if missing:
+            print(f"  [alias] SKIP {c_name!r} <- {a_name!r}: "
+                  f"no player named {missing[0]!r} in the data")
+            continue
 
-            # One person cannot hold two slots in the same match.
-            clash = cur.execute("""
-                SELECT COUNT(*) FROM match_players x
-                JOIN match_players y ON x.match_id = y.match_id
-                WHERE x.player_id = ? AND y.player_id = ?
-            """, (ids[c_name], ids[a_name])).fetchone()[0]
-            if clash:
-                print(f"  [alias] REFUSED {c_name!r} <- {a_name!r}: "
-                      f"both appear in {clash} of the same match(es) -- "
-                      f"they cannot be one person")
-                continue
+        # A merge chain (A -> B -> C) would break the single-level
+        # resolution in v_player, silently dropping a player's games.
+        if a_name in canon_names:
+            print(f"  [alias] REFUSED {c_name!r} <- {a_name!r}: "
+                  f"{a_name!r} is itself a canonical name (merge chain)")
+            continue
 
-            cur.execute("UPDATE players SET merged_into = ? WHERE id = ?",
-                        (ids[c_name], ids[a_name]))
-            applied += 1
+        # The same alias pointed at two canonicals: last write would win
+        # silently, revoking an earlier confirmed merge and moving both
+        # players' records.
+        if a_name in claimed:
+            print(f"  [alias] REFUSED {c_name!r} <- {a_name!r}: "
+                  f"{a_name!r} is already merged elsewhere -- remove one row")
+            continue
+
+        cid, aid = ids[c_name], ids[a_name]
+        group = groups.setdefault(cid, {cid})
+
+        # TRANSITIVE co-occurrence. Checking only (canonical, alias) is not
+        # enough: with C<-A already applied, C<-B passes that test even when
+        # A and B played each other, and C then holds two rows in that match
+        # -- a phantom game and a phantom win, permanently, in silence.
+        marks = ",".join("?" * len(group))
+        clash = cur.execute(f"""
+            SELECT COUNT(*) FROM match_players x
+            JOIN match_players y ON x.match_id = y.match_id
+            WHERE x.player_id = ? AND y.player_id IN ({marks})
+        """, (aid, *group)).fetchone()[0]
+        if clash:
+            print(f"  [alias] REFUSED {c_name!r} <- {a_name!r}: {a_name!r} shares "
+                  f"{clash} match(es) with {c_name!r} or someone already merged "
+                  f"into it -- they cannot be one person")
+            continue
+
+        cur.execute("UPDATE players SET merged_into = ? WHERE id = ?", (cid, aid))
+        group.add(aid)
+        claimed.add(a_name)
+        applied += 1
 
     print(f"  [alias] {applied}/{len(aliases)} merges applied")
 
@@ -204,13 +223,44 @@ def main() -> int:
                 f"twice. Remove one, or confirm they really are two games.")
         seen[fp] = m["source_ref"]
 
+    # source_ref is the upsert key, so two entries sharing one silently
+    # collapse into a single row and a match disappears without a word.
+    refs: dict[str, int] = {}
+    for m in matches:
+        refs[m["source_ref"]] = refs.get(m["source_ref"], 0) + 1
+    for ref, n in refs.items():
+        if n > 1:
+            problems.append(f"{ref}: ERROR appears {n} times in matches.json -- "
+                            f"source_ref must be unique or a match is lost.")
+
     for p in problems:
         print(f"  [check] {p}")
+
+    # Refuse to build from data known to be broken. This used to print the
+    # error and load anyway, so the one guard against counting a match twice
+    # could not actually stop anything -- and the caller, which keys on the
+    # exit code, was told everything went fine.
+    fatal = [p for p in problems if "ERROR" in p]
+    if fatal:
+        print(f"\n  REFUSED — {len(fatal)} fatal problem(s); the database was "
+              f"not rebuilt. Fix data/matches.json and re-run.")
+        return 1
 
     con = sqlite3.connect(DB_PATH)
     con.executescript(SCHEMA.read_text(encoding="utf-8"))
     cur = con.cursor()
     migrate(cur)
+
+    # Matches deleted from the JSON must disappear from the database too.
+    # Without this the loader only ever upserts, so removing a duplicate
+    # from matches.json is a no-op against an existing DB and the phantom
+    # win survives every rebuild -- while a fresh clone reports a different
+    # number. The published site and the owner's local answer then disagree.
+    keep = [m["source_ref"] for m in matches]
+    marks = ",".join("?" * len(keep)) or "''"
+    cur.execute(f"DELETE FROM matches WHERE source_ref NOT IN ({marks})", keep)
+    if cur.rowcount:
+        print(f"  [clean] dropped {cur.rowcount} match(es) no longer in matches.json")
 
     for m in matches:
         cur.execute(

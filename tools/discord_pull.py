@@ -47,6 +47,19 @@ INBOX = ROOT / "inbox"
 # fresh checkout every run, so a watermark inside the ignored inbox would
 # reset each time and re-download the whole channel.
 MARK = ROOT / "data" / "discord_watermark.txt"
+# Every image message we have already dealt with, and how it went. This is
+# what makes the watermark safe to advance past chat: skipping is decided
+# per-image here, not by where the marker happens to sit.
+SEEN = ROOT / "data" / "discord_seen.json"
+
+
+def load_seen():
+    return json.loads(SEEN.read_text(encoding="utf-8")) if SEEN.exists() else {}
+
+
+def save_seen(d):
+    SEEN.write_text(json.dumps(d, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8")
 API = "https://discord.com/api/v10"
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp")
 
@@ -174,11 +187,30 @@ def main() -> int:
                     (".png", ".jpg", ".jpeg", ".webp")):
                 found.append((m, a))
 
-    if not found:
-        print(f"\n  nothing new in the channel"
-              + (f" after message {after}" if after else "") + ".")
+    # ── the watermark must clear chat ──────────────────────────────
+    # Previously this returned early when a batch held no images, leaving
+    # the marker where it was. Twelve consecutive chat messages then filled
+    # the --limit window permanently: every later run re-read the same
+    # twelve, found nothing, and every screenshot posted afterwards became
+    # invisible. Forever, with a green checkmark. Advancing past scanned
+    # messages is safe because SEEN, not the marker, decides what to skip.
+    scanned_newest = msgs[-1]["id"] if msgs else None
+
+    seen = load_seen()
+    fresh = [(m, a) for m, a in found if m["id"] not in seen]
+    skipped = len(found) - len(fresh)
+    if skipped:
+        print(f"  ({skipped} image(s) already handled — skipping)")
+
+    if not fresh:
+        if scanned_newest and not args.list:
+            MARK.write_text(scanned_newest, encoding="utf-8")
+            print(f"\n  no new images; watermark moved past chat to {scanned_newest}.")
+        else:
+            print("\n  nothing new in the channel.")
         return 0
 
+    found = fresh
     print(f"\n  {len(found)} new image(s):")
     newest = None
     for m, a in found:
@@ -201,11 +233,31 @@ def main() -> int:
                 print(f"      ! download failed: {e}")
                 continue
         print(f"      -> {dest.relative_to(ROOT)}")
+        seen[m["id"]] = {"status": "pending", "file": name,
+                         "author": who, "posted": when}
         newest = m["id"]
 
-    if newest and not args.list:
-        MARK.write_text(newest, encoding="utf-8")
-        print(f"\n  watermark now {newest}")
+    if args.list:
+        return 0
+
+    save_seen(seen)
+
+    # A download that failed is NOT in `seen`, so the marker must not move
+    # past it or the image is unreachable: the marker skips it and `seen`
+    # never learned about it. Stop at the first failure; the chat behind it
+    # gets re-scanned tomorrow, which is cheap and correct.
+    failed = [m["id"] for m, _ in found if m["id"] not in seen]
+    limit_to = scanned_newest
+    if failed:
+        first_bad = min(failed, key=int)
+        ok_before = [i for i in (newest,) if i and int(i) < int(first_bad)]
+        limit_to = ok_before[0] if ok_before else after
+        print(f"\n  ! {len(failed)} download(s) failed; holding the watermark "
+              f"below {first_bad} so they are retried.")
+
+    if limit_to:
+        MARK.write_text(limit_to, encoding="utf-8")
+        print(f"\n  watermark now {limit_to}")
     print("\n  Next: ask Claude to \"add the screenshots in inbox/\".")
     return 0
 

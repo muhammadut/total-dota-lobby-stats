@@ -21,6 +21,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write       # needed to push the new match back
 
@@ -58,8 +59,12 @@ jobs:
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
           DISCORD_APPROVERS: ${{ secrets.DISCORD_APPROVERS }}
         run: |
-          # Commands first: a "merge A and B" typed in the channel should
-          # take effect in the same run it is read, not the next one.
+          # load.py FIRST. dota_stats.db is gitignored, so a fresh runner has
+          # no database until this runs -- and without it discord_commands.py
+          # sees zero players ("I don't have a player called HURR") and
+          # co_occur() returns False, disabling the one guard that stops two
+          # different people being merged into one row.
+          python load.py
           python tools/discord_commands.py
           python tools/discord_ask.py --resolve
           python load.py
@@ -90,7 +95,7 @@ jobs:
           scoreboard or overview showing two teams of five and both scores, \
           and reply to the poster with tools/discord_notify.py --reply-to \
           <message_id>. Verify every match against the checksum rule before \
-          ingesting. Run tools/automerge.py afterwards. Do NOT pass --deploy: \
+          ingesting. Run 'python tools/automerge.py --ask-discord' afterwards. Do NOT pass --deploy: \
           this workflow commits and pushes. If a match fails validation, leave \
           it unwritten and say why. When unsure, reject rather than guess." \
             --model sonnet \
@@ -126,6 +131,7 @@ jobs:
           Pulled by tools/discord_pull.py and ingested by the add-match
           skill running headless. Validated against
           team kills <= team score <= enemy deaths before writing."
+          git pull --rebase --autostash origin main
           git push
 
       - name: Report
