@@ -109,16 +109,41 @@ returns False, disabling the co-occurrence guard.
 
 ## Status — as of 2026-07-25
 
-13 matches, 38 player rows / 29 people, 9 merges, all from 2026-07-24/25.
+14 matches, 40 player rows / 30 people, 10 merges, all from 2026-07-24/25.
+Every match is 5v5, none is dateless, and the live asset hash matches the
+built one.
 
-**The cloud workflow has NEVER RUN.** No repo secrets are set. Needed:
+**The pipeline has now been rehearsed end-to-end, locally, on two real
+Discord screenshots.** Pull → triage → zoom-verify → ingest → automerge →
+reconcile → deploy, with the live site byte-identical to the build (modulo
+git's CRLF→LF). Two things that only a real run surfaced:
+
+- **A re-read agreed with the recorded match digit for digit.** `discord-
+  1530753840532688998` had already been ingested; transcribing it again from
+  scratch reproduced all 10 players, 30 K/D/A values, both scores and the
+  winner exactly. That is the only real evidence the reading step is stable.
+- **`Rogue Agent [ITIzI]` was a misread of `Rogue Agent [|T|z|]`** — pipes,
+  not capital I, settled at 12× where the bars overshoot the `T`'s cap-height
+  above and below. One human had been split across two rows for 2 games.
+  `automerge.py` caught it unprompted once both spellings existed.
+
+**The cloud workflow has still NEVER RUN.** No repo secrets are set. Needed:
 `DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID`, `DISCORD_APPROVERS`
 (`539898067957186560,364832153843793920,1149675111557890048`), and
 `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or `ANTHROPIC_API_KEY`.
 
-Triage has never seen a hostile image. The command parser has only been used by
-Claude. **Next step: post a screenshot — ideally some deliberately bad ones —
-and rehearse locally before trusting the cron.**
+Triage has never seen a hostile image, and the command parser has only ever
+been driven by Claude. **Next step: post a deliberately bad image — wrong
+tab, cropped, not Dota at all — and confirm it is refused and answered in
+channel rather than silently dropped.**
+
+### `automerge.py` picks the established name as canonical
+
+When it merged the two `Rogue Agent` rows it kept `[ITIzI]` — the *misread*
+spelling — because that row had the earlier appearances. The count is right
+(one person, 2 games) but the dashboard shows a name that was never real.
+There is no command to flip a merge's direction; the only route is editing
+the `aliases` line and re-running `load.py`. Same root as known-unfixed 4.
 
 ## Known-unfixed (adversarial review, 2026-07-25)
 
