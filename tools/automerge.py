@@ -87,6 +87,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--ask-discord", action="store_true",
+                    help="post the too-weak candidates to Discord for a vote")
     args = ap.parse_args()
 
     if not DB.exists():
@@ -144,6 +146,17 @@ def main() -> int:
         print(f"\n  NEEDS YOUR CALL {len(ask)} (too weak to merge unasked):")
         for a, b, rule in ask:
             print(f"    {a!r}  ~  {b!r}   ({rule})")
+
+    # Anything below the automatic bar becomes a question in the channel
+    # rather than a line in a log nobody reads. discord_ask.py refuses to
+    # re-post a pair that is already open, so this is safe to run daily.
+    if ask and args.ask_discord and not args.dry_run:
+        print()
+        for a, b, rule in ask:
+            canon, alias = pick_canonical(a, b, games)
+            subprocess.run([sys.executable, str(ROOT / "tools" / "discord_ask.py"),
+                            "--ask", "--canonical", canon, "--alias", alias,
+                            "--reason", rule], cwd=ROOT)
 
     if args.dry_run:
         print("\n  dry run — nothing written.")

@@ -49,6 +49,19 @@ jobs:
         if: steps.pull.outputs.count == '0'
         run: echo "Nothing to do. Exiting before the model starts."
 
+      # Runs every day regardless of whether screenshots arrived, so a vote
+      # cast this afternoon is applied tomorrow morning without needing a
+      # new match to trigger it.
+      - name: Apply merge votes from Discord
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          DISCORD_APPROVERS: ${{ secrets.DISCORD_APPROVERS }}
+        run: |
+          python tools/discord_ask.py --resolve
+          python load.py
+          python export_web.py
+
       - name: Install Claude Code
         if: steps.pull.outputs.count != '0'
         run: npm install -g @anthropic-ai/claude-code
@@ -80,8 +93,10 @@ jobs:
             --model sonnet \
             --permission-mode bypassPermissions < /dev/null
 
+      # Deliberately NOT gated on new screenshots: a merge vote resolved
+      # above changes matches.json on a day when nothing was posted, and
+      # that must still be committed.
       - name: Commit and push
-        if: steps.pull.outputs.count != '0'
         run: |
           git config user.name  "dota-stats-bot"
           git config user.email "actions@github.com"
