@@ -394,6 +394,33 @@
         {"name": "Mandark [<MC>]", "side": "dire", "hero": "Outworld Destroyer", "hero_level": 27, "kills": 19, "deaths": 2, "assists": 14, "net_worth": 31876, "last_hits": 415, "denies": 12, "gpm": 736},
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Magnus", "hero_level": 23, "kills": 9, "deaths": 5, "assists": 21, "net_worth": 18707, "last_hits": 175, "denies": 10, "gpm": 451}
       ]
+    },
+    {
+      "source_ref": "discord-1530771449986420967",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 22:59",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 47,
+      "dire_score": 38,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1530771449986420967). The Radiant carries an explicit WINNER badge; both teams are the generic 'The Radiant'/'The Dire' headings, so both team names are stored NULL rather than the literal strings. No match id or duration -- the scoreboard tab shows no match header. played_at is the Discord upload time converted to local, which is server-side and absolute, so it is a better clock than a filename; it is still an upper bound on the match itself. This capture is 1920x1200 and cut after GPM, so XPM, healing, outposts and the damage columns are off-screen and remain NULL. Checksums: radiant 47 kills = score 47 = dire deaths 47 (exact); dire 36 kills <= score 38 <= radiant deaths 38 -- two tower-credited kills, so every Dire K/D/A digit was re-read at 5x zoom and confirmed. 'Rogue Agent [|T|z|]' carries pipe characters, not capital I: verified at 12x zoom, where the bars overshoot the cap-height of the adjacent T both above and below the baseline. The existing 'Rogue Agent [ITIzI]' row is an earlier misreading of the same clan tag.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Queen of Pain", "hero_level": 30, "kills": 17, "deaths": 3, "assists": 24, "net_worth": 39386, "last_hits": 633, "denies": 9, "gpm": 802},
+        {"name": "vAnzO", "side": "radiant", "hero": "Rubick", "hero_level": 25, "kills": 6, "deaths": 11, "assists": 33, "net_worth": 20051, "last_hits": 167, "denies": 6, "gpm": 427},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Lifestealer", "hero_level": 28, "kills": 13, "deaths": 6, "assists": 15, "net_worth": 36032, "last_hits": 466, "denies": 27, "gpm": 651},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Lich", "hero_level": 26, "kills": 5, "deaths": 9, "assists": 27, "net_worth": 19599, "last_hits": 55, "denies": 9, "gpm": 366},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Underlord", "hero_level": 28, "kills": 6, "deaths": 9, "assists": 32, "net_worth": 30480, "last_hits": 372, "denies": 8, "gpm": 571},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Storm Spirit", "hero_level": 28, "kills": 6, "deaths": 4, "assists": 17, "net_worth": 28063, "last_hits": 528, "denies": 4, "gpm": 623},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Magnus", "hero_level": 27, "kills": 8, "deaths": 7, "assists": 12, "net_worth": 25904, "last_hits": 443, "denies": 0, "gpm": 545},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Troll Warlord", "hero_level": 29, "kills": 17, "deaths": 9, "assists": 13, "net_worth": 34779, "last_hits": 649, "denies": 21, "gpm": 748},
+        {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Tusk", "hero_level": 23, "kills": 1, "deaths": 16, "assists": 25, "net_worth": 14263, "last_hits": 106, "denies": 2, "gpm": 347},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 4, "deaths": 11, "assists": 22, "net_worth": 11135, "last_hits": 43, "denies": 2, "gpm": 293}
+      ]
     }
   ]
 }
