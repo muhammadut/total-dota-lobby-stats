@@ -43,7 +43,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CONF = ROOT / "tools" / "discord.local.json"
 INBOX = ROOT / "inbox"
-MARK = INBOX / ".last_message_id"
+# The watermark is COMMITTED, unlike inbox/ itself. A cloud runner gets a
+# fresh checkout every run, so a watermark inside the ignored inbox would
+# reset each time and re-download the whole channel.
+MARK = ROOT / "data" / "discord_watermark.txt"
 API = "https://discord.com/api/v10"
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp")
 

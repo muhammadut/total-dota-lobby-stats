@@ -1,0 +1,103 @@
+name: Sync Dota matches
+
+# Runs in GitHub's cloud, so it works with your machine off.
+#
+# Cheap half first: pull from Discord and stop if nothing arrived. The
+# model is only started when a screenshot is actually waiting, so an idle
+# day costs a few seconds of runner time and no tokens.
+
+on:
+  schedule:
+    # 09:00 UTC = 05:00 America/Toronto. GitHub's scheduler can run late
+    # under load; it is not a precise alarm clock, which is fine here.
+    - cron: "0 9 * * *"
+  workflow_dispatch:        # adds a "Run workflow" button for testing
+
+concurrency:
+  # Two runs writing data/matches.json at once would conflict.
+  group: sync-matches
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # needed to push the new match back
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pull new screenshots from Discord
+        id: pull
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+        run: |
+          python tools/discord_pull.py
+          count=$(ls -1 inbox/*.png inbox/*.jpg inbox/*.jpeg 2>/dev/null | wc -l)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Found $count new screenshot(s)."
+
+      - name: Stop early if nothing new
+        if: steps.pull.outputs.count == '0'
+        run: echo "Nothing to do. Exiting before the model starts."
+
+      - name: Install Claude Code
+        if: steps.pull.outputs.count != '0'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Parse, verify and ingest
+        if: steps.pull.outputs.count != '0'
+        env:
+          # Either works. CLAUDE_CODE_OAUTH_TOKEN uses a Claude subscription
+          # (generate with `claude setup-token`); ANTHROPIC_API_KEY bills
+          # API credits instead.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "Use the add-match skill to add every screenshot in inbox/ \
+          to the database. Verify each one against the checksum rule before \
+          ingesting. Run tools/automerge.py afterwards. Do NOT use \
+          --deploy: this workflow commits and pushes. If any match fails \
+          validation, leave it unwritten and say why." \
+            --permission-mode bypassPermissions < /dev/null
+
+      - name: Commit and push
+        if: steps.pull.outputs.count != '0'
+        run: |
+          git config user.name  "dota-stats-bot"
+          git config user.email "actions@github.com"
+          # inbox/ is gitignored; only the data and the rebuilt site move.
+          git add -A
+
+          # The watermark advances at DOWNLOAD time, not ingest time. If
+          # validation refused the batch, committing it anyway would push
+          # the marker past screenshots that were never recorded — and the
+          # images live in gitignored inbox/, so they would be gone for
+          # good. Gate the whole commit on matches.json actually changing,
+          # and otherwise stage nothing: the runner is disposable, so an
+          # uncommitted watermark simply never happened and tomorrow's run
+          # re-pulls the same screenshots.
+          if git diff --cached --quiet -- data/matches.json; then
+            echo "::warning::No match was written — validation refused the batch."
+            echo "Discarding the watermark advance so these screenshots retry."
+            git reset --quiet
+            exit 0
+          fi
+
+          git commit -m "Auto-add matches from Discord
+
+          Pulled by tools/discord_pull.py and ingested by the add-match
+          skill running headless. Validated against
+          team kills <= team score <= enemy deaths before writing."
+          git push
+
+      - name: Report
+        if: always()
+        run: |
+          echo "Screenshots pulled: ${{ steps.pull.outputs.count }}"
+          echo "Watermark: $(cat data/discord_watermark.txt 2>/dev/null || echo none)"
