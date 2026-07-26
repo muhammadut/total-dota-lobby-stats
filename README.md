@@ -274,6 +274,46 @@ alone can't.
    screenshots are the only source. Automatic import isn't an option for
    these; entry stays manual.
 
+## Tools
+
+| Command | What it does |
+|---|---|
+| `python tools/discord_pull.py` | fetch new screenshots from Discord into `inbox/` |
+| `python tools/discord_commands.py` | act on `merge A and B`, `yes`/`no`, `status`, `help` typed in the channel |
+| `python tools/discord_ask.py --resolve` | apply merge votes |
+| `python tools/reconcile.py` | account for every downloaded image; ask for a repost if one failed |
+| `python tools/ingest.py --from f.json --dry-run` | validate a parsed match, write nothing |
+| `python tools/ingest.py --from f.json --deploy` | write, rebuild, commit, push |
+| `python tools/ingest.py --from p.json --amend` | backfill fields on an existing match |
+| `python tools/automerge.py --ask-discord` | merge obvious renames, ask the channel about the rest |
+| `python tools/crop.py shot.png --rows --tab scoreboard` | zoom for ambiguous digits |
+
+## Integrity
+
+The system exists to answer "who won the most matches this year", so the
+failure that matters is a wrong number produced quietly. Guards, in order of
+how much they protect that:
+
+1. **Arithmetic checksum** — `team kills <= team score <= enemy deaths`, per
+   team, on every match. A misread digit breaks it and the batch is refused.
+2. **Transitive co-occurrence** — an alias is checked against the canonical
+   *and everyone already merged into it*. Two names in the same match are two
+   people, and that is never overridden.
+3. **Content fingerprint** — the same roster and K/D/A twice is a re-capture,
+   not a second game.
+4. **`load.py` refuses and exits 1** on any fatal problem, so callers keying on
+   the exit code cannot proceed over broken data.
+5. **Deletion is honoured** — a match removed from `matches.json` is dropped
+   from the database, so the local answer and the published site cannot drift.
+
+Only kills, deaths and score are checksummed. Names, net worth and GPM are not
+— a misread name mints a new player, which `automerge.py` is designed to catch
+on its next appearance.
+
+An adversarial review on 2026-07-25 found five critical defects, all in the
+guards rather than the working path. They are fixed and verified against
+reproductions; the remaining lower-severity findings are listed in `CLAUDE.md`.
+
 ## Pulling screenshots from Discord
 
 `tools/discord_pull.py` downloads new image attachments from one Discord

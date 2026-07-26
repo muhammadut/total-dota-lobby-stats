@@ -1,104 +1,159 @@
 # Total Dota Lobby Stats — working notes
 
-Win/loss tracking for a private Dota 2 inhouse lobby, transcribed by hand from
-post-game screenshots into SQLite and published to GitHub Pages.
+Win/loss tracking for a private Dota 2 inhouse lobby. Screenshots → SQLite →
+static dashboard on GitHub Pages, with a Discord bot as the front door.
 
 **Live:** https://muhammadut.github.io/total-dota-lobby-stats/
+**Repo:** github.com/muhammadut/total-dota-lobby-stats (PUBLIC)
+
+**The point of the whole system:** at the end of the year, look at the
+accumulated data and say who won the most matches. So the failure that matters
+is *a wrong number produced quietly and surviving twelve months*. A loud crash
+is fine. Silence is not. Every guard in this codebase leans that way.
 
 ## The one rule
 
 **Never hand-edit `data/matches.json`, and never hand-run the deploy.**
-`tools/ingest.py` does both, identically every time. Reading a screenshot is a
-judgement task and belongs to the model; validating, writing, rebuilding and
-deploying are mechanical and belong to the tool.
+Reading a screenshot is judgement and belongs to the model; validating, writing,
+rebuilding and deploying are mechanical and belong to the tools.
 
 ```bash
-python tools/discord_pull.py                       # fetch new screenshots -> inbox/
-python tools/ingest.py --from new.json --dry-run   # validate, write nothing
-python tools/ingest.py --from new.json --deploy    # write, rebuild, commit, push
-python tools/ingest.py --from patch.json --amend   # backfill fields on an existing match
-python tools/automerge.py                          # merge obvious renames, list the rest
-python tools/crop.py shot.png --rows --tab scoreboard   # zoom for ambiguous digits
+python tools/discord_pull.py            # Discord -> inbox/
+python tools/discord_commands.py        # act on channel instructions
+python tools/discord_ask.py --resolve   # apply merge votes
+python tools/reconcile.py               # account for every downloaded image
+python tools/ingest.py --from f.json --dry-run | --deploy | --amend
+python tools/automerge.py [--ask-discord]
+python tools/crop.py shot.png --rows --tab scoreboard
+python load.py && python export_web.py
 ```
 
-The `add-match` skill drives all of this. Say "add these" and it runs.
+The `add-match` skill drives the screenshot path. Say "add these".
 
 ## Verifying a transcription
-
-Every match must satisfy, per team:
 
 ```
 sum(team kills)  <=  team score  <=  sum(enemy team deaths)
 ```
 
-Left gap = a hero killed by a **tower** (credits the team, no player).
-Right gap = a hero killed by **neutrals/Roshan/itself** (credits nobody).
-Usually all three are equal. **Violating the ordering is arithmetically
-impossible and means a digit was misread** — re-read at zoom, don't record it.
+Left gap = a tower kill (credits the team, no player). Right gap = death to
+neutrals/Roshan/self (credits nobody). Usually all three are equal. Violating
+the *ordering* is arithmetically impossible → a digit was misread. Gaps of 3
+have occurred legitimately (this lobby dives high ground), but re-read anything
+above 1 at zoom before accepting it.
 
-Gaps of 3 have appeared legitimately in this lobby (they dive high ground), but
-anything above 1 is worth re-reading before accepting.
+**Only kills, deaths and score are checksummed.** Names, net worth, GPM, assists
+have no verification at all — a misread name silently mints a new player. Zoom
+any name you are not certain of.
 
-**Names have no checksum.** Kill totals catch a bad digit; nothing catches a bad
-letter. Zoom any name you are not certain of. `[<MG>]` turned out to be `[<MC>]`
-once; `[UGI]` is really `[UGI|]`.
-
-## Identity
+## Identity — where the year-end number actually breaks
 
 Near-certain renames merge automatically and the user is **told, not asked**
-(their explicit instruction). Weaker candidates get referred to them. The bar
-lives in `tools/automerge.py`, calibrated 12/12 against every merge decided so
-far.
+(their explicit instruction). Weaker candidates become a Discord question.
+The bar lives in `tools/automerge.py`, calibrated 12/12 against known merges.
 
-**Never overridden:** two names appearing in the *same match* are proof of two
-different people, however alike the strings look.
+**Absolute precondition, never overridden:** two names in the *same match* are
+two different people. `load.py` enforces this **transitively** — an incoming
+alias is checked against the canonical *and everyone already merged into it*.
+Skipping that let one player show 12 games across 10 real matches.
 
-Merges are recorded in the `aliases` array of `data/matches.json` — durable,
-diffable, undone by deleting a line. Never applied straight to the database.
-Several real merges share no characters at all (`cpx22`/`Mandark`,
-`samundar khan`/`rtz`, `Kael™`/`Dawn of War`, `Learn some basic_!_`/
-`MODE:IG.BASHIRA™`); those only ever come from the user.
+Merges live in the `aliases` array of `data/matches.json`. Never applied
+straight to the database. Several real merges share no characters at all
+(`cpx22`/`Mandark`, `samundar khan`/`rtz`, `Kael™`/`Dawn of War`,
+`Learn some basic_!_`/`MODE:IG.BASHIRA™`) — those only ever come from a human.
 
 ## Dating a match
 
-The SCOREBOARD tab has **no match header** — no id, date, duration or mode. Only
-the OVERVIEW tab does. Sources of truth, best first:
+SCOREBOARD tab has **no match header**. Sources, best first:
 
-1. **OVERVIEW tab** — real match id and start time. If one turns up later for a
-   match already recorded, backfill it with `ingest.py --amend`.
-2. **Discord upload time** — server-side and absolute. Best clock for a
-   scoreboard-only capture. Still an *upper bound* on the match itself.
-3. **`Dota_2_<YYYY.MM.DD>-<HH.MM>.png` filename** — the capturing client's local
-   clock, which may be a different timezone.
-4. File mtime — for shared files this is arrival time, 2–3 h after the game.
+1. **OVERVIEW tab** — real match id and start time. Found later? `ingest.py --amend`.
+2. **Discord upload time** — server-side, absolute. Best for scoreboard-only.
+3. **`Dota_2_<date>-<time>.png` filename** — the *capturing client's* clock.
+4. File mtime — for shared files this is arrival, 2–3 h after the game.
 
-**Known timezones** (confirmed against Discord timestamps): the user's client is
-**UTC−4**; `stoicheart`'s is **UTC+5**, a 9-hour gap. A constant offset across
-several files is a timezone, not a wrong clock.
+**Confirmed timezones:** user is **UTC−4**; `stoicheart` is **UTC+5** (9 h gap).
+A constant offset across several files is a timezone, not a broken clock.
+Clients are identifiable by the gold counter: `67,845` user, `26,525` hurrali,
+`389,225` stoicheart.
 
-Clients are also identifiable by the gold counter in the top bar: `67,845` is
-the user's, `26,525` is hurrali's, `389,225` is stoicheart's.
+## Discord
 
-## Dashboard
+Bot `DotaLobbyStats#6201` in `#lobby-stats` (channel `1530411273895018668`).
+Token in `tools/discord.local.json`, **gitignored — the repo is public**.
 
-Light, Apple/Airtable-adjacent: paper canvas, white cards on layered shadows,
-hairline rules, frosted-glass chrome. **Colour is rationed** — the only
-saturated hues are Radiant green and Dire red, so they always mean something.
-Fonts: Plus Jakarta Sans + DM Mono. Hero art from Valve's CDN.
+Approvers (only their votes/commands change identity): `ut70`
+`539898067957186560`, `fzr2k` `364832153843793920`, `stoicheart`
+`1149675111557890048`.
 
-- Aggregation happens **in the browser**, not the exporter, because the year
-  filter recomputes every figure from the matches in scope.
-- `export_web.py` re-stamps a content hash onto asset URLs. Without it a
-  returning visitor can hold a cached `app.js` beside a fresh `data.js`, and the
-  page renders blank. This has actually happened.
-- **Don't surface internal integrity metrics in the UI.** The player-game count
-  (matches × 10) was shown once and read as a contradiction next to "Matches 7".
+Channel understands: `merge A and B`, `not same A and B`, `yes`/`no` (as a
+reply), `who is A`, `status`, `help`. Names resolve loosely; ambiguity is
+reported, never guessed.
+
+**Two independent watermarks** — `data/discord_watermark.txt` (images) and
+`data/discord_cmd_watermark.txt` (commands). They must stay separate or one
+reader swallows the other's messages. `data/discord_seen.json` records the fate
+of every downloaded image, which is what makes the image watermark safe to
+advance past chat.
+
+## Automation
+
+`.github/workflows/sync-matches.yml` — daily 09:00 UTC + manual dispatch.
+Pull → if nothing new, exit before starting the model → else Sonnet parses,
+ingests, and the workflow commits and pushes. Public repo = free Actions
+minutes. `--limit 12` caps a single run so a dump of images can't become a bill.
+
+**Order matters: `load.py` runs BEFORE `discord_commands.py`.** `dota_stats.db`
+is gitignored, so a fresh runner has no database — without that first build,
+every merge command answers "I don't have a player called X" and `co_occur()`
+returns False, disabling the co-occurrence guard.
+
+## Status — as of 2026-07-25
+
+13 matches, 38 player rows / 29 people, 9 merges, all from 2026-07-24/25.
+
+**The cloud workflow has NEVER RUN.** No repo secrets are set. Needed:
+`DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID`, `DISCORD_APPROVERS`
+(`539898067957186560,364832153843793920,1149675111557890048`), and
+`CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or `ANTHROPIC_API_KEY`.
+
+Triage has never seen a hostile image. The command parser has only been used by
+Claude. **Next step: post a screenshot — ideally some deliberately bad ones —
+and rehearse locally before trusting the cron.**
+
+## Known-unfixed (adversarial review, 2026-07-25)
+
+Three reviewers audited ingest, identity and automation. The critical findings
+are fixed and verified against reproductions. These remain **open**:
+
+1. **Non-atomic writes.** Every writer uses `Path.write_text` (truncate). A
+   crash mid-write leaves the year's ledger empty or half-written; git is the
+   only recovery. Wants temp-file + `os.replace`.
+2. **`norm()` erases non-ASCII.** `毒奶粉2024` and `开心果2024` both reduce to
+   `2024` and would auto-merge. Also `Player1`/`Player2` at 86% similarity.
+   Needs a minimum *alphabetic* stem, not just 4 characters.
+3. **Approvals fail open in CI.** `tools/discord.local.json` is gitignored, so
+   if `DISCORD_APPROVERS` is unset the approver list is empty and
+   `privileged = (not allow)` makes **everyone** an approver. Set the secret.
+4. **`not same A and B` doesn't un-merge.** It records the rejection and says
+   "I won't ask again", but if they were already merged the merge stays. There
+   is no un-merge command; only deleting the alias line and re-running `load.py`.
+5. A stray `yes` from an approver applies the single open merge question even
+   if it wasn't a reply to it.
+6. `dump_matches()` silently drops unknown top-level keys in `matches.json`.
+7. A dateless match (`played_on` null) is counted in **every** year by the
+   dashboard filter. Currently 0 such matches, but it would corrupt a year-end
+   board.
 
 ## Cautions
 
-- The repo is **public**. `tools/discord.local.json` holds the bot token and is
-  gitignored — verify with `git check-ignore` before any push that touches it.
-- Items on the scoreboard are icons, never text. They are not transcribed; a
-  wrong item is worse than no item.
-- Screenshots come in at least three resolutions (5120×2160, 1920×1080,
-  1920×1200) and get cut at different columns. Missing columns stay NULL.
+- Items on the scoreboard are icons, never text. Not transcribed — a wrong item
+  is worse than no item.
+- Screenshots arrive at 5120×2160, 1920×1080 and 1920×1200, cut at different
+  columns. Missing columns stay NULL.
+- `export_web.py` re-stamps a content hash onto asset URLs. Without it a
+  returning visitor can hold a cached `app.js` beside a fresh `data.js` and the
+  page renders blank. This has actually happened.
+- Don't surface internal integrity metrics in the UI. The player-game count
+  (matches × 10) was shown once and read as a contradiction next to "Matches 7".
+- Dashboard is light, Apple/Airtable-adjacent; colour is rationed so Radiant
+  green and Dire red always mean something.
