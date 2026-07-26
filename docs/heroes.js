@@ -65,6 +65,7 @@ window.HERO_SLUG = {
 "Tusk": "tusk",
 "Underlord": "abyssal_underlord",
 "Undying": "undying",
+"Ursa": "ursa",
 "Viper": "viper",
 "Void Spirit": "void_spirit",
 "Warlock": "warlock",

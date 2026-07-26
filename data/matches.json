@@ -367,6 +367,33 @@
         {"name": "UT", "side": "dire", "hero": "Juggernaut", "hero_level": 27, "kills": 12, "deaths": 11, "assists": 8, "net_worth": 26832, "last_hits": 508, "denies": 4, "gpm": 649, "bounty_runes": 9, "xpm": 831, "healing": 5839, "outposts": 0, "hero_damage": 25244, "building_damage": 4153, "damage_received_raw": 54120, "damage_reduced_pct": 46.5},
         {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Hoodwink", "hero_level": 24, "kills": 6, "deaths": 14, "assists": 21, "net_worth": 15097, "last_hits": 128, "denies": 2, "gpm": 394, "bounty_runes": 1, "xpm": 619, "healing": 0, "outposts": 1, "hero_damage": 24729, "building_damage": 102, "damage_received_raw": 47924, "damage_reduced_pct": 32.3}
       ]
+    },
+    {
+      "source_ref": "discord-1530753840532688998",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 21:49",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Kaya He Karna Hai?",
+      "dire_team_name": null,
+      "radiant_score": 24,
+      "dire_score": 49,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1530753840532688998). The Dire carries an explicit WINNER badge; Radiant played as 'Kaya He Karna Hai?'. No match id or duration -- the scoreboard tab shows no match header. played_at is the Discord upload time converted to local, which is server-side and absolute, so it is a better clock than a filename; it is still an upper bound on the match itself. This capture is 1920x1200 and cut after GPM, so XPM, healing, outposts and the damage columns are off-screen and remain NULL. Checksums: radiant 24 kills = score 24 = dire deaths 24 (exact); dire 46 kills <= score 49 <= radiant deaths 49 -- three tower-credited kills, so every K/D/A digit was re-read at 2.2x zoom and confirmed.",
+      "players": [
+        {"name": "UT", "side": "radiant", "hero": "Ursa", "hero_level": 23, "kills": 8, "deaths": 9, "assists": 5, "net_worth": 18462, "last_hits": 358, "denies": 3, "gpm": 546},
+        {"name": "Dawn of War", "side": "radiant", "hero": "Dark Seer", "hero_level": 18, "kills": 4, "deaths": 13, "assists": 12, "net_worth": 17174, "last_hits": 253, "denies": 2, "gpm": 437},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Queen of Pain", "hero_level": 25, "kills": 8, "deaths": 7, "assists": 11, "net_worth": 20427, "last_hits": 290, "denies": 6, "gpm": 545},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 20, "kills": 1, "deaths": 10, "assists": 17, "net_worth": 12483, "last_hits": 58, "denies": 5, "gpm": 342},
+        {"name": "¤GerM¤ [LIB0G]", "side": "radiant", "hero": "Undying", "hero_level": 19, "kills": 3, "deaths": 10, "assists": 18, "net_worth": 11876, "last_hits": 70, "denies": 2, "gpm": 318},
+        {"name": "vAnzO", "side": "dire", "hero": "Invoker", "hero_level": 24, "kills": 7, "deaths": 3, "assists": 30, "net_worth": 20897, "last_hits": 208, "denies": 7, "gpm": 492},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Lich", "hero_level": 22, "kills": 3, "deaths": 8, "assists": 27, "net_worth": 18105, "last_hits": 125, "denies": 8, "gpm": 429},
+        {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Spectre", "hero_level": 27, "kills": 8, "deaths": 6, "assists": 21, "net_worth": 27683, "last_hits": 417, "denies": 3, "gpm": 640},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Outworld Destroyer", "hero_level": 27, "kills": 19, "deaths": 2, "assists": 14, "net_worth": 31876, "last_hits": 415, "denies": 12, "gpm": 736},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Magnus", "hero_level": 23, "kills": 9, "deaths": 5, "assists": 21, "net_worth": 18707, "last_hits": 175, "denies": 10, "gpm": 451}
+      ]
     }
   ]
 }
