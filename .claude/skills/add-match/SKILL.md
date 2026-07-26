@@ -41,7 +41,39 @@ re-captures of old ones:
 python stats.py log
 ```
 
-## 2. Identify each screenshot
+## 2. Triage — is this even a match?
+
+**Do this before anything else, and be strict.** Anyone can post anything in a
+Discord channel. Judge the image, then take exactly one of three paths:
+
+| What you see | Path |
+|---|---|
+| Post-game **SCOREBOARD** or **OVERVIEW** tab, two teams of 5, a score | **ingest** |
+| A Dota screen that is not post-game — hero picker, GRAPHS/BREAKDOWNS/BUFFS tab, shop, main menu, a live game | **reject: wrong screen** |
+| Not Dota at all — a meme, a photo, another game, a chat log | **reject: not a match** |
+| Post-game but unreadable — cropped past the scores, blurred, half a roster | **reject: unreadable** |
+
+A screenshot must show **all of**: two team blocks, five players each, and a
+visible team score for both sides. Missing any one of those, reject it. Do not
+try to reconstruct a partial roster — a match recorded from 8 visible players is
+silently wrong forever, and no checksum will catch it.
+
+**Tell the person who posted it.** Reply in the channel, quoting their message,
+so a rejected screenshot does not just vanish:
+
+```bash
+python tools/discord_notify.py --reply-to <message_id> "Skipped that one — I need the post-game SCOREBOARD tab (two teams, five players, both scores). Could you repost it?"
+```
+
+The message id is the prefix of the filename in `inbox/`
+(`1530753840532688998_image.png` → `1530753840532688998`). Keep the reply to one
+or two sentences, say specifically what was wrong, and say what to send instead.
+
+When unattended, **rejecting is always the right call if you are unsure.** A
+missing match is a message away from being fixed; a wrong match silently skews
+someone's win rate and nobody notices.
+
+## 3. Identify each screenshot
 
 Look at the highlighted tab in the top nav.
 
@@ -61,7 +93,7 @@ has no ID/date/duration; that is acceptable, leave them `null`.
 an explicit winner badge; the overview header has been observed rendering stale
 text from a previously-viewed match.
 
-## 3. Extract the fields
+## 4. Extract the fields
 
 Per match: `source_ref` (unique, e.g. `screenshot-12`), `dota_match_id`,
 `played_on` (`YYYY-MM-DD`), `played_at` (`YYYY-MM-DD HH:MM`), `duration_seconds`,
@@ -77,7 +109,7 @@ Per player: `name`, `side`, `hero`, `hero_level`, `kills`, `deaths`, `assists`,
 A generic "The Radiant" / "The Dire" heading means the team was unnamed — store
 `null`, not the literal string.
 
-## 4. Verify before ingesting
+## 5. Verify before ingesting
 
 **The arithmetic checksum.** For each team:
 
@@ -107,7 +139,7 @@ than PNG captures — a `[<MG>]` in one such photo turned out to be `[<MC>]`.
 **Names have no checksum.** Kill totals catch a bad digit; nothing catches a
 misread letter. Zoom on any player name you are not certain of.
 
-## 5. Check identities
+## 6. Check identities
 
 New spellings of an existing player split one human into two rows and make both
 win rates wrong. Run this after every ingest:
@@ -145,7 +177,7 @@ Some real merges are unreachable by any string rule — `cpx22`/`Mandark`,
 `samundar khan`/`rtz`, `Kael™`/`Dawn of War` share no characters at all. If the
 user names a pair, add it to `aliases` by hand and re-run `load.py`.
 
-## 6. Ingest
+## 7. Ingest
 
 Write the parsed matches to a temp JSON file (one object, or an array), then:
 
@@ -164,7 +196,7 @@ twice from a re-capture; if it fires, the game is already in the database.
 `export_web.py` re-stamps the asset hash automatically, so returning visitors
 cannot end up with a half-cached mix of old and new files.
 
-## 7. Report
+## 8. Report
 
 Tell the user: which matches were added, each one's result, any checksum notes,
 any new alias candidates awaiting their decision, and the live URL —

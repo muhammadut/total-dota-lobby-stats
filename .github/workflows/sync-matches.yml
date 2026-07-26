@@ -37,7 +37,10 @@ jobs:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
         run: |
-          python tools/discord_pull.py
+          # --limit caps how many messages one run will scan. If someone
+          # dumps 200 images in the channel, this run handles at most 12 and
+          # the rest wait for tomorrow, so a bad day cannot become a bad bill.
+          python tools/discord_pull.py --limit 12
           count=$(ls -1 inbox/*.png inbox/*.jpg inbox/*.jpeg 2>/dev/null | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
           echo "Found $count new screenshot(s)."
@@ -58,12 +61,23 @@ jobs:
           # API credits instead.
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # The skill replies in-channel when it rejects a screenshot.
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
         run: |
-          claude -p "Use the add-match skill to add every screenshot in inbox/ \
-          to the database. Verify each one against the checksum rule before \
-          ingesting. Run tools/automerge.py afterwards. Do NOT use \
-          --deploy: this workflow commits and pushes. If any match fails \
-          validation, leave it unwritten and say why." \
+          # Sonnet, not Opus: this is careful reading against a fixed
+          # checklist, not open-ended reasoning, and the arithmetic
+          # checksum catches digit errors regardless of which model read
+          # them. Several times cheaper per run.
+          claude -p "Use the add-match skill on every screenshot in inbox/. \
+          TRIAGE FIRST: reject anything that is not a Dota 2 post-game \
+          scoreboard or overview showing two teams of five and both scores, \
+          and reply to the poster with tools/discord_notify.py --reply-to \
+          <message_id>. Verify every match against the checksum rule before \
+          ingesting. Run tools/automerge.py afterwards. Do NOT pass --deploy: \
+          this workflow commits and pushes. If a match fails validation, leave \
+          it unwritten and say why. When unsure, reject rather than guess." \
+            --model sonnet \
             --permission-mode bypassPermissions < /dev/null
 
       - name: Commit and push
