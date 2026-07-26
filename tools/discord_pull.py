@@ -86,9 +86,44 @@ def api(path, token):
         sys.exit(f"  HTTP {e.code}: {body}")
 
 
+def check(token, channel) -> int:
+    """
+    Verify each part of the setup separately, so a failure names the step
+    that is wrong instead of just refusing. The four things that break are
+    the token, whether the bot is in the server, whether it can see the
+    channel, and whether it can read history -- and they fail in that order.
+    """
+    print("\n  1. token")
+    me = api("/users/@me", token)
+    print(f"     ok — authenticated as {me.get('username')}#{me.get('discriminator','0')}"
+          f" (bot={me.get('bot', False)})")
+
+    print("  2. channel visibility")
+    ch = api(f"/channels/{channel}", token)
+    kind = {0: "text", 5: "announcement", 11: "public thread",
+            12: "private thread"}.get(ch.get("type"), f"type {ch.get('type')}")
+    print(f"     ok — #{ch.get('name')}  ({kind})")
+
+    print("  3. read message history")
+    msgs = api(f"/channels/{channel}/messages?limit=1", token)
+    print(f"     ok — history readable ({len(msgs)} recent message(s) visible)")
+
+    imgs = 0
+    for m in api(f"/channels/{channel}/messages?limit=50", token):
+        for a in m.get("attachments", []):
+            ct = (a.get("content_type") or "").split(";")[0]
+            if ct in IMAGE_TYPES:
+                imgs += 1
+    print(f"  4. images in the last 50 messages: {imgs}")
+    print("\n  All good. Run:  python tools/discord_pull.py")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--check", action="store_true",
+                    help="verify token, channel access and read permission, step by step")
     ap.add_argument("--limit", type=int, default=50, help="max messages to scan (1-100)")
     ap.add_argument("--since", help="message id to read after, overriding the watermark")
     ap.add_argument("--list", action="store_true", help="show what's new, download nothing")
@@ -96,6 +131,9 @@ def main() -> int:
     args = ap.parse_args()
 
     token, channel = config()
+    if args.check:
+        return check(token, channel)
+
     INBOX.mkdir(exist_ok=True)
 
     after = args.since
