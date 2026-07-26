@@ -150,22 +150,29 @@ Steam display names change between games, which is the main threat to
 accuracy here — the same human under two names splits into two records, and
 both win rates become wrong.
 
-Nothing is merged automatically. `stats.py aliases` flags candidates on
-three signals — **prefix containment** (players habitually bolt suffixes on:
-`Stoic` → `Stoic (Mode: Sccc)(only solo)`), **shared clan tag**, and
-**overall name similarity** — and it excludes any pair seen in the same
-match, since they can't be one person. Prefix containment earns its own
-signal because similarity scoring is dominated by length difference and
-rates that Stoic pair at only 29%. To confirm a merge:
+Near-certain matches are merged automatically and reported; weaker ones are
+referred to you. `python tools/automerge.py` applies the bar below:
 
-```sql
-UPDATE players SET merged_into =
-  (SELECT id FROM players WHERE display_name = '<canonical name>')
-WHERE display_name = '<alias name>';
-```
+| Signal | Verdict |
+|---|---|
+| Identical once case, punctuation and clan tag are stripped (`TigerX` / `____Tiger X____`) | auto |
+| One stem is a prefix of the other, ≥4 chars (`vAnzO` / `vAnzOr`) | auto |
+| One stem contained in the other, ≥4 chars, **same clan tag** (`¤GerM¤` / `dotagerm`) | auto |
+| ≥85% similar | auto |
+| Same clan tag but only 30–85% similar | **ask** |
 
-The raw observed names stay in the table; reporting views resolve through
-`merged_into`. Nothing is rewritten or lost.
+**One precondition is never overridden:** the two names must never appear in
+the same match. One person cannot hold two slots in one game, so co-occurrence
+proves they are different people however alike the strings look — that is what
+keeps `Thekra [UGI]` separate from `.......... [UGI]`.
+
+The rules are calibrated against every merge decided so far (12/12): they catch
+all four a string rule could find, and reject the ones that needed a human.
+
+Merges are written to the `aliases` array in `data/matches.json` — durable,
+diffable, undone by deleting a line — never applied straight to the database.
+The raw observed names stay in the `players` table; reporting views resolve
+through `merged_into`, so nothing is rewritten or lost.
 
 ### Confirmed merges
 
