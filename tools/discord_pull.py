@@ -37,6 +37,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -45,6 +46,19 @@ INBOX = ROOT / "inbox"
 MARK = INBOX / ".last_message_id"
 API = "https://discord.com/api/v10"
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp")
+
+
+def local_time(ts: str) -> str:
+    """
+    Discord stamps messages in UTC. Printing that raw, next to filenames the
+    Dota client writes in ITS local time, is how a timezone gap turns into a
+    mis-dated match -- so convert to this machine's clock, which is the frame
+    the database uses.
+    """
+    try:
+        return datetime.fromisoformat(ts).astimezone().strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return (ts or "")[:16].replace("T", " ") + "Z"
 
 
 def config():
@@ -166,12 +180,12 @@ def main() -> int:
     newest = None
     for m, a in found:
         who = (m.get("author") or {}).get("username", "?")
-        when = (m.get("timestamp") or "")[:16].replace("T", " ")
+        when = local_time(m.get("timestamp") or "")
         kb = (a.get("size") or 0) / 1024
         # Prefix with the message id: unique, and sorts chronologically.
         name = f"{m['id']}_{a['filename']}".replace("/", "_")
         dest = INBOX / name
-        print(f"    {when}  {who:<16} {a['filename']}  ({kb:.0f} KB)")
+        print(f"    {when} local  {who:<16} {a['filename']}  ({kb:.0f} KB)")
         if args.list:
             continue
         if not dest.exists():
