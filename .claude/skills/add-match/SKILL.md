@@ -16,8 +16,23 @@ way every time.
 
 ## 1. Find the screenshots
 
-Default folder: `C:\Users\UT\Pictures\Screenshots`. Use whatever path the user
-gives instead. List by modified time and read each one.
+Look in this order:
+
+1. **`inbox/`** — screenshots pulled from Discord. If the user mentions Discord,
+   or asks for "the latest", run `python tools/discord_pull.py` first to fetch
+   anything new. Filenames there are `<message_id>_<original>`, and the message
+   id sorts chronologically, so the newest file is the last one.
+2. `C:\Users\UT\Pictures\Screenshots` — the default local folder.
+3. Whatever path the user names, which always wins.
+
+List by modified time and read each one. Filenames matter: the Dota client names
+its own captures `Dota_2_<YYYY.MM.DD>-<HH.MM>.png`, which is often the only
+timestamp a SCOREBOARD-tab capture carries. Compare it against the file's mtime —
+a constant offset across several files means the capturing client is in another
+timezone, not that the clock is wrong.
+
+Once a file in `inbox/` is ingested, leave it there; `discord_pull.py` tracks a
+watermark and will not re-download it.
 
 Check what is already recorded first, so you can tell new games from
 re-captures of old ones:

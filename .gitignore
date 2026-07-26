@@ -4,3 +4,10 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Discord bot credentials -- THIS REPO IS PUBLIC. Never commit a token.
+tools/discord.local.json
+.env
+
+# Screenshots pulled from Discord, pending ingest
+inbox/

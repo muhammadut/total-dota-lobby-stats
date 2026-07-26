@@ -266,3 +266,41 @@ alone can't.
    `Not Found`). Private lobby games aren't published there, so the
    screenshots are the only source. Automatic import isn't an option for
    these; entry stays manual.
+
+## Pulling screenshots from Discord
+
+`tools/discord_pull.py` downloads new image attachments from one Discord
+channel into `inbox/`, ready for the `add-match` skill. Fetch only — parsing a
+scoreboard is a judgement task and stays with the model.
+
+```bash
+python tools/discord_pull.py            # pull anything new
+python tools/discord_pull.py --list     # show, don't download
+python tools/discord_pull.py --all      # ignore the watermark
+```
+
+It uses the plain REST API over `urllib` — no `discord.py`, no gateway socket,
+no dependencies. A watermark file records the last message seen, so re-running
+never re-downloads.
+
+**Setup, once:**
+
+1. [discord.com/developers/applications](https://discord.com/developers/applications) → New Application → Bot
+2. Enable **Message Content Intent**, copy the token
+3. OAuth2 → URL Generator → scope `bot`, permissions **View Channel** + **Read Message History** → open the URL, add it to the server
+4. Right-click the channel → **Copy Channel ID** (needs Developer Mode)
+
+Then create `tools/discord.local.json`:
+
+```json
+{"token": "...", "channel_id": "..."}
+```
+
+> **This repository is public.** A leaked bot token lets anyone drive the bot.
+> `tools/discord.local.json` and `inbox/` are both gitignored — verify with
+> `git check-ignore -v tools/discord.local.json` before your first push. If a
+> token ever does get pushed, regenerate it in the developer portal; rotating
+> is the only real fix.
+
+A user token instead of a bot token would be self-botting, which violates
+Discord's terms — don't.
