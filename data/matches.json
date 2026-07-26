@@ -38,7 +38,9 @@
     {"canonical": "Mandark [<MC>]", "alias": "cpx22 [<MC>]", "note": "same player, user-asserted; shared clan tag but unrelated name"},
     {"canonical": "samundar khan", "alias": "rtz [FUBU]", "note": "same player, user-asserted; no shared name root or clan tag"},
     {"canonical": "Kael™", "alias": "Dawn of War", "note": "same player, user-asserted; no shared name root or clan tag. Kael™ is the more recent name (match 8912312189 vs 8912258476)"},
-    {"canonical": "TigerX [GB]", "alias": "____Tiger X____ [GB]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"}
+    {"canonical": "TigerX [GB]", "alias": "____Tiger X____ [GB]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
+    {"canonical": "HypermodeL [M.C]", "alias": "sesto [M.C]", "note": "same player, user-asserted; shared clan tag but unrelated name"},
+    {"canonical": "MODE:IG.BASHIRA™", "alias": "Learn some basic_!_ [FFPL]", "note": "same player, user-asserted; no shared name root or clan tag"}
   ],
 
   "matches": [
@@ -337,6 +339,33 @@
         {"name": "vAnzO", "side": "dire", "hero": "Techies", "hero_level": 23, "kills": 8, "deaths": 12, "assists": 19, "net_worth": 15421, "last_hits": 133, "denies": 6, "gpm": 441, "bounty_runes": 1, "xpm": 630, "healing": 0},
         {"name": "HURR [PK_]", "side": "dire", "hero": "Lifestealer", "hero_level": 28, "kills": 20, "deaths": 6, "assists": 15, "net_worth": 32325, "last_hits": 387, "denies": 14, "gpm": 727, "bounty_runes": 2, "xpm": 1117, "healing": 2761},
         {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Magnus", "hero_level": 24, "kills": 2, "deaths": 15, "assists": 25, "net_worth": 18736, "last_hits": 203, "denies": 4, "gpm": 453, "bounty_runes": 4, "xpm": 703, "healing": 0}
+      ]
+    },
+    {
+      "source_ref": "scoreboard-2026-07-25-e",
+      "dota_match_id": null,
+      "played_on": "2026-07-25",
+      "played_at": "2026-07-25 20:02",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 55,
+      "dire_score": 43,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab from UT's own client (source file Screenshot (19).png), full column set captured. The Radiant carries an explicit WINNER badge. No match id or duration -- the scoreboard tab shows no match header; played_at is the on-screen system clock at capture (8:02 PM), i.e. just after the game ended, not the start. Checksums: radiant 52 kills <= score 55 <= dire deaths 55 -- THREE tower-credited kills, unusually many, so every K/D/A digit was re-read at 1.6x zoom and confirmed; dire 43 kills = score 43 = radiant deaths 43 (exact). Seeker's hero level was obscured by a Discord overlay and read as 24 at 6x zoom.",
+      "players": [
+        {"name": "rtz [FUBU]", "side": "radiant", "hero": "Disruptor", "hero_level": 25, "kills": 6, "deaths": 8, "assists": 38, "net_worth": 14893, "last_hits": 28, "denies": 1, "gpm": 361, "bounty_runes": 0, "xpm": 726, "healing": 195, "outposts": 2, "hero_damage": 21763, "building_damage": 26, "damage_received_raw": 43908, "damage_reduced_pct": 45.5},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Queen of Pain", "hero_level": 28, "kills": 16, "deaths": 7, "assists": 24, "net_worth": 30330, "last_hits": 318, "denies": 12, "gpm": 622, "bounty_runes": 4, "xpm": 1015, "healing": 155, "outposts": 0, "hero_damage": 53446, "building_damage": 2493, "damage_received_raw": 95442, "damage_reduced_pct": 53.5},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "radiant", "hero": "Ancient Apparition", "hero_level": 22, "kills": 5, "deaths": 13, "assists": 25, "net_worth": 14688, "last_hits": 51, "denies": 1, "gpm": 336, "bounty_runes": 0, "xpm": 543, "healing": 0, "outposts": 2, "hero_damage": 14110, "building_damage": 39, "damage_received_raw": 31244, "damage_reduced_pct": 39.7},
+        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Mars", "hero_level": 25, "kills": 7, "deaths": 12, "assists": 22, "net_worth": 18933, "last_hits": 169, "denies": 14, "gpm": 433, "bounty_runes": 2, "xpm": 678, "healing": 0, "outposts": 2, "hero_damage": 25854, "building_damage": 1809, "damage_received_raw": 96446, "damage_reduced_pct": 52.7},
+        {"name": "Downlander", "side": "radiant", "hero": "Templar Assassin", "hero_level": 30, "kills": 18, "deaths": 3, "assists": 17, "net_worth": 43948, "last_hits": 592, "denies": 16, "gpm": 870, "bounty_runes": 1, "xpm": 1230, "healing": 0, "outposts": 0, "hero_damage": 44832, "building_damage": 26334, "damage_received_raw": 77322, "damage_reduced_pct": 76.3},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Legion Commander", "hero_level": 24, "kills": 8, "deaths": 11, "assists": 11, "net_worth": 18187, "last_hits": 255, "denies": 11, "gpm": 437, "bounty_runes": 4, "xpm": 600, "healing": 1848, "outposts": 0, "hero_damage": 31828, "building_damage": 2610, "damage_received_raw": 76616, "damage_reduced_pct": 44.2},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Lina", "hero_level": 27, "kills": 12, "deaths": 7, "assists": 6, "net_worth": 27072, "last_hits": 468, "denies": 11, "gpm": 634, "bounty_runes": 4, "xpm": 875, "healing": 0, "outposts": 0, "hero_damage": 34855, "building_damage": 3592, "damage_received_raw": 55487, "damage_reduced_pct": 50.6},
+        {"name": "vAnzO", "side": "dire", "hero": "Rubick", "hero_level": 25, "kills": 5, "deaths": 12, "assists": 24, "net_worth": 16658, "last_hits": 127, "denies": 7, "gpm": 390, "bounty_runes": 2, "xpm": 730, "healing": 1176, "outposts": 2, "hero_damage": 34461, "building_damage": 28, "damage_received_raw": 42917, "damage_reduced_pct": 36.6},
+        {"name": "UT", "side": "dire", "hero": "Juggernaut", "hero_level": 27, "kills": 12, "deaths": 11, "assists": 8, "net_worth": 26832, "last_hits": 508, "denies": 4, "gpm": 649, "bounty_runes": 9, "xpm": 831, "healing": 5839, "outposts": 0, "hero_damage": 25244, "building_damage": 4153, "damage_received_raw": 54120, "damage_reduced_pct": 46.5},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Hoodwink", "hero_level": 24, "kills": 6, "deaths": 14, "assists": 21, "net_worth": 15097, "last_hits": 128, "denies": 2, "gpm": 394, "bounty_runes": 1, "xpm": 619, "healing": 0, "outposts": 1, "hero_damage": 24729, "building_damage": 102, "damage_received_raw": 47924, "damage_reduced_pct": 32.3}
       ]
     }
   ]

@@ -184,6 +184,46 @@ main{ max-width:var(--measure); margin:0 auto; padding:0 var(--gutter) 4rem; }
 }
 .sec-head p{ margin:0; color:var(--ink-3); font-size:.92rem; max-width:64ch; }
 
+/* ── Toolbar: search + segmented sort ───────────────────────────── */
+.toolbar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.6rem;
+  margin-bottom:.9rem;
+}
+.field{
+  display:flex; align-items:center; gap:.5rem; flex:1 1 230px; min-width:0;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-pill); padding:.42rem .85rem;
+  color:var(--ink-4); box-shadow:var(--sh-1);
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.field:focus-within{
+  border-color:var(--ink-4); box-shadow:var(--sh-2);
+}
+.field input{
+  border:0; outline:0; background:none; flex:1; min-width:0;
+  font-family:var(--sans); font-size:.86rem; color:var(--ink);
+}
+.field input::placeholder{ color:var(--ink-4); }
+/* Safari's search decorations don't match this styling. */
+.field input::-webkit-search-decoration,
+.field input::-webkit-search-cancel-button{ -webkit-appearance:none; }
+
+.segmented{
+  display:inline-flex; gap:.15rem; padding:.22rem; border-radius:var(--r-pill);
+  flex:0 0 auto;
+}
+.seg{
+  appearance:none; border:0; background:none; cursor:pointer; white-space:nowrap;
+  font-family:var(--sans); font-size:.76rem; font-weight:600; color:var(--ink-2);
+  padding:.34rem .7rem; border-radius:var(--r-pill);
+  transition:color .2s ease, background .25s ease, box-shadow .25s ease;
+}
+.seg:hover{ color:var(--ink); }
+.seg.is-on{
+  background:var(--surface); color:var(--ink);
+  box-shadow:var(--sh-1), 0 0 0 1px rgba(22,23,26,.05);
+}
+
 .card{
   background:var(--surface); border-radius:var(--r-md);
   box-shadow:var(--sh-2); border:1px solid var(--line-2);
@@ -495,3 +535,10 @@ tr.is-lead .rank{ color:var(--ink); }
   *,*::before,*::after{ animation-duration:.01ms !important; animation-delay:0ms !important;
                         transition-duration:.01ms !important; scroll-behavior:auto !important; }
 }
+
+/* Empty-filter message, shared by all three views. */
+.none{
+  text-align:center; color:var(--ink-3); font-size:.88rem;
+  padding:2.6rem 1rem; margin:0;
+}
+td.none{ padding:2.2rem 1rem; }

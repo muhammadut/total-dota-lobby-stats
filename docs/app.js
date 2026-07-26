@@ -119,8 +119,52 @@
 
   /* ── State ────────────────────────────────────────────────────── */
   var YEARS = D.meta.years || [];
-  var state = { year: YEARS[0] || "all", sortKey: "games", sortDir: -1 };
+  var state = {
+    year: YEARS[0] || "all",
+    sortKey: "games", sortDir: -1,
+    qPlayers: "", minGames: 1,
+    qHeroes: "", heroSort: "picks",
+    qMatches: "", matchSort: "recent"
+  };
   var cur = { matches: [], players: [], heroes: [] };
+
+  var hay = function (s) { return String(s || "").toLowerCase(); };
+  var match = function (q, parts) {
+    if (!q) return true;
+    var needle = q.toLowerCase().trim();
+    for (var i = 0; i < parts.length; i++) {
+      if (hay(parts[i]).indexOf(needle) !== -1) return true;
+    }
+    return false;
+  };
+
+  // Wire a segmented pill group: sets state[key] from data-<attr> and redraws.
+  function segment(id, attr, key, redraw, cast) {
+    var wrap = $("#" + id);
+    if (!wrap) return;
+    wrap.addEventListener("click", function (e) {
+      var b = e.target.closest(".seg");
+      if (!b) return;
+      var val = b.getAttribute("data-" + attr);
+      state[key] = cast ? cast(val) : val;
+      Array.prototype.forEach.call(wrap.querySelectorAll(".seg"), function (o) {
+        o.classList.toggle("is-on", o === b);
+      });
+      redraw();
+    });
+  }
+
+  // Typing should filter as you go, but redrawing 60 cards per keystroke is
+  // wasteful — coalesce to one redraw per idle moment.
+  function searchBox(id, key, redraw) {
+    var el0 = $("#" + id);
+    if (!el0) return;
+    var t = null;
+    el0.addEventListener("input", function () {
+      clearTimeout(t);
+      t = setTimeout(function () { state[key] = el0.value; redraw(); }, 120);
+    });
+  }
 
   function applyYear() {
     // A match with no recorded date has no year, and must not silently
@@ -226,7 +270,10 @@
     tb.innerHTML = "";
     var k = state.sortKey, dir = state.sortDir;
 
-    var list = cur.players.slice().sort(function (a, b) {
+    var list = cur.players.filter(function (p) {
+      if (p.games < state.minGames) return false;
+      return match(state.qPlayers, [p.name, p.topHero]);
+    }).sort(function (a, b) {
       var x = a[k], y = b[k];
       if (k === "name") return dir * String(x).localeCompare(String(y));
       if (x === null || x === undefined) x = dir === -1 ?  Infinity : -Infinity;
@@ -266,6 +313,11 @@
       });
       tb.appendChild(tr);
     });
+
+    if (!list.length) {
+      tb.innerHTML = '<tr><td colspan="10" class="none">' +
+        'No players match that filter.</td></tr>';
+    }
   }
 
   function wireSort() {
@@ -315,7 +367,27 @@
   function drawMatches() {
     var wrap = $("#matches");
     wrap.innerHTML = "";
-    cur.matches.slice().reverse().forEach(function (m, i) {
+
+    var list = cur.matches.filter(function (m) {
+      if (!state.qMatches) return true;
+      var parts = [m.radiant_team_name, m.dire_team_name, m.dota_match_id];
+      m.radiant.concat(m.dire).forEach(function (r) { parts.push(r.name, r.hero); });
+      return match(state.qMatches, parts);
+    });
+
+    var order = state.matchSort;
+    if (order === "recent")      list = list.slice().reverse();
+    else if (order === "oldest") list = list.slice();
+    else if (order === "kills")  list = list.slice().sort(function (a, b) {
+      return (b.radiant_score + b.dire_score) - (a.radiant_score + a.dire_score);
+    });
+
+    if (!list.length) {
+      wrap.innerHTML = '<p class="none">No matches contain that.</p>';
+      return;
+    }
+
+    list.forEach(function (m, i) {
       var rWon = m.winning_side === "radiant";
       var card = el("div", "match");
       card.style.setProperty("--i", i);
@@ -360,7 +432,27 @@
   function drawHeroes() {
     var wrap = $("#heroes");
     wrap.innerHTML = "";
-    cur.heroes.forEach(function (h, i) {
+
+    var list = cur.heroes.filter(function (h) {
+      return match(state.qHeroes, [h.hero].concat(h.players));
+    });
+    if (state.heroSort === "win") {
+      list = list.slice().sort(function (a, b) {
+        // Win rate alone would float a 1-pick 100% above a 4-pick 75%, so
+        // ties and near-ties fall back to sample size.
+        var wa = a.wins / a.picks, wb = b.wins / b.picks;
+        return (wb - wa) || (b.picks - a.picks) || a.hero.localeCompare(b.hero);
+      });
+    } else if (state.heroSort === "name") {
+      list = list.slice().sort(function (a, b) { return a.hero.localeCompare(b.hero); });
+    }
+
+    if (!list.length) {
+      wrap.innerHTML = '<p class="none">No heroes match that.</p>';
+      return;
+    }
+
+    list.forEach(function (h, i) {
       var w = Math.round((h.wins / h.picks) * 100);
       var src = heroSrc(h.hero, "art");
       var c = el("div", "hcard");
@@ -476,6 +568,13 @@
   renderAll();
   wireSort();
   wireTabs();
+
+  searchBox("qPlayers", "qPlayers", drawStandings);
+  searchBox("qHeroes",  "qHeroes",  drawHeroes);
+  searchBox("qMatches", "qMatches", drawMatches);
+  segment("minGames",  "min",  "minGames",  drawStandings, Number);
+  segment("heroSort",  "sort", "heroSort",  drawHeroes);
+  segment("matchSort", "sort", "matchSort", drawMatches);
 
   $("#drawerClose").addEventListener("click", closeDrawer);
   scrim.addEventListener("click", closeDrawer);
