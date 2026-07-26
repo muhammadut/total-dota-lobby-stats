@@ -113,12 +113,21 @@ def main() -> int:
     known |= {(x["alias"], x["canonical"]) for x in aliases}
     already_alias = {x["alias"] for x in aliases}
 
+    # Pairs a human has explicitly said are DIFFERENT people. Without this,
+    # every run would re-ask a question that was already answered "no",
+    # which trains people to ignore the bot.
+    rej = ROOT / "data" / "rejected_merges.json"
+    rejected = set()
+    if rej.exists():
+        for pair in json.loads(rej.read_text(encoding="utf-8")):
+            rejected.add(tuple(sorted(pair)))
+
     auto, ask = [], []
     for i, (ida, a) in enumerate(players):
         for idb, b in players[i + 1:]:
             if (min(ida, idb), max(ida, idb)) in together:
                 continue                      # proof they are different people
-            if (a, b) in known:
+            if (a, b) in known or tuple(sorted((a, b))) in rejected:
                 continue
             # Merging into or out of an existing alias would build a chain,
             # which the single-level resolution in v_player cannot follow.

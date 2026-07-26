@@ -52,12 +52,15 @@ jobs:
       # Runs every day regardless of whether screenshots arrived, so a vote
       # cast this afternoon is applied tomorrow morning without needing a
       # new match to trigger it.
-      - name: Apply merge votes from Discord
+      - name: Handle channel commands and merge votes
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
           DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
           DISCORD_APPROVERS: ${{ secrets.DISCORD_APPROVERS }}
         run: |
+          # Commands first: a "merge A and B" typed in the channel should
+          # take effect in the same run it is read, not the next one.
+          python tools/discord_commands.py
           python tools/discord_ask.py --resolve
           python load.py
           python export_web.py

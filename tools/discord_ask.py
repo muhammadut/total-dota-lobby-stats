@@ -122,14 +122,13 @@ def cmd_ask(token, channel, args) -> int:
     text = (f"**Same player?**\n"
             f"`{args.alias}`  →  `{args.canonical}`\n"
             f"_{args.reason}_\n"
-            f"{YES} yes, merge them   {NO} no, different people\n"
-            f"(They have never appeared in the same match, so it is possible.)")
+            f"They have never appeared in the same match, so it is possible.\n\n"
+            f"**Reply `yes` or `no`** to this message. "
+            f"(Or say `not same {args.alias} and {args.canonical}` any time.)")
     msg = post(token, channel, text)
-    for e in (YES, NO):
-        try:
-            react(token, channel, msg["id"], e)
-        except Exception as ex:
-            print(f"  ! could not seed {e}: {ex}. Approvers can still react manually.")
+    # Reactions are no longer seeded -- words are the interface now. They are
+    # still READ on resolve, since people react instinctively and it costs
+    # nothing to honour that.
     rows.append({"message_id": msg["id"], "canonical": args.canonical,
                  "alias": args.alias, "reason": args.reason})
     save_pending(rows)
