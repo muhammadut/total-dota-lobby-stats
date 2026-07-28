@@ -48,6 +48,7 @@ window.HERO_SLUG = {
 "Queen of Pain": "queenofpain",
 "Ringmaster": "ringmaster",
 "Rubick": "rubick",
+"Sand King": "sand_king",
 "Shadow Demon": "shadow_demon",
 "Shadow Fiend": "nevermore",
 "Shadow Shaman": "shadow_shaman",

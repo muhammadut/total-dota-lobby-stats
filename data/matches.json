@@ -505,6 +505,33 @@
         {"name": "TigerX [GB]", "side": "dire", "hero": "Lich", "hero_level": 18, "kills": 4, "deaths": 9, "assists": 21, "net_worth": 10504, "last_hits": 22, "denies": 13, "gpm": 329, "xpm": 494, "bounty_runes": 2},
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Demon", "hero_level": 16, "kills": 6, "deaths": 10, "assists": 17, "net_worth": 10726, "last_hits": 19, "denies": 1, "gpm": 326, "xpm": 405, "bounty_runes": 0}
       ]
+    },
+    {
+      "source_ref": "discord-1531757320902541342",
+      "dota_match_id": null,
+      "played_on": "2026-07-28",
+      "played_at": "2026-07-28 16:16",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 41,
+      "dire_score": 36,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by hurrali_32751 -- the third distinct uploader, after fzr2k and soma3031 -- and pulled by tools/discord_pull.py (message 1531757320902541342). NOTE THE RESULT LOOKS BACKWARDS AND IS NOT: the Dire won on 36 kills against the Radiant's 41. Dota is won by destroying the Ancient, not on kills, so a team can lose the kill count and win the game; the WINNER badge sits on The Dire and is explicit. Do not 'correct' this later. Both headings are generic, so both team names are stored NULL. No match id or duration. played_at is the Discord upload time converted to local. Checksums: radiant 40 kills <= score 41 <= dire deaths 41, and dire 35 kills <= score 36 <= radiant deaths 36 -- one tower-credited kill on each side, nothing lost to neutrals. HEAL is NOT recorded: as with the 14:38 match its values sit flush against the capture's right edge, where a truncated '1,250' would read as a plausible '125'. The all-dots player measures twelve dots on the 5px lattice with tag [UGI|], matching the spelling on file for the fourth capture running.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Sand King", "hero_level": 26, "kills": 14, "deaths": 5, "assists": 15, "net_worth": 25058, "last_hits": 395, "denies": 4, "gpm": 603, "xpm": 772, "bounty_runes": 3},
+        {"name": "Downlander", "side": "radiant", "hero": "Luna", "hero_level": 26, "kills": 14, "deaths": 7, "assists": 10, "net_worth": 28671, "last_hits": 609, "denies": 11, "gpm": 714, "xpm": 768, "bounty_runes": 4},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Rubick", "hero_level": 23, "kills": 4, "deaths": 7, "assists": 23, "net_worth": 13673, "last_hits": 51, "denies": 0, "gpm": 312, "xpm": 548, "bounty_runes": 1},
+        {"name": "¤GerM¤ [LIB0G]", "side": "radiant", "hero": "Shadow Demon", "hero_level": 21, "kills": 5, "deaths": 8, "assists": 28, "net_worth": 11273, "last_hits": 52, "denies": 3, "gpm": 286, "xpm": 443, "bounty_runes": 3},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 24, "kills": 3, "deaths": 9, "assists": 27, "net_worth": 20129, "last_hits": 288, "denies": 5, "gpm": 433, "xpm": 610, "bounty_runes": 2},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 23, "kills": 5, "deaths": 9, "assists": 20, "net_worth": 13527, "last_hits": 38, "denies": 2, "gpm": 361, "xpm": 571, "bounty_runes": 0},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Storm Spirit", "hero_level": 27, "kills": 4, "deaths": 7, "assists": 19, "net_worth": 28279, "last_hits": 398, "denies": 5, "gpm": 558, "xpm": 862, "bounty_runes": 5},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 29, "kills": 21, "deaths": 3, "assists": 9, "net_worth": 45829, "last_hits": 736, "denies": 21, "gpm": 933, "xpm": 1192, "bounty_runes": 4},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Axe", "hero_level": 24, "kills": 5, "deaths": 7, "assists": 19, "net_worth": 20770, "last_hits": 289, "denies": 6, "gpm": 492, "xpm": 627, "bounty_runes": 3},
+        {"name": "Soooze [<MC>]", "side": "dire", "hero": "Lich", "hero_level": 23, "kills": 0, "deaths": 15, "assists": 19, "net_worth": 12228, "last_hits": 70, "denies": 17, "gpm": 317, "xpm": 571, "bounty_runes": 1}
+      ]
     }
   ]
 }
