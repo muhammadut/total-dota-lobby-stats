@@ -41,7 +41,9 @@
     {"canonical": "TigerX [GB]", "alias": "____Tiger X____ [GB]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
     {"canonical": "HypermodeL [M.C]", "alias": "sesto [M.C]", "note": "same player, user-asserted; shared clan tag but unrelated name"},
     {"canonical": "MODE:IG.BASHIRA™", "alias": "Learn some basic_!_ [FFPL]", "note": "same player, user-asserted; no shared name root or clan tag"},
-    {"canonical": "Rogue Agent [ITIzI]", "alias": "Rogue Agent [|T|z|]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"}
+    {"canonical": "Rogue Agent [ITIzI]", "alias": "Rogue Agent [|T|z|]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
+    {"canonical": "SpArtAAAAAAAA [WEPAK]", "alias": "SpaRtAAAAAAAAAA [WEPAK]", "note": "auto-merged: 'spartaaaaaaaa' is a prefix of 'spartaaaaaaaaaa'"},
+    {"canonical": ".......... [UGI]", "alias": "............. [UGI|]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
   ],
 
   "matches": [

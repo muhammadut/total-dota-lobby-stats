@@ -51,12 +51,23 @@ def norm(name: str) -> str:
 def classify(a: str, b: str):
     """Return (verdict, rule) where verdict is 'auto', 'ask' or None."""
     na, nb = norm(a), norm(b)
+    same_clan = clan(a) and clan(a) == clan(b)
+
+    # Names with NO letters or digits at all -- '..........', '____' -- have
+    # no stem, so every similarity test below is meaningless on them and
+    # this used to `return None`, dropping the pair without a word. That is
+    # how one player sat in the standings as two separate rows of dots, 3
+    # games and 1, for as long as nobody happened to look. There is no
+    # evidence either way here, so it must become a question, never a
+    # decision: 'ask' is exactly the pile for that.
+    if not na and not nb:
+        return "ask", ("neither name has letters or digits to compare"
+                       + (", and both carry the same clan tag" if same_clan else ""))
     if not na or not nb:
         return None, None
     short, long = sorted((na, nb), key=len)
     if len(short) < MIN_STEM:
         return None, None
-    same_clan = clan(a) and clan(a) == clan(b)
     ratio = difflib.SequenceMatcher(None, na, nb).ratio()
 
     if na == nb:
@@ -89,6 +100,12 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--ask-discord", action="store_true",
                     help="post the too-weak candidates to Discord for a vote")
+    ap.add_argument("--merge", nargs=2, metavar=("CANONICAL", "ALIAS"),
+                    help="record a merge a human has already settled -- names "
+                         "the automatic bar cannot judge, such as two "
+                         "punctuation-only names. Goes through exactly the "
+                         "same co-occurrence precondition as an auto-merge; "
+                         "the only thing skipped is the similarity test.")
     args = ap.parse_args()
 
     if not DB.exists():
@@ -123,7 +140,52 @@ def main() -> int:
             rejected.add(tuple(sorted(pair)))
 
     auto, ask = [], []
+
+    # An explicit merge names two players outright. It exists because some
+    # pairs are unjudgeable by stem similarity yet perfectly obvious to a
+    # human with a zoomed screenshot, and until this flag there was no
+    # offline way to record one -- only a Discord command, which cannot
+    # even type a name made of thirteen dots.
+    if args.merge:
+        by_name = {n: i for i, n in players}
+
+        def resolve(s: str) -> str:
+            if s in by_name:
+                return s
+            hits = [n for n in by_name if s.lower() in n.lower()]
+            if len(hits) == 1:
+                return hits[0]
+            if not hits:
+                sys.exit(f"  no player matches {s!r}")
+            sys.exit(f"  {s!r} is ambiguous — matches {len(hits)}: {hits}")
+
+        canon, alias = resolve(args.merge[0]), resolve(args.merge[1])
+        if canon == alias:
+            sys.exit("  those resolve to the same player; nothing to do.")
+        ida, idb = by_name[canon], by_name[alias]
+        # The one precondition that is never waived, human or not.
+        if (min(ida, idb), max(ida, idb)) in together:
+            sys.exit(f"  REFUSED — {canon!r} and {alias!r} appear in the same "
+                     f"match. One person cannot hold two slots in one game, so "
+                     f"they are different people however alike the names look.")
+        if (canon, alias) in known:
+            print(f"\n  {alias!r} is already merged into {canon!r}.")
+            return 0
+        if canon in already_alias or alias in already_alias:
+            sys.exit("  REFUSED — that would chain one merge onto another, "
+                     "which the single-level resolution in v_player cannot "
+                     "follow. Merge into the canonical name instead.")
+        if tuple(sorted((canon, alias))) in rejected:
+            sys.exit("  REFUSED — a human previously said these are DIFFERENT "
+                     "people. Remove the pair from data/rejected_merges.json "
+                     "first if that was wrong.")
+        auto.append((canon, alias,
+                     "confirmed by a human; the automatic bar cannot judge "
+                     "these two names"))
+
     for i, (ida, a) in enumerate(players):
+        if args.merge:
+            break
         for idb, b in players[i + 1:]:
             if (min(ida, idb), max(ida, idb)) in together:
                 continue                      # proof they are different people
