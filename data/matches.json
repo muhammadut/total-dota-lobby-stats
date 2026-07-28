@@ -422,6 +422,60 @@
         {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Tusk", "hero_level": 23, "kills": 1, "deaths": 16, "assists": 25, "net_worth": 14263, "last_hits": 106, "denies": 2, "gpm": 347},
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 4, "deaths": 11, "assists": 22, "net_worth": 11135, "last_hits": 43, "denies": 2, "gpm": 293}
       ]
+    },
+    {
+      "source_ref": "discord-1531643121572646994",
+      "dota_match_id": null,
+      "played_on": "2026-07-28",
+      "played_at": "2026-07-28 08:42",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 20,
+      "dire_score": 55,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1531643121572646994). The Dire carries an explicit WINNER badge; both headings are the generic 'The Radiant'/'The Dire', so both team names are stored NULL. No match id or duration -- the scoreboard tab has no match header. played_at is the Discord upload time converted to local (server-side and absolute), an upper bound on the match itself. Windowed capture at 1682x1082, cut after GPM, so XPM, healing, outposts and the damage columns are off-screen and remain NULL. Checksums are exact on BOTH sides: radiant 20 kills = score 20 = dire deaths 20, and dire 55 kills = score 55 = radiant deaths 55. 'SpaRtAAAAAAAAAA [WEPAK]' has ten A's and a lowercase a / capital R, counted mechanically from glyph apexes rather than by eye, and agrees with the second screenshot of the same day. '____Tiger X____ [GB]' is four underscores each side, matching the string already on file.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Pangolier", "hero_level": 23, "kills": 4, "deaths": 10, "assists": 10, "net_worth": 18303, "last_hits": 377, "denies": 8, "gpm": 512},
+        {"name": "Obno[X]iouS- 不快な [M.C]", "side": "radiant", "hero": "Faceless Void", "hero_level": 26, "kills": 6, "deaths": 8, "assists": 6, "net_worth": 19588, "last_hits": 434, "denies": 7, "gpm": 537},
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Underlord", "hero_level": 23, "kills": 3, "deaths": 10, "assists": 13, "net_worth": 15112, "last_hits": 251, "denies": 5, "gpm": 436},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Lich", "hero_level": 19, "kills": 4, "deaths": 11, "assists": 11, "net_worth": 10543, "last_hits": 67, "denies": 20, "gpm": 294},
+        {"name": "Lord_TheePa [UGI|]", "side": "radiant", "hero": "Ancient Apparition", "hero_level": 18, "kills": 3, "deaths": 16, "assists": 11, "net_worth": 10934, "last_hits": 40, "denies": 5, "gpm": 293},
+        {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 25, "kills": 11, "deaths": 3, "assists": 19, "net_worth": 26617, "last_hits": 343, "denies": 6, "gpm": 618},
+        {"name": "sesto [M.C]", "side": "dire", "hero": "Axe", "hero_level": 27, "kills": 18, "deaths": 2, "assists": 22, "net_worth": 29236, "last_hits": 317, "denies": 5, "gpm": 655},
+        {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "dire", "hero": "Lifestealer", "hero_level": 26, "kills": 11, "deaths": 4, "assists": 22, "net_worth": 30047, "last_hits": 392, "denies": 18, "gpm": 672},
+        {"name": "SavaGe!", "side": "dire", "hero": "Phoenix", "hero_level": 24, "kills": 9, "deaths": 6, "assists": 28, "net_worth": 18412, "last_hits": 97, "denies": 2, "gpm": 415},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 21, "kills": 6, "deaths": 5, "assists": 26, "net_worth": 14940, "last_hits": 29, "denies": 4, "gpm": 362}
+      ]
+    },
+    {
+      "source_ref": "discord-1531659113162084616",
+      "dota_match_id": null,
+      "played_on": "2026-07-28",
+      "played_at": "2026-07-28 09:46",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 46,
+      "dire_score": 37,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1531659113162084616). The Radiant carries an explicit WINNER badge; both headings are generic, so both team names are stored NULL. No match id or duration. played_at is the Discord upload time converted to local. Capture is 1920x1200 and cut after GPM, so XPM, healing, outposts and the damage columns remain NULL. Checksums: radiant 46 kills = score 46 = dire deaths 46 (exact); dire 36 kills <= score 37 <= radiant deaths 37 -- one tower-credited kill. The all-dots player is THIRTEEN dots, counted mechanically and stable across five ink thresholds; the '.......... [UGI]' already on file is ten dots, so these are two spellings of one person and not a new player. Clan tag reads [UGI|] -- the final bar is measurably narrower than the preceding capital I and taller than it, so it is a pipe; this is cosmetic only, since identity resolution ignores clan tags. HURR went 19-0.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Invoker", "hero_level": 26, "kills": 10, "deaths": 6, "assists": 24, "net_worth": 27627, "last_hits": 395, "denies": 7, "gpm": 692},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Lifestealer", "hero_level": 28, "kills": 19, "deaths": 0, "assists": 19, "net_worth": 33289, "last_hits": 348, "denies": 24, "gpm": 734},
+        {"name": "Obno[X]iouS- 不快な [M.C]", "side": "radiant", "hero": "Mars", "hero_level": 24, "kills": 8, "deaths": 8, "assists": 23, "net_worth": 22885, "last_hits": 262, "denies": 15, "gpm": 545},
+        {"name": "............. [UGI|]", "side": "radiant", "hero": "Undying", "hero_level": 22, "kills": 6, "deaths": 9, "assists": 23, "net_worth": 14306, "last_hits": 44, "denies": 1, "gpm": 369},
+        {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Lich", "hero_level": 20, "kills": 3, "deaths": 14, "assists": 21, "net_worth": 11825, "last_hits": 57, "denies": 10, "gpm": 342},
+        {"name": "SavaGe!", "side": "dire", "hero": "Rubick", "hero_level": 18, "kills": 5, "deaths": 7, "assists": 18, "net_worth": 12575, "last_hits": 119, "denies": 7, "gpm": 358},
+        {"name": "sesto [M.C]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 18, "deaths": 5, "assists": 6, "net_worth": 25502, "last_hits": 433, "denies": 10, "gpm": 692},
+        {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "dire", "hero": "Ursa", "hero_level": 25, "kills": 11, "deaths": 7, "assists": 11, "net_worth": 25561, "last_hits": 378, "denies": 8, "gpm": 614},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 16, "kills": 0, "deaths": 12, "assists": 18, "net_worth": 11107, "last_hits": 95, "denies": 6, "gpm": 296},
+        {"name": "Lord_TheePa [UGI|]", "side": "dire", "hero": "Underlord", "hero_level": 19, "kills": 2, "deaths": 15, "assists": 18, "net_worth": 13203, "last_hits": 185, "denies": 12, "gpm": 369}
+      ]
     }
   ]
 }
