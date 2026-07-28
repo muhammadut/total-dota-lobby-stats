@@ -43,7 +43,7 @@
     {"canonical": "MODE:IG.BASHIRA™", "alias": "Learn some basic_!_ [FFPL]", "note": "same player, user-asserted; no shared name root or clan tag"},
     {"canonical": "Rogue Agent [ITIzI]", "alias": "Rogue Agent [|T|z|]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
     {"canonical": "SpArtAAAAAAAA [WEPAK]", "alias": "SpaRtAAAAAAAAAA [WEPAK]", "note": "auto-merged: 'spartaaaaaaaa' is a prefix of 'spartaaaaaaaaaa'"},
-    {"canonical": ".......... [UGI]", "alias": "............. [UGI|]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
+    {"canonical": ".......... [UGI]", "alias": "............ [UGI|]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
   ],
 
   "matches": [
@@ -465,18 +465,45 @@
       "dire_score": 37,
       "winning_side": "radiant",
       "result_confidence": "confirmed",
-      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1531659113162084616). The Radiant carries an explicit WINNER badge; both headings are generic, so both team names are stored NULL. No match id or duration. played_at is the Discord upload time converted to local. Capture is 1920x1200 and cut after GPM, so XPM, healing, outposts and the damage columns remain NULL. Checksums: radiant 46 kills = score 46 = dire deaths 46 (exact); dire 36 kills <= score 37 <= radiant deaths 37 -- one tower-credited kill. The all-dots player is THIRTEEN dots, counted mechanically and stable across five ink thresholds; the '.......... [UGI]' already on file is ten dots, so these are two spellings of one person and not a new player. Clan tag reads [UGI|] -- the final bar is measurably narrower than the preceding capital I and taller than it, so it is a pipe; this is cosmetic only, since identity resolution ignores clan tags. HURR went 19-0.",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1531659113162084616). The Radiant carries an explicit WINNER badge; both headings are generic, so both team names are stored NULL. No match id or duration. played_at is the Discord upload time converted to local. Capture is 1920x1200 and cut after GPM, so XPM, healing, outposts and the damage columns remain NULL. Checksums: radiant 46 kills = score 46 = dire deaths 46 (exact); dire 36 kills <= score 37 <= radiant deaths 37 -- one tower-credited kill. The all-dots player is TWELVE dots, counted from the 5px dot lattice; an earlier pass read thirteen by counting the opening bracket of the clan tag as a dot; the '.......... [UGI]' already on file is ten dots, so these are two spellings of one person and not a new player. Clan tag reads [UGI|] -- the final bar is measurably narrower than the preceding capital I and taller than it, so it is a pipe; this is cosmetic only, since identity resolution ignores clan tags. HURR went 19-0.",
       "players": [
         {"name": "Stoic", "side": "radiant", "hero": "Invoker", "hero_level": 26, "kills": 10, "deaths": 6, "assists": 24, "net_worth": 27627, "last_hits": 395, "denies": 7, "gpm": 692},
         {"name": "HURR [PK_]", "side": "radiant", "hero": "Lifestealer", "hero_level": 28, "kills": 19, "deaths": 0, "assists": 19, "net_worth": 33289, "last_hits": 348, "denies": 24, "gpm": 734},
         {"name": "Obno[X]iouS- 不快な [M.C]", "side": "radiant", "hero": "Mars", "hero_level": 24, "kills": 8, "deaths": 8, "assists": 23, "net_worth": 22885, "last_hits": 262, "denies": 15, "gpm": 545},
-        {"name": "............. [UGI|]", "side": "radiant", "hero": "Undying", "hero_level": 22, "kills": 6, "deaths": 9, "assists": 23, "net_worth": 14306, "last_hits": 44, "denies": 1, "gpm": 369},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Undying", "hero_level": 22, "kills": 6, "deaths": 9, "assists": 23, "net_worth": 14306, "last_hits": 44, "denies": 1, "gpm": 369},
         {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Lich", "hero_level": 20, "kills": 3, "deaths": 14, "assists": 21, "net_worth": 11825, "last_hits": 57, "denies": 10, "gpm": 342},
         {"name": "SavaGe!", "side": "dire", "hero": "Rubick", "hero_level": 18, "kills": 5, "deaths": 7, "assists": 18, "net_worth": 12575, "last_hits": 119, "denies": 7, "gpm": 358},
         {"name": "sesto [M.C]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 18, "deaths": 5, "assists": 6, "net_worth": 25502, "last_hits": 433, "denies": 10, "gpm": 692},
         {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "dire", "hero": "Ursa", "hero_level": 25, "kills": 11, "deaths": 7, "assists": 11, "net_worth": 25561, "last_hits": 378, "denies": 8, "gpm": 614},
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 16, "kills": 0, "deaths": 12, "assists": 18, "net_worth": 11107, "last_hits": 95, "denies": 6, "gpm": 296},
         {"name": "Lord_TheePa [UGI|]", "side": "dire", "hero": "Underlord", "hero_level": 19, "kills": 2, "deaths": 15, "assists": 18, "net_worth": 13203, "last_hits": 185, "denies": 12, "gpm": 369}
+      ]
+    },
+    {
+      "source_ref": "discord-1531732550404407547",
+      "dota_match_id": null,
+      "played_on": "2026-07-28",
+      "played_at": "2026-07-28 14:38",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 26,
+      "dire_score": 37,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by soma3031 -- the first upload from anyone other than fzr2k -- and pulled by tools/discord_pull.py (message 1531732550404407547). The Dire carries an explicit WINNER badge; both headings are generic, so both team names are stored NULL. No match id or duration. played_at is the Discord upload time converted to local. Checksums: radiant 26 kills = score 26 <= dire deaths 27, so one hero died to neutrals, Roshan or itself and no player was credited; dire 37 kills = score 37 = radiant deaths 37 (exact). This is a NEW capturing client -- gold counter 631,360, none of the three already on file -- and it is scrolled further right than any previous screenshot, so BOUNTY RUNES and XPM are recorded here for the first time. HEAL is NOT recorded: its values end two pixels from the capture's right edge with no cell padding, and a truncated '1,250' would read as a perfectly plausible '125'. Healing has no bearing on the standings, so NULL is the honest value. The all-dots player is twelve dots, matching the spelling now on file.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Storm Spirit", "hero_level": 22, "kills": 11, "deaths": 5, "assists": 5, "net_worth": 16418, "last_hits": 340, "denies": 4, "gpm": 572, "xpm": 731, "bounty_runes": 5},
+        {"name": "SavaGe!", "side": "radiant", "hero": "Lion", "hero_level": 14, "kills": 5, "deaths": 8, "assists": 11, "net_worth": 8404, "last_hits": 28, "denies": 4, "gpm": 267, "xpm": 322, "bounty_runes": 1},
+        {"name": "Downlander", "side": "radiant", "hero": "Drow Ranger", "hero_level": 21, "kills": 5, "deaths": 3, "assists": 9, "net_worth": 21036, "last_hits": 392, "denies": 20, "gpm": 579, "xpm": 661, "bounty_runes": 1},
+        {"name": "¤GerM¤ [LIB0G]", "side": "radiant", "hero": "Disruptor", "hero_level": 15, "kills": 2, "deaths": 9, "assists": 13, "net_worth": 6355, "last_hits": 39, "denies": 2, "gpm": 236, "xpm": 340, "bounty_runes": 3},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Axe", "hero_level": 17, "kills": 3, "deaths": 12, "assists": 3, "net_worth": 10346, "last_hits": 167, "denies": 6, "gpm": 336, "xpm": 426, "bounty_runes": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Lifestealer", "hero_level": 26, "kills": 10, "deaths": 1, "assists": 14, "net_worth": 28116, "last_hits": 419, "denies": 28, "gpm": 750, "xpm": 1021, "bounty_runes": 4},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Lina", "hero_level": 26, "kills": 10, "deaths": 0, "assists": 13, "net_worth": 26463, "last_hits": 390, "denies": 5, "gpm": 693, "xpm": 1100, "bounty_runes": 4},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Earthshaker", "hero_level": 22, "kills": 7, "deaths": 7, "assists": 18, "net_worth": 17766, "last_hits": 168, "denies": 4, "gpm": 485, "xpm": 727, "bounty_runes": 0},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Lich", "hero_level": 18, "kills": 4, "deaths": 9, "assists": 21, "net_worth": 10504, "last_hits": 22, "denies": 13, "gpm": 329, "xpm": 494, "bounty_runes": 2},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Demon", "hero_level": 16, "kills": 6, "deaths": 10, "assists": 17, "net_worth": 10726, "last_hits": 19, "denies": 1, "gpm": 326, "xpm": 405, "bounty_runes": 0}
       ]
     }
   ]

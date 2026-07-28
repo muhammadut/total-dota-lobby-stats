@@ -100,6 +100,12 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--ask-discord", action="store_true",
                     help="post the too-weak candidates to Discord for a vote")
+    ap.add_argument("--unmerge", metavar="ALIAS",
+                    help="undo a merge: ALIAS becomes its own player again. "
+                         "Until this existed the only way to reverse a wrong "
+                         "merge was to delete the line by hand, which the "
+                         "project forbids. Also clears an alias whose name no "
+                         "longer appears in the data.")
     ap.add_argument("--merge", nargs=2, metavar=("CANONICAL", "ALIAS"),
                     help="record a merge a human has already settled -- names "
                          "the automatic bar cannot judge, such as two "
@@ -129,6 +135,42 @@ def main() -> int:
     known = {(x["canonical"], x["alias"]) for x in aliases}
     known |= {(x["alias"], x["canonical"]) for x in aliases}
     already_alias = {x["alias"] for x in aliases}
+
+    def rebuild():
+        DATA.write_text(dump_matches(payload), encoding="utf-8")
+        json.loads(DATA.read_text(encoding="utf-8"))     # must still parse
+        for cmd in (["load.py"], ["export_web.py"]):
+            r = subprocess.run([sys.executable] + cmd, cwd=ROOT,
+                               capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
+            for line in (r.stdout or "").splitlines():
+                print("    " + line)
+
+    # Undoing a merge is a separate motion from making one: it is the only
+    # repair for a merge that turned out to be wrong, and the only way to
+    # retire an alias whose name has since been corrected out of the data.
+    if args.unmerge:
+        hits = [x for x in aliases if x["alias"] == args.unmerge]
+        if not hits:
+            hits = [x for x in aliases
+                    if args.unmerge.lower() in x["alias"].lower()]
+        if not hits:
+            sys.exit(f"  no merge has {args.unmerge!r} as its alias. "
+                     f"Note this takes the ALIAS, not the canonical name.")
+        if len(hits) > 1:
+            sys.exit(f"  {args.unmerge!r} is ambiguous — it matches "
+                     f"{[h['alias'] for h in hits]}")
+        h = hits[0]
+        print(f"\n  UNMERGE  {h['alias']!r}  -/->  {h['canonical']!r}")
+        print(f"    {h['alias']!r} becomes its own player again, and its games "
+              f"leave {h['canonical']!r}'s totals.")
+        if args.dry_run:
+            print("\n  dry run — nothing written.")
+            return 0
+        aliases.remove(h)
+        rebuild()
+        print(f"\n  removed 1 alias from {DATA.relative_to(ROOT)}")
+        return 0
 
     # Pairs a human has explicitly said are DIFFERENT people. Without this,
     # every run would re-ask a question that was already answered "no",
