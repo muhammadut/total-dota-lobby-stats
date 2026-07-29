@@ -31,6 +31,7 @@ window.HERO_SLUG = {
 "Lion": "lion",
 "Luna": "luna",
 "Magnus": "magnataur",
+"Marci": "marci",
 "Mars": "mars",
 "Medusa": "medusa",
 "Mirana": "mirana",

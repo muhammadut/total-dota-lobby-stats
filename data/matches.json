@@ -532,6 +532,33 @@
         {"name": "HURR [PK_]", "side": "dire", "hero": "Axe", "hero_level": 24, "kills": 5, "deaths": 7, "assists": 19, "net_worth": 20770, "last_hits": 289, "denies": 6, "gpm": 492, "xpm": 627, "bounty_runes": 3},
         {"name": "Soooze [<MC>]", "side": "dire", "hero": "Lich", "hero_level": 23, "kills": 0, "deaths": 15, "assists": 19, "net_worth": 12228, "last_hits": 70, "denies": 17, "gpm": 317, "xpm": 571, "bounty_runes": 1}
       ]
+    },
+    {
+      "source_ref": "discord-1532078658024640594",
+      "dota_match_id": null,
+      "played_on": "2026-07-29",
+      "played_at": "2026-07-29 13:33",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": "Hello Madafaka!",
+      "radiant_score": 17,
+      "dire_score": 40,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1532078658024640594). The Dire is a NAMED team, 'Hello Madafaka!', and carries the explicit WINNER badge; the Radiant heading is generic so that side stays NULL. A WIND LACE item tooltip is open over the ITEMS column, but it clears K/D/A and NET to its left and LH/DN/GPM to its right, and items are never transcribed, so nothing needed is hidden. No match id or duration. played_at is the Discord upload time converted to local. Capture is 1920x1200 cut just after GPM, so BOUNTY RUNES, XPM and everything past it are off-screen and stay NULL. Checksums: radiant 16 kills <= score 17 <= dire deaths 17, and dire 38 kills <= score 40 <= radiant deaths 40 -- one tower on the radiant side, two on the dire, verified at 5x. TWO NAMES CHANGED SINCE THE LAST GAME, both confirmed at 12x rather than assumed: 'SpArtAAAAAAAA' is back to a capital A and lowercase r with eight A's, matching the spelling on file, after appearing on 07-28 as 'SpaRtAAAAAAAAAA' (lowercase a, capital R, ten A's) -- the name/tag boundary was settled by colour, since the clan tag renders orange and the name near-white. And Obno[X]iouS- now reads a different Japanese word, kyouaku-na rather than fukai-na; the first character is a box enclosing an X, not the four-stroke negation. Same player, renamed.",
+      "players": [
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Marci", "hero_level": 14, "kills": 2, "deaths": 9, "assists": 6, "net_worth": 5794, "last_hits": 38, "denies": 2, "gpm": 231},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Axe", "hero_level": 18, "kills": 6, "deaths": 8, "assists": 3, "net_worth": 14109, "last_hits": 235, "denies": 4, "gpm": 455},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Void Spirit", "hero_level": 18, "kills": 2, "deaths": 4, "assists": 6, "net_worth": 12940, "last_hits": 172, "denies": 7, "gpm": 383},
+        {"name": "Downlander", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 19, "kills": 6, "deaths": 8, "assists": 5, "net_worth": 15802, "last_hits": 317, "denies": 10, "gpm": 522},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Dark Willow", "hero_level": 14, "kills": 0, "deaths": 11, "assists": 8, "net_worth": 5866, "last_hits": 30, "denies": 0, "gpm": 229},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Silencer", "hero_level": 17, "kills": 4, "deaths": 5, "assists": 24, "net_worth": 9717, "last_hits": 29, "denies": 6, "gpm": 299},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Snapfire", "hero_level": 17, "kills": 9, "deaths": 2, "assists": 18, "net_worth": 10594, "last_hits": 89, "denies": 2, "gpm": 347},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Necrophos", "hero_level": 23, "kills": 13, "deaths": 2, "assists": 14, "net_worth": 25539, "last_hits": 394, "denies": 15, "gpm": 722},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Outworld Destroyer", "hero_level": 19, "kills": 8, "deaths": 4, "assists": 10, "net_worth": 15575, "last_hits": 208, "denies": 12, "gpm": 458},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Tidehunter", "hero_level": 21, "kills": 4, "deaths": 4, "assists": 23, "net_worth": 14345, "last_hits": 164, "denies": 7, "gpm": 426}
+      ]
     }
   ]
 }
