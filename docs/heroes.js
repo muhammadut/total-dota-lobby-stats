@@ -71,5 +71,6 @@ window.HERO_SLUG = {
 "Viper": "viper",
 "Void Spirit": "void_spirit",
 "Warlock": "warlock",
-"Winter Wyvern": "winter_wyvern"
+"Winter Wyvern": "winter_wyvern",
+"Witch Doctor": "witch_doctor"
 };
