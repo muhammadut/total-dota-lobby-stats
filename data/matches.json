@@ -586,6 +586,33 @@
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Shadow Fiend", "hero_level": 26, "kills": 8, "deaths": 5, "assists": 7, "net_worth": 28834, "last_hits": 592, "denies": 9, "gpm": 752, "xpm": 963, "bounty_runes": 7},
         {"name": "¤GerM¤ [LIB0G]", "side": "dire", "hero": "Nyx Assassin", "hero_level": 22, "kills": 3, "deaths": 5, "assists": 19, "net_worth": 12404, "last_hits": 57, "denies": 5, "gpm": 313, "xpm": 592, "bounty_runes": 1}
       ]
+    },
+    {
+      "source_ref": "discord-1532139139963682978",
+      "dota_match_id": null,
+      "played_on": "2026-07-29",
+      "played_at": "2026-07-29 17:33",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 72,
+      "dire_score": 26,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by stoicheart_62488 -- the fourth distinct uploader -- and pulled by tools/discord_pull.py (message 1532139139963682978). Gold counter reads 389,225, which is stoicheart's client fingerprint already on file. TIMEZONE CROSS-CHECK PASSES: the filename is Dota_2_2026.07.30-02.32.png, i.e. the capturing client's clock says 02:32 on the 30th, while Discord logged the upload at 17:33 local on the 29th. That is the documented nine-hour gap between the user at UTC-4 and stoicheart at UTC+5, to the minute, so both clocks agree and played_on is the 29th in the frame the database uses. Highest-scoring game on record at 72-26, and Downlander's 26 kills on Spectre is the highest individual total. Radiant's chain is exactly equal on all three terms -- 72 kills = score 72 = dire deaths 72 -- which is self-validating: a single misread kill digit could not leave all three matching. Dire: 24 kills <= score 26 <= radiant deaths 26, two tower-credited kills, re-read at 5x. HEAL is NOT recorded, same right-edge clipping risk as the last three matches. NEW NAME 'xxx' appears on the Dire, and automerge can never evaluate it: norm() reduces it to a three-character stem, below MIN_STEM, so every pair involving it is discarded before comparison and it will never be proposed or even listed. It is recorded as its own player pending a human decision -- see the note in the aliases discussion; do not assume it is a new person just because nothing flagged it.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Pangolier", "hero_level": 27, "kills": 17, "deaths": 4, "assists": 31, "net_worth": 27421, "last_hits": 368, "denies": 7, "gpm": 716, "xpm": 1040, "bounty_runes": 7},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Snapfire", "hero_level": 25, "kills": 14, "deaths": 5, "assists": 34, "net_worth": 23343, "last_hits": 244, "denies": 8, "gpm": 588, "xpm": 814, "bounty_runes": 1},
+        {"name": "Downlander", "side": "radiant", "hero": "Spectre", "hero_level": 28, "kills": 26, "deaths": 2, "assists": 23, "net_worth": 32288, "last_hits": 398, "denies": 11, "gpm": 774, "xpm": 1255, "bounty_runes": 1},
+        {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Lich", "hero_level": 23, "kills": 5, "deaths": 9, "assists": 33, "net_worth": 14803, "last_hits": 78, "denies": 8, "gpm": 409, "xpm": 679, "bounty_runes": 1},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Earthshaker", "hero_level": 24, "kills": 10, "deaths": 6, "assists": 36, "net_worth": 15228, "last_hits": 51, "denies": 2, "gpm": 383, "xpm": 747, "bounty_runes": 2},
+        {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Puck", "hero_level": 27, "kills": 7, "deaths": 10, "assists": 9, "net_worth": 20702, "last_hits": 252, "denies": 4, "gpm": 506, "xpm": 1001, "bounty_runes": 7},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Magnus", "hero_level": 25, "kills": 8, "deaths": 13, "assists": 8, "net_worth": 17055, "last_hits": 264, "denies": 9, "gpm": 506, "xpm": 826, "bounty_runes": 1},
+        {"name": "xxx", "side": "dire", "hero": "Medusa", "hero_level": 24, "kills": 4, "deaths": 14, "assists": 7, "net_worth": 21810, "last_hits": 377, "denies": 13, "gpm": 563, "xpm": 741, "bounty_runes": 1},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Demon", "hero_level": 20, "kills": 4, "deaths": 14, "assists": 14, "net_worth": 11987, "last_hits": 36, "denies": 0, "gpm": 369, "xpm": 488, "bounty_runes": 0},
+        {"name": "Soooze [<MC>]", "side": "dire", "hero": "Nyx Assassin", "hero_level": 19, "kills": 1, "deaths": 21, "assists": 12, "net_worth": 9498, "last_hits": 54, "denies": 0, "gpm": 271, "xpm": 473, "bounty_runes": 3}
+      ]
     }
   ]
 }
