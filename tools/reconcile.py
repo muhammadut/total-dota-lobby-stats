@@ -40,7 +40,15 @@ def main() -> int:
 
     seen = load_seen()
     pending = {k: v for k, v in seen.items() if v.get("status") == "pending"}
-    if not pending:
+    # "failed" used to be terminal. But a screenshot is marked failed the
+    # moment it is not yet in the ledger, and that is also true of one being
+    # ingested a minute later -- run this before the ingest rather than after
+    # and a perfectly good screenshot is condemned permanently, with the
+    # poster told to repost it. Re-examine failures too, so the record can
+    # heal. Promotion only: a failure that is still absent is left alone and
+    # is never re-notified.
+    stale = {k: v for k, v in seen.items() if v.get("status") == "failed"}
+    if not pending and not stale:
         print("  nothing pending — every downloaded screenshot is accounted for.")
         return 0
 
@@ -53,6 +61,13 @@ def main() -> int:
     ingested, failed = [], []
     for mid, info in pending.items():
         (ingested if mid in got else failed).append((mid, info))
+
+    # A past failure that has since landed is a correction, not news.
+    healed = [(mid, info) for mid, info in stale.items() if mid in got]
+    for mid, info in healed:
+        print(f"  CORRECTED {info.get('file', mid)} — was marked failed, "
+              f"but it is in the ledger now.")
+        seen[mid]["status"] = "ingested"
 
     for mid, info in ingested:
         print(f"  ingested  {info.get('file', mid)}")
@@ -78,6 +93,7 @@ def main() -> int:
         save_seen(seen)
 
     print(f"\n  {len(ingested)} ingested, {len(failed)} failed"
+          + (f", {len(healed)} corrected" if healed else "")
           + (" (dry run — nothing written)" if args.dry_run else ""))
     # Loud on failure: this is the one condition that means screenshots
     # arrived and were not recorded, and it must not look like a quiet day.
