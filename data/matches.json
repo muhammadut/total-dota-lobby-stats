@@ -41,9 +41,9 @@
     {"canonical": "TigerX [GB]", "alias": "____Tiger X____ [GB]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
     {"canonical": "HypermodeL [M.C]", "alias": "sesto [M.C]", "note": "same player, user-asserted; shared clan tag but unrelated name"},
     {"canonical": "MODE:IG.BASHIRA™", "alias": "Learn some basic_!_ [FFPL]", "note": "same player, user-asserted; no shared name root or clan tag"},
-    {"canonical": "Rogue Agent [ITIzI]", "alias": "Rogue Agent [|T|z|]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
     {"canonical": "SpArtAAAAAAAA [WEPAK]", "alias": "SpaRtAAAAAAAAAA [WEPAK]", "note": "auto-merged: 'spartaaaaaaaa' is a prefix of 'spartaaaaaaaaaa'"},
-    {"canonical": ".......... [UGI]", "alias": "............ [UGI|]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
+    {"canonical": "samundar khan", "alias": "xxx", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
+    {"canonical": "Obno[X]iouS- 不快な [M.C]", "alias": "Obno[X]iouS- 凶悪な [M.C]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"}
   ],
 
   "matches": [
@@ -179,7 +179,7 @@
         {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Storm Spirit", "kills": 5, "deaths": 4, "assists": 1, "net_worth": 7321, "hero_level": 13, "last_hits": 116, "denies": 3, "gpm": 396, "bounty_runes": 0, "xpm": 483, "healing": 0},
         {"name": "Soooze [<MC>]", "side": "dire", "hero": "Warlock", "kills": 1, "deaths": 12, "assists": 5, "net_worth": 3614, "hero_level": 7, "last_hits": 9, "denies": 1, "gpm": 181, "bounty_runes": 2, "xpm": 163, "healing": 2548},
         {"name": "Downlander", "side": "dire", "hero": "Drow Ranger", "kills": 1, "deaths": 2, "assists": 2, "net_worth": 8317, "hero_level": 12, "last_hits": 163, "denies": 10, "gpm": 401, "bounty_runes": 1, "xpm": 451, "healing": 0},
-        {"name": ".......... [UGI]", "side": "dire", "hero": "Underlord", "kills": 1, "deaths": 5, "assists": 1, "net_worth": 6949, "hero_level": 10, "last_hits": 95, "denies": 5, "gpm": 334, "bounty_runes": 0, "xpm": 332, "healing": 0}
+        {"name": "............ [UGI|]", "side": "dire", "hero": "Underlord", "kills": 1, "deaths": 5, "assists": 1, "net_worth": 6949, "hero_level": 10, "last_hits": 95, "denies": 5, "gpm": 334, "bounty_runes": 0, "xpm": 332, "healing": 0}
       ]
     },
     {
@@ -201,7 +201,7 @@
         {"name": "I'M Still Noob", "side": "radiant", "hero": "Io", "kills": 8, "deaths": 9, "assists": 27, "net_worth": 13623, "hero_level": 23, "last_hits": 47, "denies": 6, "gpm": 371, "bounty_runes": 0, "xpm": 710, "healing": 17701},
         {"name": "vAnzO", "side": "radiant", "hero": "Invoker", "kills": 6, "deaths": 12, "assists": 16, "net_worth": 13021, "hero_level": 20, "last_hits": 107, "denies": 6, "gpm": 337, "bounty_runes": 2, "xpm": 511, "healing": 560},
         {"name": "Downlander", "side": "radiant", "hero": "Spectre", "kills": 23, "deaths": 3, "assists": 19, "net_worth": 35429, "hero_level": 29, "last_hits": 440, "denies": 8, "gpm": 848, "bounty_runes": 2, "xpm": 1438, "healing": 171},
-        {"name": ".......... [UGI]", "side": "radiant", "hero": "Tidehunter", "kills": 6, "deaths": 13, "assists": 21, "net_worth": 12313, "hero_level": 20, "last_hits": 107, "denies": 4, "gpm": 336, "bounty_runes": 0, "xpm": 512, "healing": 0},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Tidehunter", "kills": 6, "deaths": 13, "assists": 21, "net_worth": 12313, "hero_level": 20, "last_hits": 107, "denies": 4, "gpm": 336, "bounty_runes": 0, "xpm": 512, "healing": 0},
         {"name": "HURR [PK_]", "side": "dire", "hero": "Night Stalker", "kills": 7, "deaths": 8, "assists": 22, "net_worth": 15792, "hero_level": 23, "last_hits": 203, "denies": 6, "gpm": 441, "bounty_runes": 2, "xpm": 701, "healing": 0},
         {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Tusk", "kills": 5, "deaths": 15, "assists": 16, "net_worth": 7109, "hero_level": 17, "last_hits": 29, "denies": 3, "gpm": 250, "bounty_runes": 2, "xpm": 395, "healing": 0},
         {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Slark", "kills": 11, "deaths": 9, "assists": 17, "net_worth": 18558, "hero_level": 24, "last_hits": 281, "denies": 10, "gpm": 538, "bounty_runes": 7, "xpm": 797, "healing": 0},
@@ -255,11 +255,11 @@
         {"name": "sesto [M.C]", "side": "radiant", "hero": "Drow Ranger", "hero_level": 26, "kills": 17, "deaths": 3, "assists": 12, "net_worth": 33502, "last_hits": 471, "denies": 20, "gpm": 835, "bounty_runes": 3, "xpm": 972, "healing": 0},
         {"name": "dotagerm [LIB0G]", "side": "radiant", "hero": "Mirana", "hero_level": 22, "kills": 2, "deaths": 6, "assists": 25, "net_worth": 13038, "last_hits": 98, "denies": 2, "gpm": 351, "bounty_runes": 4, "xpm": 649, "healing": 6121},
         {"name": "MODE:IG.BASHIRA™", "side": "radiant", "hero": "Lich", "hero_level": 20, "kills": 1, "deaths": 9, "assists": 22, "net_worth": 12196, "last_hits": 33, "denies": 18, "gpm": 330, "bounty_runes": 0, "xpm": 539, "healing": 125},
-        {"name": "Thekra [UGI]", "side": "radiant", "hero": "Axe", "hero_level": 21, "kills": 12, "deaths": 11, "assists": 7, "net_worth": 18391, "last_hits": 173, "denies": 6, "gpm": 483, "bounty_runes": 1, "xpm": 601, "healing": 0},
+        {"name": "Thekra [UGI|]", "side": "radiant", "hero": "Axe", "hero_level": 21, "kills": 12, "deaths": 11, "assists": 7, "net_worth": 18391, "last_hits": 173, "denies": 6, "gpm": 483, "bounty_runes": 1, "xpm": 601, "healing": 0},
         {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Leshrac", "hero_level": 21, "kills": 8, "deaths": 4, "assists": 9, "net_worth": 19760, "last_hits": 292, "denies": 1, "gpm": 507, "bounty_runes": 5, "xpm": 614, "healing": 0},
         {"name": "HURR [PK_]", "side": "dire", "hero": "Anti-Mage", "hero_level": 25, "kills": 7, "deaths": 7, "assists": 11, "net_worth": 21992, "last_hits": 429, "denies": 11, "gpm": 609, "bounty_runes": 4, "xpm": 825, "healing": 0},
         {"name": "I'M Still Noob", "side": "dire", "hero": "Rubick", "hero_level": 19, "kills": 10, "deaths": 9, "assists": 12, "net_worth": 12385, "last_hits": 137, "denies": 3, "gpm": 381, "bounty_runes": 1, "xpm": 494, "healing": 0},
-        {"name": ".......... [UGI]", "side": "dire", "hero": "Primal Beast", "hero_level": 18, "kills": 4, "deaths": 12, "assists": 8, "net_worth": 11982, "last_hits": 148, "denies": 2, "gpm": 315, "bounty_runes": 0, "xpm": 437, "healing": 0},
+        {"name": "............ [UGI|]", "side": "dire", "hero": "Primal Beast", "hero_level": 18, "kills": 4, "deaths": 12, "assists": 8, "net_worth": 11982, "last_hits": 148, "denies": 2, "gpm": 315, "bounty_runes": 0, "xpm": 437, "healing": 0},
         {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 16, "kills": 2, "deaths": 11, "assists": 19, "net_worth": 8738, "last_hits": 40, "denies": 2, "gpm": 274, "bounty_runes": 1, "xpm": 335, "healing": 122}
       ]
     },
@@ -310,7 +310,7 @@
         {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Medusa", "hero_level": 20, "kills": 4, "deaths": 1, "assists": 7, "net_worth": 18999, "last_hits": 371, "denies": 9, "gpm": 714, "bounty_runes": 2, "xpm": 811, "healing": 0},
         {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Rubick", "hero_level": 12, "kills": 3, "deaths": 6, "assists": 13, "net_worth": 6130, "last_hits": 17, "denies": 0, "gpm": 265, "bounty_runes": 0, "xpm": 309, "healing": 0},
         {"name": "HURR [PK_]", "side": "radiant", "hero": "Pudge", "hero_level": 13, "kills": 2, "deaths": 5, "assists": 16, "net_worth": 6861, "last_hits": 31, "denies": 7, "gpm": 288, "bounty_runes": 3, "xpm": 396, "healing": 0},
-        {"name": "Rogue Agent [ITIzI]", "side": "dire", "hero": "Night Stalker", "hero_level": 15, "kills": 2, "deaths": 5, "assists": 6, "net_worth": 9776, "last_hits": 160, "denies": 1, "gpm": 385, "bounty_runes": 2, "xpm": 476, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Night Stalker", "hero_level": 15, "kills": 2, "deaths": 5, "assists": 6, "net_worth": 9776, "last_hits": 160, "denies": 1, "gpm": 385, "bounty_runes": 2, "xpm": 476, "healing": 0},
         {"name": "I'M Still Noob", "side": "dire", "hero": "Bane", "hero_level": 12, "kills": 2, "deaths": 4, "assists": 7, "net_worth": 4949, "last_hits": 15, "denies": 3, "gpm": 219, "bounty_runes": 1, "xpm": 324, "healing": 0},
         {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Storm Spirit", "hero_level": 16, "kills": 8, "deaths": 5, "assists": 3, "net_worth": 12425, "last_hits": 174, "denies": 1, "gpm": 494, "bounty_runes": 1, "xpm": 556, "healing": 0},
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 10, "kills": 0, "deaths": 12, "assists": 7, "net_worth": 4355, "last_hits": 21, "denies": 2, "gpm": 199, "bounty_runes": 0, "xpm": 260, "healing": 125},
