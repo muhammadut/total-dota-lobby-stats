@@ -100,6 +100,10 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--ask-discord", action="store_true",
                     help="post the too-weak candidates to Discord for a vote")
+    ap.add_argument("--not-same", nargs=2, metavar=("A", "B"),
+                    help="record that two names are DIFFERENT people, so the "
+                         "pair is never proposed again. Refuses if they are "
+                         "currently merged -- un-merge first.")
     ap.add_argument("--unmerge", metavar="ALIAS",
                     help="undo a merge: ALIAS becomes its own player again. "
                          "Until this existed the only way to reverse a wrong "
@@ -183,24 +187,52 @@ def main() -> int:
 
     auto, ask = [], []
 
+    by_name = {n: i for i, n in players}
+
+    def resolve(s: str) -> str:
+        if s in by_name:
+            return s
+        hits = [n for n in by_name if s.lower() in n.lower()]
+        if len(hits) == 1:
+            return hits[0]
+        if not hits:
+            sys.exit(f"  no player matches {s!r}")
+        sys.exit(f"  {s!r} is ambiguous — matches {len(hits)}: {hits}")
+
+    # Recording a "no" is as load-bearing as recording a "yes": without it the
+    # same pair is proposed every run, and a question that keeps coming back
+    # after it has been answered is one people stop reading.
+    if args.not_same:
+        a, b = resolve(args.not_same[0]), resolve(args.not_same[1])
+        if a == b:
+            sys.exit("  those resolve to the same player.")
+        if (a, b) in known:
+            sys.exit(f"  REFUSED — {a!r} and {b!r} are currently MERGED. "
+                     f"Recording them as different while the merge stands "
+                     f"would leave the database contradicting the decision. "
+                     f"Run --unmerge on the alias first.")
+        pair = sorted((a, b))
+        if tuple(pair) in rejected:
+            print(f"\n  already recorded as different people: {a!r} / {b!r}")
+            return 0
+        print(f"\n  NOT THE SAME  {a!r}  vs  {b!r}")
+        print("    recorded; they will not be proposed again.")
+        if args.dry_run:
+            print("\n  dry run — nothing written.")
+            return 0
+        existing = json.loads(rej.read_text(encoding="utf-8")) if rej.exists() else []
+        existing.append(pair)
+        rej.write_text(json.dumps(existing, ensure_ascii=False, indent=2) + "\n",
+                       encoding="utf-8")
+        print(f"  wrote {rej.relative_to(ROOT)}")
+        return 0
+
     # An explicit merge names two players outright. It exists because some
     # pairs are unjudgeable by stem similarity yet perfectly obvious to a
     # human with a zoomed screenshot, and until this flag there was no
     # offline way to record one -- only a Discord command, which cannot
     # even type a name made of thirteen dots.
     if args.merge:
-        by_name = {n: i for i, n in players}
-
-        def resolve(s: str) -> str:
-            if s in by_name:
-                return s
-            hits = [n for n in by_name if s.lower() in n.lower()]
-            if len(hits) == 1:
-                return hits[0]
-            if not hits:
-                sys.exit(f"  no player matches {s!r}")
-            sys.exit(f"  {s!r} is ambiguous — matches {len(hits)}: {hits}")
-
         canon, alias = resolve(args.merge[0]), resolve(args.merge[1])
         if canon == alias:
             sys.exit("  those resolve to the same player; nothing to do.")
