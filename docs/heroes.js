@@ -42,6 +42,7 @@ window.HERO_SLUG = {
 "Nyx Assassin": "nyx_assassin",
 "Outworld Destroyer": "obsidian_destroyer",
 "Pangolier": "pangolier",
+"Phantom Assassin": "phantom_assassin",
 "Phantom Lancer": "phantom_lancer",
 "Phoenix": "phoenix",
 "Primal Beast": "primal_beast",
@@ -73,6 +74,8 @@ window.HERO_SLUG = {
 "Viper": "viper",
 "Void Spirit": "void_spirit",
 "Warlock": "warlock",
+"Windranger": "windrunner",
 "Winter Wyvern": "winter_wyvern",
-"Witch Doctor": "witch_doctor"
+"Witch Doctor": "witch_doctor",
+"Zeus": "zuus"
 };

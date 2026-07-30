@@ -668,6 +668,33 @@
         {"name": "xxx", "side": "dire", "hero": "Kunkka", "hero_level": 30, "kills": 6, "deaths": 11, "assists": 32, "net_worth": 46910, "last_hits": 665, "denies": 7, "gpm": 742},
         {"name": "............ [UGI|]", "side": "dire", "hero": "Ancient Apparition", "hero_level": 29, "kills": 8, "deaths": 21, "assists": 34, "net_worth": 20114, "last_hits": 33, "denies": 1, "gpm": 399}
       ]
+    },
+    {
+      "source_ref": "discord-1532533872942649374",
+      "dota_match_id": null,
+      "played_on": "2026-07-30",
+      "played_at": "2026-07-30 19:42",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 28,
+      "dire_score": 54,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1532533872942649374). The Dire carries the explicit WINNER badge; both headings generic so both team names NULL. The client shows RECONNECT and 'This game is safe to leave', i.e. the capturing player had dropped, but the winner badge means the game itself is over and the scoreboard is final. No match id or duration. Capture cut just after GPM, so BOUNTY RUNES, XPM and HEAL stay NULL. Checksums: radiant 28 kills = score 28 = dire deaths 28, exact; dire 53 kills <= score 54 <= radiant deaths 54, one tower-credited kill. NEW NAME '420 [FUBU]', and like 'xxx' before it automerge can never evaluate it: norm() reduces it to the three-character stem '420', below MIN_STEM, so every pair involving it is discarded before comparison and it will never be proposed or even listed. It is recorded as its own player pending a human decision. What IS known: '420 [FUBU]' and 'xxx' play in THIS match on the same side, and xxx resolves to samundar khan, so 420 is definitely not samundar khan or rtz [FUBU]. The remaining FUBU names it could be are Scarface, old rebel and beetlebum -- or nobody, if 420 is new.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Windranger", "hero_level": 24, "kills": 7, "deaths": 9, "assists": 11, "net_worth": 16514, "last_hits": 353, "denies": 4, "gpm": 511},
+        {"name": "UT", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 22, "kills": 4, "deaths": 10, "assists": 16, "net_worth": 16266, "last_hits": 284, "denies": 4, "gpm": 438},
+        {"name": "Downlander", "side": "radiant", "hero": "Spectre", "hero_level": 25, "kills": 12, "deaths": 7, "assists": 11, "net_worth": 24918, "last_hits": 440, "denies": 16, "gpm": 562},
+        {"name": "xxx", "side": "radiant", "hero": "Zeus", "hero_level": 19, "kills": 2, "deaths": 12, "assists": 21, "net_worth": 11330, "last_hits": 85, "denies": 1, "gpm": 292},
+        {"name": "420 [FUBU]", "side": "radiant", "hero": "Lich", "hero_level": 19, "kills": 3, "deaths": 16, "assists": 14, "net_worth": 13569, "last_hits": 63, "denies": 11, "gpm": 301},
+        {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 29, "kills": 13, "deaths": 3, "assists": 22, "net_worth": 34106, "last_hits": 443, "denies": 5, "gpm": 717},
+        {"name": "Obno[X]iouS- 不快な [M.C]", "side": "dire", "hero": "Phantom Assassin", "hero_level": 28, "kills": 17, "deaths": 5, "assists": 16, "net_worth": 35515, "last_hits": 460, "denies": 5, "gpm": 759},
+        {"name": "SavaGe!", "side": "dire", "hero": "Mirana", "hero_level": 25, "kills": 8, "deaths": 3, "assists": 26, "net_worth": 19640, "last_hits": 166, "denies": 3, "gpm": 473},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Axe", "hero_level": 25, "kills": 11, "deaths": 8, "assists": 22, "net_worth": 19550, "last_hits": 196, "denies": 7, "gpm": 428},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 4, "deaths": 9, "assists": 33, "net_worth": 15994, "last_hits": 37, "denies": 4, "gpm": 358}
+      ]
     }
   ]
 }
