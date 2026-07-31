@@ -49,6 +49,7 @@ window.HERO_SLUG = {
 "Puck": "puck",
 "Pudge": "pudge",
 "Queen of Pain": "queenofpain",
+"Razor": "razor",
 "Ringmaster": "ringmaster",
 "Rubick": "rubick",
 "Sand King": "sand_king",

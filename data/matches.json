@@ -722,6 +722,33 @@
         {"name": "SavaGe!", "side": "dire", "hero": "Rubick", "hero_level": 25, "kills": 3, "deaths": 11, "assists": 25, "net_worth": 16904, "last_hits": 120, "denies": 7, "gpm": 367},
         {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Axe", "hero_level": 26, "kills": 7, "deaths": 14, "assists": 19, "net_worth": 23503, "last_hits": 312, "denies": 6, "gpm": 472}
       ]
+    },
+    {
+      "source_ref": "discord-1532826395087077497",
+      "dota_match_id": null,
+      "played_on": "2026-07-31",
+      "played_at": "2026-07-31 15:04",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 47,
+      "dire_score": 56,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by hash1m23 and pulled by tools/discord_pull.py (message 1532826395087077497). FIRST SCREENSHOT FROM A FOURTH CAPTURING CLIENT: the gold counter reads 122,100, which matches none of the three known clients (67,845 user, 26,525 hurrali, 389,225 stoicheart), and the filename is a mobile-style GUID rather than the usual Dota_2_<date>-<time>.png, so there is no client clock to cross-check. played_at is therefore the Discord upload time, which is server-side and absolute. The Dire carries the explicit WINNER badge; both headings generic so both team names NULL. No match id or duration. Checksums: radiant 45 kills <= score 47 <= dire deaths 47, two tower-credited kills; dire 54 kills <= score 56 <= radiant deaths 57, two towers and one death to neutrals/Roshan/self. BOTH left gaps are 2, above the re-read threshold, so every K/D/A digit was re-read at 4x and both scores at 8x before accepting; all agreed. GPM IS RECORDED AND IS NOT CLIPPED, despite the gold digits running to the literal last pixel column (x=1918/1919 of 1919). Proof: each value splits into exactly three glyph-runs on a 9px pitch, the final run is full width, and the rows whose ink reaches 1919 are precisely those ending in 9, 6 and 9 -- round glyphs that bulge right -- while those ending in 2, 3 and 5 stop at 1918. A truncation would cut at a fixed x regardless of glyph; this varies with glyph identity. The column is right-aligned (visible in LH/DN, where 373 and 34 end at a common x), so a four-digit value would render four runs, not three. Columns past GPM are off-screen behind a horizontal scrollbar, so XPM, HEAL and BOUNTY RUNES stay NULL. NEW NAME 'Sameed', no clan tag, top of the winning side on Pangolier; its six-character stem is above MIN_STEM so automerge can evaluate it normally, unlike 'xxx' and '420 [FUBU]'. 'Rogue Agent [|T|z|]' renders with pipes here, matching the corrected canonical spelling, so it lands on the existing row without intervention.",
+      "players": [
+        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Ember Spirit", "hero_level": 27, "kills": 9, "deaths": 7, "assists": 23, "net_worth": 26697, "last_hits": 373, "denies": 1, "gpm": 552},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 23, "kills": 0, "deaths": 13, "assists": 27, "net_worth": 11038, "last_hits": 80, "denies": 4, "gpm": 275},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Earthshaker", "hero_level": 24, "kills": 8, "deaths": 15, "assists": 17, "net_worth": 19931, "last_hits": 289, "denies": 5, "gpm": 495},
+        {"name": "Rogue Agent [|T|z|]", "side": "radiant", "hero": "Razor", "hero_level": 30, "kills": 27, "deaths": 13, "assists": 8, "net_worth": 29900, "last_hits": 482, "denies": 4, "gpm": 722},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "radiant", "hero": "Silencer", "hero_level": 23, "kills": 1, "deaths": 9, "assists": 29, "net_worth": 10390, "last_hits": 34, "denies": 0, "gpm": 259},
+        {"name": "Sameed", "side": "dire", "hero": "Pangolier", "hero_level": 30, "kills": 15, "deaths": 4, "assists": 29, "net_worth": 37440, "last_hits": 541, "denies": 3, "gpm": 816},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Lich", "hero_level": 26, "kills": 12, "deaths": 10, "assists": 30, "net_worth": 17146, "last_hits": 53, "denies": 17, "gpm": 423},
+        {"name": "Downlander", "side": "dire", "hero": "Necrophos", "hero_level": 28, "kills": 15, "deaths": 7, "assists": 19, "net_worth": 37616, "last_hits": 563, "denies": 8, "gpm": 763},
+        {"name": "Soooze [<MC>]", "side": "dire", "hero": "Axe", "hero_level": 26, "kills": 12, "deaths": 14, "assists": 17, "net_worth": 21183, "last_hits": 223, "denies": 9, "gpm": 502},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Lion", "hero_level": 23, "kills": 0, "deaths": 12, "assists": 30, "net_worth": 13096, "last_hits": 38, "denies": 5, "gpm": 279}
+      ]
     }
   ]
 }
