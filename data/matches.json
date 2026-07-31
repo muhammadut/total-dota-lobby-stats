@@ -695,6 +695,33 @@
         {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Axe", "hero_level": 25, "kills": 11, "deaths": 8, "assists": 22, "net_worth": 19550, "last_hits": 196, "denies": 7, "gpm": 428},
         {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 4, "deaths": 9, "assists": 33, "net_worth": 15994, "last_hits": 37, "denies": 4, "gpm": 358}
       ]
+    },
+    {
+      "source_ref": "discord-1532556464592392212",
+      "dota_match_id": null,
+      "played_on": "2026-07-30",
+      "played_at": "2026-07-30 21:12",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 48,
+      "dire_score": 46,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by fzr2k and pulled by tools/discord_pull.py (message 1532556464592392212). The Radiant carries the explicit WINNER badge; both headings generic so both team names NULL. Second-closest game on record at 48-46. No match id or duration. Capture cut just after GPM, so BOUNTY RUNES, XPM and HEAL stay NULL. Checksums: radiant 47 kills <= score 48 <= dire deaths 48, one tower-credited kill; dire 46 kills = score 46 = radiant deaths 46, exact. Between them the two chains cross-validate all four columns. Two players appear under the OTHER of their two known spellings, both already merged, so neither creates a row: 'SpArtAAAAAAAA' measures SpArt plus eight A's on the pitch-9 apex lattice, the canonical form, rather than the SpaRt-plus-ten variant seen on 07-28 and earlier today; and Obno[X]iouS- is back to the kyouaku-na spelling, confirmed at 12x by the box-enclosing-an-X first character. That player has now been seen alternating between the two Japanese words across four days, so the rename is a habit, not a one-off.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Storm Spirit", "hero_level": 30, "kills": 15, "deaths": 6, "assists": 21, "net_worth": 39652, "last_hits": 663, "denies": 1, "gpm": 784},
+        {"name": "Downlander", "side": "radiant", "hero": "Drow Ranger", "hero_level": 29, "kills": 14, "deaths": 6, "assists": 18, "net_worth": 35783, "last_hits": 630, "denies": 13, "gpm": 756},
+        {"name": "¤GerM¤ [LIB0G]", "side": "radiant", "hero": "Disruptor", "hero_level": 27, "kills": 8, "deaths": 10, "assists": 30, "net_worth": 16128, "last_hits": 42, "denies": 5, "gpm": 317},
+        {"name": "UT", "side": "radiant", "hero": "Mars", "hero_level": 27, "kills": 6, "deaths": 11, "assists": 25, "net_worth": 24874, "last_hits": 251, "denies": 3, "gpm": 453},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Tusk", "hero_level": 26, "kills": 4, "deaths": 13, "assists": 19, "net_worth": 14446, "last_hits": 126, "denies": 1, "gpm": 350},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Outworld Destroyer", "hero_level": 28, "kills": 13, "deaths": 6, "assists": 18, "net_worth": 29544, "last_hits": 480, "denies": 10, "gpm": 596},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Sven", "hero_level": 30, "kills": 16, "deaths": 8, "assists": 14, "net_worth": 38489, "last_hits": 649, "denies": 11, "gpm": 750},
+        {"name": "Scarface [FUBU]", "side": "dire", "hero": "Snapfire", "hero_level": 26, "kills": 7, "deaths": 9, "assists": 21, "net_worth": 17214, "last_hits": 159, "denies": 6, "gpm": 382},
+        {"name": "SavaGe!", "side": "dire", "hero": "Rubick", "hero_level": 25, "kills": 3, "deaths": 11, "assists": 25, "net_worth": 16904, "last_hits": 120, "denies": 7, "gpm": 367},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Axe", "hero_level": 26, "kills": 7, "deaths": 14, "assists": 19, "net_worth": 23503, "last_hits": 312, "denies": 6, "gpm": 472}
+      ]
     }
   ]
 }

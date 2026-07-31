@@ -62,6 +62,7 @@ window.HERO_SLUG = {
 "Sniper": "sniper",
 "Spectre": "spectre",
 "Storm Spirit": "storm_spirit",
+"Sven": "sven",
 "Techies": "techies",
 "Templar Assassin": "templar_assassin",
 "Tidehunter": "tidehunter",
