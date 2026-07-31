@@ -749,6 +749,33 @@
         {"name": "Soooze [<MC>]", "side": "dire", "hero": "Axe", "hero_level": 26, "kills": 12, "deaths": 14, "assists": 17, "net_worth": 21183, "last_hits": 223, "denies": 9, "gpm": 502},
         {"name": "I'M Still Noob", "side": "dire", "hero": "Lion", "hero_level": 23, "kills": 0, "deaths": 12, "assists": 30, "net_worth": 13096, "last_hits": 38, "denies": 5, "gpm": 279}
       ]
+    },
+    {
+      "source_ref": "discord-1532843800387653812",
+      "dota_match_id": null,
+      "played_on": "2026-07-31",
+      "played_at": "2026-07-31 16:14",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 19,
+      "dire_score": 57,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by soooze and pulled by tools/discord_pull.py (message 1532843800387653812). The Dire carries the explicit WINNER badge; both headings generic so both team names NULL. No match id or duration. played_at is the Discord upload time, which is server-side and absolute; the file is a generic image.png with no client clock to cross-check. Checksums: radiant 18 kills <= score 19 <= dire deaths 19, one tower-credited kill; dire 56 kills <= score 57 <= radiant deaths 57, one tower-credited kill. Most lopsided game on record at 19-57. TWO HAZARDS IN THIS CAPTURE, BOTH CHECKED RATHER THAN ASSUMED. First, the image is not a full screenshot but an 1860x822 CROP, and the crop cut into the left edge -- the header renders 'ORE: 19', missing the S and C of SCORE. The player-name column is NOT affected, and that is measured rather than eyeballed: '____Tiger X____ [GB]' still shows exactly four leading underscores on a pitch-7 lattice, matching the canonical spelling, so nothing was shaved off the left of the names. Second, a TRANSLUCENT SECOND LAYER OF NAMES bleeds through the roster panel -- 'Dawood', 'frant1c__', 'SalmanAhmad1999', 'Suzaku', 'ut70', a ghost 'SpArtAAAAAAAA' over the Dire header -- apparently a lobby or friends list compositing behind the scoreboard. That is a direct trap for the one field with no checksum: a ghost fragment misread as a player name would silently mint a new person. The two layers separate cleanly by brightness at 5x (real names are crisp and bright, the ghost layer is dim and vertically offset by roughly half a row), and every name was read from the bright layer only. The all-dots player measures twelve width-3 runs on a rigid pitch-5 lattice before the pitch breaks to 9 at the '[' of the clan tag, i.e. twelve dots, matching the canonical spelling. No new names in this match; all ten are already on file.",
+      "players": [
+        {"name": "xxx", "side": "radiant", "hero": "Viper", "hero_level": 19, "kills": 7, "deaths": 14, "assists": 7, "net_worth": 10778, "last_hits": 129, "denies": 11, "gpm": 395},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 20, "kills": 1, "deaths": 5, "assists": 6, "net_worth": 18188, "last_hits": 385, "denies": 7, "gpm": 548},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "radiant", "hero": "Lich", "hero_level": 16, "kills": 4, "deaths": 13, "assists": 8, "net_worth": 7777, "last_hits": 31, "denies": 9, "gpm": 282},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Snapfire", "hero_level": 17, "kills": 4, "deaths": 10, "assists": 9, "net_worth": 8551, "last_hits": 100, "denies": 2, "gpm": 303},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Tidehunter", "hero_level": 15, "kills": 2, "deaths": 15, "assists": 7, "net_worth": 8736, "last_hits": 104, "denies": 4, "gpm": 293},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Sniper", "hero_level": 22, "kills": 15, "deaths": 6, "assists": 22, "net_worth": 25114, "last_hits": 323, "denies": 6, "gpm": 723},
+        {"name": "SavaGe!", "side": "dire", "hero": "Hoodwink", "hero_level": 21, "kills": 12, "deaths": 3, "assists": 27, "net_worth": 14294, "last_hits": 74, "denies": 5, "gpm": 437},
+        {"name": "Soooze [<MC>]", "side": "dire", "hero": "Spectre", "hero_level": 25, "kills": 18, "deaths": 2, "assists": 21, "net_worth": 24806, "last_hits": 278, "denies": 18, "gpm": 710},
+        {"name": "Lord_TheePa [UGI|]", "side": "dire", "hero": "Legion Commander", "hero_level": 20, "kills": 7, "deaths": 6, "assists": 26, "net_worth": 16150, "last_hits": 136, "denies": 15, "gpm": 470},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 20, "kills": 4, "deaths": 2, "assists": 35, "net_worth": 11125, "last_hits": 24, "denies": 3, "gpm": 331}
+      ]
     }
   ]
 }
