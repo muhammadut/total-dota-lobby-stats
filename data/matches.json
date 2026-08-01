@@ -915,6 +915,60 @@
         {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Hoodwink", "hero_level": 15, "kills": 7, "deaths": 3, "assists": 19, "net_worth": 8972, "last_hits": 29, "denies": 1, "gpm": 302},
         {"name": "Downlander", "side": "dire", "hero": "Spectre", "hero_level": 20, "kills": 14, "deaths": 0, "assists": 18, "net_worth": 21421, "last_hits": 287, "denies": 14, "gpm": 660}
       ]
+    },
+    {
+      "source_ref": "discord-1532936306051780809",
+      "dota_match_id": null,
+      "played_on": "2026-07-31",
+      "played_at": "2026-07-31 22:21",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 46,
+      "dire_score": 41,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by stoicheart_62488 and pulled by tools/discord_pull.py (message 1532936306051780809). THE RESULT LOOKS BACKWARDS AND IS NOT: the Dire won on 41 kills against the Radiant's 46. The game is won by destroying the Ancient, not on kills, and the WINNER badge sits on The Dire. Do not 'correct' this later. Same situation as message 1532513454810988699. Both headings generic so both team names NULL. No match id or duration. TIMEZONE CONFIRMED AGAIN: the filename says Dota_2_2026.08.01-07.21 while Discord received it at 2026-07-31 22:21 local, a gap of exactly 9 hours, which is the offset already on file between the user (UTC-4) and stoicheart (UTC+5). played_on follows the Discord clock, which is server-side and absolute; the capturing client had already rolled over to 1 August. Worth noting the client's chat channel reads 'To (New Delhi, DL)', which would imply UTC+5:30 and a 9.5-hour gap; the filename says otherwise, so the machine clock is UTC+5 regardless of where it sits. Checksums: radiant 46 kills = score 46 = dire deaths 46, exact; dire 40 kills <= score 41 <= radiant deaths 41, one tower-credited kill. Every K/D/A digit re-read at 4x, both scores at 7x, all ten names at 5x. The BOUNTY RUNES column is beginning at the right edge, so GPM sits clear of the frame; XPM, HEAL and beyond are off-screen and stay NULL. 'SpArtAAAAAAAA [WEPAK]' measured on the pitch-8 apex lattice as SpArt plus EIGHT A's with the capital A in third position -- the third capture in a row to produce a byte-identical lattice (S at 140, A at 155, t at 165, A's at 171 through 227), so that spelling is now well established. No new names.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Viper", "hero_level": 27, "kills": 13, "deaths": 6, "assists": 18, "net_worth": 24092, "last_hits": 409, "denies": 15, "gpm": 638},
+        {"name": "samundar khan", "side": "radiant", "hero": "Tidehunter", "hero_level": 25, "kills": 3, "deaths": 5, "assists": 29, "net_worth": 19301, "last_hits": 248, "denies": 3, "gpm": 461},
+        {"name": "¤GerM¤ [LIB0G]", "side": "radiant", "hero": "Nyx Assassin", "hero_level": 22, "kills": 4, "deaths": 14, "assists": 27, "net_worth": 12078, "last_hits": 47, "denies": 4, "gpm": 302},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Hoodwink", "hero_level": 25, "kills": 11, "deaths": 10, "assists": 21, "net_worth": 13549, "last_hits": 112, "denies": 1, "gpm": 395},
+        {"name": "Downlander", "side": "radiant", "hero": "Tiny", "hero_level": 28, "kills": 15, "deaths": 6, "assists": 9, "net_worth": 29878, "last_hits": 496, "denies": 11, "gpm": 703},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 28, "kills": 11, "deaths": 7, "assists": 15, "net_worth": 25465, "last_hits": 342, "denies": 5, "gpm": 582},
+        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 27, "kills": 5, "deaths": 11, "assists": 25, "net_worth": 23580, "last_hits": 381, "denies": 9, "gpm": 553},
+        {"name": "SavaGe!", "side": "dire", "hero": "Invoker", "hero_level": 27, "kills": 7, "deaths": 11, "assists": 24, "net_worth": 22058, "last_hits": 220, "denies": 0, "gpm": 540},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Grimstroke", "hero_level": 22, "kills": 4, "deaths": 9, "assists": 28, "net_worth": 11864, "last_hits": 17, "denies": 3, "gpm": 318},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Anti-Mage", "hero_level": 28, "kills": 13, "deaths": 8, "assists": 14, "net_worth": 31008, "last_hits": 549, "denies": 12, "gpm": 762}
+      ]
+    },
+    {
+      "source_ref": "discord-1533215464023654411",
+      "dota_match_id": null,
+      "played_on": "2026-08-01",
+      "played_at": "2026-08-01 16:50",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Hello Madafaka!",
+      "dire_team_name": null,
+      "radiant_score": 50,
+      "dire_score": 49,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by ut70 and pulled by tools/discord_pull.py (message 1533215464023654411). FIRST MATCH OF AUGUST, and the first 5120x2160 capture in some time. The Radiant heading reads 'Hello Madafaka!' and carries the WINNER badge -- the second appearance of that custom team name, after message 1532878840446193885 -- so it is recorded in radiant_team_name; the Dire heading is generic and stays NULL. Closest game on record at 50-49. No match id or duration. Checksums are exact on both sides: radiant 50 kills = score 50 = dire deaths 50, and dire 49 kills = score 49 = radiant deaths 49, with no tower or neutral gap anywhere, so all four columns cross-validate with nothing left over. Every K/D/A digit, all ten names and both scores re-read at zoom. THE EXTENDED COLUMNS ARE RECORDED, which the narrower captures cannot support: this one reaches BOUNTY RUNES, XPM, HEAL, OUTPOSTS, DAMAGE DEALT (hero and building) and DAMAGE RECEIVED (raw). They are safe because the rightmost ink in every player row ends at x=5087 of 5120, leaving 32 pixels of clear padding -- nothing is cut. The final column's group header is itself clipped at the frame, reading only 'DAMAG...', but the mapping is not a guess: the visible sub-columns run HERO and BUILDING under DAMAGE DEALT, then RAW, which is Dota's DAMAGE RECEIVED group, and 70 existing rows in this database already carry damage_received_raw at the same magnitude relative to hero damage. damage_reduced_pct is the off-screen partner column and stays NULL. Rogue Agent went 20/6/9 on Phantom Lancer for 47,394 net at 848 GPM and 1,170 XPM, the highest net worth and XPM on record. No new names.",
+      "players": [
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Queen of Pain", "hero_level": 28, "kills": 10, "deaths": 8, "assists": 16, "net_worth": 29392, "last_hits": 445, "denies": 9, "gpm": 572, "xpm": 840, "hero_damage": 42427, "building_damage": 2176, "healing": 0, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 85704},
+        {"name": "vAnzO", "side": "radiant", "hero": "Mirana", "hero_level": 28, "kills": 7, "deaths": 12, "assists": 28, "net_worth": 26398, "last_hits": 296, "denies": 7, "gpm": 478, "xpm": 835, "hero_damage": 26582, "building_damage": 1419, "healing": 125, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 62687},
+        {"name": "Rogue Agent [|T|z|]", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 30, "kills": 20, "deaths": 6, "assists": 9, "net_worth": 47394, "last_hits": 764, "denies": 5, "gpm": 848, "xpm": 1170, "hero_damage": 60965, "building_damage": 17550, "healing": 0, "bounty_runes": 2, "outposts": 2, "damage_received_raw": 87202},
+        {"name": "TigerX [GB]", "side": "radiant", "hero": "Disruptor", "hero_level": 27, "kills": 5, "deaths": 12, "assists": 28, "net_worth": 20984, "last_hits": 53, "denies": 9, "gpm": 376, "xpm": 688, "hero_damage": 18257, "building_damage": 609, "healing": 400, "bounty_runes": 1, "outposts": 1, "damage_received_raw": 53457},
+        {"name": "UT", "side": "radiant", "hero": "Chaos Knight", "hero_level": 26, "kills": 8, "deaths": 11, "assists": 18, "net_worth": 26412, "last_hits": 296, "denies": 4, "gpm": 462, "xpm": 662, "hero_damage": 30024, "building_damage": 8774, "healing": 0, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 102199},
+        {"name": "Downlander", "side": "dire", "hero": "Spectre", "hero_level": 30, "kills": 13, "deaths": 7, "assists": 23, "net_worth": 37805, "last_hits": 604, "denies": 19, "gpm": 730, "xpm": 1139, "hero_damage": 73064, "building_damage": 6635, "healing": 0, "bounty_runes": 4, "outposts": 0, "damage_received_raw": 90209},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Phoenix", "hero_level": 28, "kills": 15, "deaths": 13, "assists": 21, "net_worth": 26826, "last_hits": 376, "denies": 4, "gpm": 585, "xpm": 820, "hero_damage": 69959, "building_damage": 2141, "healing": 5426, "bounty_runes": 4, "outposts": 0, "damage_received_raw": 59289},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 26, "kills": 7, "deaths": 9, "assists": 23, "net_worth": 17272, "last_hits": 85, "denies": 0, "gpm": 374, "xpm": 651, "hero_damage": 16376, "building_damage": 4625, "healing": 0, "bounty_runes": 2, "outposts": 2, "damage_received_raw": 58271},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Lich", "hero_level": 25, "kills": 7, "deaths": 14, "assists": 24, "net_worth": 14844, "last_hits": 31, "denies": 19, "gpm": 319, "xpm": 550, "hero_damage": 29290, "building_damage": 64, "healing": 0, "bounty_runes": 4, "outposts": 1, "damage_received_raw": 44881},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Mars", "hero_level": 29, "kills": 7, "deaths": 7, "assists": 26, "net_worth": 31892, "last_hits": 565, "denies": 11, "gpm": 641, "xpm": 928, "hero_damage": 32417, "building_damage": 3997, "healing": 4912, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 97395}
+      ]
     }
   ]
 }
