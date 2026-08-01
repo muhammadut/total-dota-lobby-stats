@@ -76,10 +76,19 @@
 
      50% is the exact population mean here — every match has five
      winners and five losers — so a score above 50 is genuinely and
-     measurably above lobby average, not merely above the sample. */
-  function wilson(wins, n) {
+     measurably above lobby average, not merely above the sample.
+
+     z is how much certainty the score demands, and it is therefore the
+     dial for how heavily games played counts. At z=1.96 a 3-1 record
+     (30.1) just edges a 10-10 one (29.9) — statistically fair, but it
+     puts a four-game player sixth. Raising z widens the interval, which
+     costs a small sample far more than a large one, so volume rises:
+     at 2.576 that same 3-1 falls behind four longer records, and at 3.0
+     it drops nine places. Exposed as a control because "how much should
+     turning up count?" is a matter of taste, not of statistics. */
+  function wilson(wins, n, z) {
     if (!n) return 0;
-    var z = 1.96, p = wins / n, z2 = z * z;
+    var p = wins / n, z2 = z * z;
     var centre = p + z2 / (2 * n);
     var margin = z * Math.sqrt(p * (1 - p) / n + z2 / (4 * n * n));
     return Math.max(0, (centre - margin) / (1 + z2 / n)) * 100;
@@ -124,7 +133,6 @@
     var players = Object.keys(P).map(function (k) {
       var p = P[k];
       p.winPct = p.games ? (p.wins / p.games) * 100 : 0;
-      p.rating = wilson(p.wins, p.games);
       // Undefined, not zero: dividing by no deaths has no answer.
       p.kda    = p.deaths ? (p.kills + p.assists) / p.deaths : null;
       p.avgGpm = p.rateN ? Math.round(p.gpmSum / p.rateN) : null;
@@ -161,7 +169,11 @@
     qPlayers: "", minGames: 1,
     qHeroes: "", heroSort: "picks",
     qMatches: "", matchSort: "recent",
-    duoPick: [], duoSort: "delta", duoMin: 2, qDuos: ""
+    duoPick: [], duoSort: "delta", duoMin: 2, qDuos: "",
+    // 99%. Deliberately stricter than the textbook 95%: this is a
+    // participation league, and a four-game record should not sit
+    // alongside a twenty-game one.
+    evidence: 2.576
   };
   var cur = { matches: [], players: [], heroes: [] };
 
@@ -212,6 +224,17 @@
     var agg = aggregate(cur.matches);
     cur.players = agg.players;
     cur.heroes  = agg.heroes;
+    rescore();
+  }
+
+  // Rating depends on a setting the reader can change, so it is stamped
+  // onto each player rather than computed inside aggregate() — the sort
+  // comparator, the drawer and the Duos header all read p.rating, and
+  // they must never disagree about which setting produced it.
+  function rescore() {
+    cur.players.forEach(function (p) {
+      p.rating = wilson(p.wins, p.games, state.evidence);
+    });
   }
 
   /* ── Masthead ─────────────────────────────────────────────────── */
@@ -922,6 +945,11 @@
   segment("matchSort", "sort", "matchSort", drawMatches);
   segment("duoSort",   "sort", "duoSort",   drawDuos);
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
+  segment("evidence",  "z", "evidence", function () {
+    rescore();
+    drawStandings();
+    drawDuos();          // the Duos header prints the rating too
+  }, Number);
 
   var clr = $("#duoClear");
   if (clr) clr.addEventListener("click", function () {

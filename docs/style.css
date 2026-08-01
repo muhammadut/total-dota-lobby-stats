@@ -495,6 +495,13 @@ tr.is-lead .rank{ color:var(--ink); }
 }
 .chip.is-on .chip__n{ background:rgba(255,255,255,.18); color:rgba(255,255,255,.85); }
 
+/* A caption inside the pill group: without it "Less / More / Most" is
+   three words with no subject. */
+.seg-label{
+  font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-3); padding:0 .5rem 0 .55rem; align-self:center; white-space:nowrap;
+}
+
 .seg--solo{
   border-radius:var(--r-pill); padding:.45rem .9rem; cursor:pointer;
   font-size:.78rem; font-weight:600; color:var(--ink-2);
