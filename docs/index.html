@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9e4b4389">
+<link rel="stylesheet" href="style.css?v=337f81a5">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111316'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%23e8554a' stroke-width='2'/%3E%3Cpath d='M16 11l4.6 5-4.6 5-4.6-5z' fill='%2317915a'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -46,6 +46,7 @@
 <div class="tabbar">
   <nav class="tabs glass" role="tablist" aria-label="Sections">
     <button class="tab is-active" role="tab" aria-selected="true"  data-view="standings">Standings</button>
+    <button class="tab"           role="tab" aria-selected="false" data-view="duos">Duos</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="matches">Matches</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="heroes">Heroes</button>
   </nav>
@@ -57,7 +58,7 @@
     <div class="sec-head">
       <div>
         <h2>Standings</h2>
-        <p>Win and loss are derived from which side you were on — never stored twice. Tap a column to sort, a row for the full record.</p>
+        <p>Ranked by <b>Rating</b>, which weighs win rate against how much evidence there is for it — so no minimum-games filter is needed. Tap a column to sort, a row for the full record.</p>
       </div>
     </div>
 
@@ -81,7 +82,7 @@
             <tr>
               <th class="c-rank" scope="col">#</th>
               <th class="c-player" scope="col" data-sort="name">Player</th>
-              <th class="c-num" scope="col" data-sort="games" aria-sort="descending">GP</th>
+              <th class="c-num" scope="col" data-sort="games">GP</th>
               <th class="c-num" scope="col" data-sort="wins">W</th>
               <th class="c-num" scope="col" data-sort="losses">L</th>
               <th class="c-bar" scope="col" data-sort="winPct">Win rate</th>
@@ -89,13 +90,44 @@
               <th class="c-kda" scope="col">K / D / A</th>
               <th class="c-num" scope="col" data-sort="kda">KDA</th>
               <th class="c-num c-opt" scope="col" data-sort="avgGpm">GPM</th>
+              <th class="c-num c-rating" scope="col" data-sort="rating" aria-sort="descending" title="Win rate adjusted for how many games back it up">Rating</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
     </div>
-    <p class="note">KDA is (kills + assists) ÷ deaths. <b>∞</b> marks an undefined ratio — never died, or never lost. One- and two-game records are noise, not skill.</p>
+    <p class="note"><b>Rating</b> is the win rate this record actually supports — the lower bound of a 95% confidence interval. A 1–0 player scores 20.7, not 100, because one game is not evidence; a 18–8 season scores 50.0. More games at a good rate always beat fewer games at a perfect one, with no cutoff anywhere. <b>50 is exactly lobby average</b>, since every match produces five winners and five losers. KDA is (kills + assists) ÷ deaths; <b>∞</b> marks an undefined ratio — never died.</p>
+  </section>
+
+  <section id="view-duos" class="view">
+    <div class="sec-head">
+      <div>
+        <h2>Duos</h2>
+        <p>Who do you actually win with? Pick one player to see every teammate ranked by the difference they make — or pick several to test a squad.</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <label class="field">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input type="search" id="qDuos" placeholder="Find a player to add…" aria-label="Find a player">
+      </label>
+      <div class="segmented glass" id="duoSort" role="group" aria-label="Sort teammates">
+        <button class="seg is-on" data-sort="delta">Biggest swing</button>
+        <button class="seg" data-sort="games">Most played</button>
+        <button class="seg" data-sort="name">A–Z</button>
+      </div>
+      <div class="segmented glass" id="duoMin" role="group" aria-label="Minimum games together">
+        <button class="seg" data-min="1">1+</button>
+        <button class="seg is-on" data-min="2">2+</button>
+        <button class="seg" data-min="4">4+</button>
+      </div>
+      <button class="seg seg--solo glass" id="duoClear" type="button">Clear</button>
+    </div>
+
+    <div class="chips" id="duoPicker" role="group" aria-label="Select players"></div>
+    <div id="duoBody"></div>
   </section>
 
   <section id="view-matches" class="view">
@@ -123,7 +155,7 @@
     <div class="sec-head">
       <div>
         <h2>Heroes</h2>
-        <p>Every hero drafted and how it fared. Portraits from the Dota&nbsp;2 client.</p>
+        <p>Every hero drafted and how it fared. <b>Click any hero</b> to see who has played it, how often, and how it went for each of them.</p>
       </div>
     </div>
     <div class="toolbar">
@@ -165,8 +197,8 @@
   <div class="drawer__body" id="drawerBody"></div>
 </aside>
 
-<script src="heroes.js?v=9e4b4389"></script>
-<script src="data.js?v=9e4b4389"></script>
-<script src="app.js?v=9e4b4389"></script>
+<script src="heroes.js?v=337f81a5"></script>
+<script src="data.js?v=337f81a5"></script>
+<script src="app.js?v=337f81a5"></script>
 </body>
 </html>

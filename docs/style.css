@@ -312,6 +312,24 @@ tr.is-lead .rank{ color:var(--ink); }
 .pct{ font-weight:700; }
 @media (max-width:860px){ .c-opt{ display:none; } }
 
+/* A fourth tab (Duos) is one more than fits on a narrow phone, and the
+   pill row is centred, so the overflow gets clipped on BOTH sides —
+   "Standings" and "Heroes" would both lose letters. Let the bar scroll
+   instead, and stop centring once it no longer fits. */
+@media (max-width:560px){
+  .tabbar{
+    justify-content:flex-start; overflow-x:auto; scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .tabbar::-webkit-scrollbar{ display:none; }
+  .tabs{ flex:0 0 auto; margin:0 auto; }
+  .tab{ padding:.5rem .85rem; font-size:.8rem; white-space:nowrap; }
+  /* Same story for the toolbars, which now carry two pill groups plus
+     a Clear button on the Duos view. */
+  .toolbar{ flex-wrap:wrap; }
+  .duo-stat__big{ font-size:1.7rem; }
+}
+
 /* ── Match cards ────────────────────────────────────────────────── */
 .matches{ display:flex; flex-direction:column; gap:.8rem; }
 .match{
@@ -441,6 +459,88 @@ tr.is-lead .rank{ color:var(--ink); }
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
+/* ── Rating ─────────────────────────────────────────────────────
+   The headline number, so it gets the mono face and a little more
+   weight than the columns it summarises. 50 is exactly lobby average
+   (five winners and five losers per match), so crossing it is the one
+   thing worth a colour — a tinted pill, not another saturated hue. */
+.c-rating{ width:5.2rem; }
+.rating{
+  font-family:var(--mono); font-size:.84rem; font-weight:500;
+  color:var(--ink-2); padding:.16rem .45rem; border-radius:var(--r-sm);
+  background:var(--paper-2);
+}
+.rating.is-over{ color:var(--radiant); background:var(--radiant-bg); font-weight:600; }
+
+/* ── Duos ───────────────────────────────────────────────────────── */
+.chips{
+  display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:1.1rem;
+  max-height:8.6rem; overflow-y:auto; padding:.15rem;
+}
+.chip{
+  display:inline-flex; align-items:center; gap:.4rem;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-pill); padding:.3rem .5rem .3rem .7rem;
+  font:inherit; font-size:.78rem; font-weight:500; color:var(--ink-2);
+  cursor:pointer; box-shadow:var(--sh-1);
+  transition:color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.chip:hover{ color:var(--ink); transform:translateY(-1px); }
+.chip__n{
+  font-family:var(--mono); font-size:.66rem; color:var(--ink-4);
+  background:var(--paper); border-radius:var(--r-pill); padding:.05rem .38rem;
+}
+.chip.is-on{
+  background:var(--ink); border-color:var(--ink); color:#fff; box-shadow:var(--sh-2);
+}
+.chip.is-on .chip__n{ background:rgba(255,255,255,.18); color:rgba(255,255,255,.85); }
+
+.seg--solo{
+  border-radius:var(--r-pill); padding:.45rem .9rem; cursor:pointer;
+  font-size:.78rem; font-weight:600; color:var(--ink-2);
+}
+.seg--solo:hover{ color:var(--ink); }
+
+.duo-head{ display:flex; align-items:center; gap:.85rem; margin:.2rem 0 1.1rem; }
+.duo-head__face{
+  width:58px; height:33px; border-radius:6px; object-fit:cover; flex:0 0 auto;
+  background:var(--paper-2); box-shadow:0 0 0 1px var(--line);
+}
+.duo-head h3{
+  margin:0; font-size:clamp(1.05rem,3vw,1.3rem); font-weight:800; letter-spacing:-.025em;
+  word-break:break-word;
+}
+.duo-head p{ margin:.1rem 0 0; font-size:.8rem; color:var(--ink-3); }
+
+.duo-stats{
+  display:grid; gap:.7rem; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  margin-bottom:1.4rem;
+}
+.duo-stat{
+  background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-md);
+  box-shadow:var(--sh-1); padding:1rem 1.1rem;
+}
+.duo-stat__label{
+  margin:0; font-size:.64rem; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3);
+}
+.duo-stat__big{
+  margin:.3rem 0 .1rem; font-size:2rem; font-weight:800; letter-spacing:-.04em; line-height:1;
+}
+.duo-stat__big i{ font-style:normal; font-size:.95rem; font-weight:600; color:var(--ink-3); margin-left:.1rem; }
+.duo-stat__sub{ margin:0; font-size:.76rem; color:var(--ink-3); }
+.duo-stat__sub b{ color:var(--radiant); }
+.duo-stat__sub i{ font-style:normal; color:var(--dire); }
+.duo-stat__hint{ margin:.35rem 0 0; font-size:.68rem; color:var(--ink-4); }
+
+.duo-grid{ min-width:720px; }
+/* Two stacked bars: solid = with them, hollow = without. Reading the
+   pair is the whole point of the view, so they share one cell. */
+.duo-bars{ display:flex; flex-direction:column; gap:3px; }
+.duo-bar{ height:5px; border-radius:var(--r-pill); background:var(--paper-2); position:relative; overflow:hidden; }
+.duo-bar span{ position:absolute; inset:0 auto 0 0; background:var(--radiant); border-radius:var(--r-pill); }
+.duo-bar--ghost span{ background:var(--ink-4); }
+
 /* ── Drawer ─────────────────────────────────────────────────────── */
 .scrim{
   position:fixed; inset:0; z-index:40; background:rgba(22,23,26,.28);
@@ -503,6 +603,32 @@ tr.is-lead .rank{ color:var(--ink); }
 .d-hero{ font-weight:600; color:var(--ink); }
 .d-when{ font-size:.68rem; color:var(--ink-4); }
 .d-kda{ text-align:right; color:var(--ink-2); font-size:.78rem; }
+
+/* Hero drawer: the portrait carries the identity, so it runs full-bleed
+   to the drawer's padding and the name sits on top of it. */
+.d-hero-art{
+  position:relative; margin:-.4rem 0 1.3rem; border-radius:var(--r-md);
+  overflow:hidden; background:var(--paper-2); aspect-ratio:16/7;
+}
+.d-hero-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* The caption sits on whatever the portrait happens to be, which for a
+   hero like Spectre is near-black. The wash has to stay opaque enough
+   under BOTH lines — the small grey eyebrow is the one that fails first. */
+.d-hero-cap{
+  position:absolute; inset:auto 0 0 0; padding:1.6rem 1.1rem .85rem;
+  background:linear-gradient(to top,
+    rgba(255,255,255,.98) 0%, rgba(255,255,255,.95) 42%,
+    rgba(255,255,255,.78) 68%, rgba(255,255,255,0) 100%);
+}
+.d-hero-cap .d-eyebrow{ color:var(--ink-2); }
+.d-hero-cap .d-name{ font-size:clamp(1.15rem,4vw,1.5rem); }
+.d-row--hero{ grid-template-columns:auto 1fr 72px auto; }
+.d-mini{ height:5px; border-radius:var(--r-pill); background:var(--dire-bg); position:relative; overflow:hidden; }
+.d-mini span{ position:absolute; inset:0 auto 0 0; background:var(--radiant); border-radius:var(--r-pill); }
+
+/* Hero cards became buttons when they gained a click target — strip the
+   UA button styling without disturbing the card's own look. */
+.hcard{ display:block; width:100%; padding:0; text-align:left; font:inherit; color:inherit; cursor:pointer; border:1px solid var(--line-2); }
 
 /* ── Colophon ───────────────────────────────────────────────────── */
 .colophon{ max-width:var(--measure); margin:0 auto; padding:0 var(--gutter) 3.5rem; }
