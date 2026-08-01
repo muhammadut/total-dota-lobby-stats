@@ -44,7 +44,9 @@
     {"canonical": "SpArtAAAAAAAA [WEPAK]", "alias": "SpaRtAAAAAAAAAA [WEPAK]", "note": "auto-merged: 'spartaaaaaaaa' is a prefix of 'spartaaaaaaaaaa'"},
     {"canonical": "samundar khan", "alias": "xxx", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
     {"canonical": "Obno[X]iouS- 不快な [M.C]", "alias": "Obno[X]iouS- 凶悪な [M.C]", "note": "auto-merged: identical once case, punctuation and clan tag are stripped"},
-    {"canonical": "vAnzO", "alias": "SavaGe!", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
+    {"canonical": "vAnzO", "alias": "SavaGe!", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
+    {"canonical": "Stoic", "alias": "Sameed", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
+    {"canonical": "Obno[X]iouS- 不快な [M.C]", "alias": "Faraz [M.C]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
   ],
 
   "matches": [
