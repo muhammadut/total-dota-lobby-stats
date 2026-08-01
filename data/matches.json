@@ -969,6 +969,33 @@
         {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Lich", "hero_level": 25, "kills": 7, "deaths": 14, "assists": 24, "net_worth": 14844, "last_hits": 31, "denies": 19, "gpm": 319, "xpm": 550, "hero_damage": 29290, "building_damage": 64, "healing": 0, "bounty_runes": 4, "outposts": 1, "damage_received_raw": 44881},
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Mars", "hero_level": 29, "kills": 7, "deaths": 7, "assists": 26, "net_worth": 31892, "last_hits": 565, "denies": 11, "gpm": 641, "xpm": 928, "hero_damage": 32417, "building_damage": 3997, "healing": 4912, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 97395}
       ]
+    },
+    {
+      "source_ref": "discord-1533231783557070898",
+      "dota_match_id": null,
+      "played_on": "2026-08-01",
+      "played_at": "2026-08-01 17:55",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Kaya He Karna Hai?",
+      "dire_team_name": null,
+      "radiant_score": 43,
+      "dire_score": 33,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by ut70 and pulled by tools/discord_pull.py (message 1533231783557070898). A SECOND CUSTOM TEAM NAME, distinct from the first: the Radiant heading reads 'Kaya He Karna Hai?' and carries the WINNER badge, verified at 3x. That makes two different names on file now -- 'Hello Madafaka!' (messages 1532878840446193885 and 1533215464023654411) and this one -- so the lobby is renaming teams per game rather than keeping one. The Dire heading is generic and stays NULL. No match id or duration. Checksums: radiant 42 kills <= score 43 <= dire deaths 43, one tower-credited kill; dire 33 kills = score 33 = radiant deaths 33, exact. Every K/D/A digit, all ten names and both headings re-read at zoom. The extended columns are recorded: the rightmost ink in every player row ends at x=5083-5087 of 5120, leaving 32-36 pixels of clear padding, so nothing is cut. As before, the final group header is itself clipped to 'DAMAG...' at the frame, and as before the mapping comes from the column order -- HERO and BUILDING under DAMAGE DEALT, then RAW, which is Dota's DAMAGE RECEIVED group -- not from the label. damage_reduced_pct is the off-screen partner column and stays NULL. Seeker took Medusa to 42,879 net at 915 GPM and 1,313 XPM, the highest XPM on record, and did it going 10/2/14. No new names.",
+      "players": [
+        {"name": "UT", "side": "radiant", "hero": "Mars", "hero_level": 25, "kills": 8, "deaths": 6, "assists": 22, "net_worth": 21768, "last_hits": 227, "denies": 6, "gpm": 490, "xpm": 772, "hero_damage": 21953, "building_damage": 982, "healing": 0, "bounty_runes": 1, "outposts": 0, "damage_received_raw": 47115},
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Undying", "hero_level": 25, "kills": 7, "deaths": 9, "assists": 19, "net_worth": 13352, "last_hits": 57, "denies": 1, "gpm": 340, "xpm": 733, "hero_damage": 13356, "building_damage": 1057, "healing": 2008, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 55021},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Medusa", "hero_level": 30, "kills": 10, "deaths": 2, "assists": 14, "net_worth": 42879, "last_hits": 698, "denies": 15, "gpm": 915, "xpm": 1313, "hero_damage": 56619, "building_damage": 18459, "healing": 0, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 92504},
+        {"name": "samundar khan", "side": "radiant", "hero": "Lich", "hero_level": 22, "kills": 5, "deaths": 9, "assists": 27, "net_worth": 12925, "last_hits": 46, "denies": 20, "gpm": 355, "xpm": 541, "hero_damage": 16980, "building_damage": 0, "healing": 0, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 35038},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Lina", "hero_level": 27, "kills": 12, "deaths": 7, "assists": 12, "net_worth": 25947, "last_hits": 480, "denies": 8, "gpm": 705, "xpm": 955, "hero_damage": 32209, "building_damage": 6326, "healing": 0, "bounty_runes": 6, "outposts": 1, "damage_received_raw": 44990},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Legion Commander", "hero_level": 21, "kills": 8, "deaths": 12, "assists": 11, "net_worth": 15468, "last_hits": 229, "denies": 4, "gpm": 408, "xpm": 512, "hero_damage": 21836, "building_damage": 0, "healing": 720, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 60580},
+        {"name": "vAnzO", "side": "dire", "hero": "Rubick", "hero_level": 24, "kills": 8, "deaths": 9, "assists": 17, "net_worth": 17154, "last_hits": 188, "denies": 2, "gpm": 455, "xpm": 699, "hero_damage": 25150, "building_damage": 145, "healing": 0, "bounty_runes": 2, "outposts": 0, "damage_received_raw": 54447},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Void Spirit", "hero_level": 27, "kills": 9, "deaths": 5, "assists": 17, "net_worth": 27802, "last_hits": 437, "denies": 4, "gpm": 609, "xpm": 926, "hero_damage": 28164, "building_damage": 88, "healing": 0, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 83004},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Ancient Apparition", "hero_level": 20, "kills": 3, "deaths": 12, "assists": 13, "net_worth": 7898, "last_hits": 52, "denies": 0, "gpm": 241, "xpm": 452, "hero_damage": 8732, "building_damage": 0, "healing": 0, "bounty_runes": 2, "outposts": 0, "damage_received_raw": 31635},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 27, "kills": 5, "deaths": 5, "assists": 10, "net_worth": 31025, "last_hits": 647, "denies": 3, "gpm": 676, "xpm": 942, "hero_damage": 19459, "building_damage": 2553, "healing": 0, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 75902}
+      ]
     }
   ]
 }
