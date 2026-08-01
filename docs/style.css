@@ -545,6 +545,9 @@ tr.is-lead .rank{ color:var(--ink); }
   margin:.3rem 0 .1rem; font-size:2rem; font-weight:800; letter-spacing:-.04em; line-height:1;
 }
 .duo-stat__big i{ font-style:normal; font-size:.95rem; font-weight:600; color:var(--ink-3); margin-left:.1rem; }
+/* The head-to-head separator is a divider between two equal numbers, not
+   a unit suffix, so it needs air on both sides and a lighter weight. */
+.duo-stat__big i.vs{ font-size:1.35rem; font-weight:400; color:var(--ink-4); margin:0 .3rem; }
 .duo-stat__sub{ margin:0; font-size:.76rem; color:var(--ink-3); }
 .duo-stat__sub b{ color:var(--radiant); }
 .duo-stat__sub i{ font-style:normal; color:var(--dire); }

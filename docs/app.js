@@ -621,45 +621,41 @@
 
   // Combined view for a selected set: all on one team, or split apart.
   function squad(names) {
-    var together = rec(), split = rec(), perSolo = {};
-    names.forEach(function (n) { perSolo[n] = rec(); });
+    var together = rec(), split = rec(), perSolo = {}, perSplit = {};
+    names.forEach(function (n) { perSolo[n] = rec(); perSplit[n] = rec(); });
     cur.matches.forEach(function (m) {
       var sides = names.map(function (n) { return sideOf(m, n); });
       var present = sides.filter(Boolean);
       if (!present.length) return;
       var all = present.length === names.length;
       var same = all && present.every(function (s) { return s === present[0]; });
+      var opposed = present.length > 1 &&
+                    !present.every(function (s) { return s === present[0]; });
       if (same) {
         add(together, m.winning_side === present[0]);
-      } else if (present.length > 1 && !present.every(function (s) { return s === present[0]; })) {
+      } else if (opposed) {
         split.g++;   // they were on opposing sides; nobody "wins" as a group
+        // ...but the individuals certainly did, and for two people that is
+        // just the head-to-head record — the obvious question to ask.
+        names.forEach(function (n, i) {
+          if (sides[i]) add(perSplit[n], m.winning_side === sides[i]);
+        });
       }
       // Each member's record in games where the full squad was NOT together.
       names.forEach(function (n, i) {
         if (sides[i] && !same) add(perSolo[n], m.winning_side === sides[i]);
       });
     });
-    return { together: together, split: split, apart: perSolo };
+    return { together: together, split: split, apart: perSolo, versus: perSplit };
   }
 
-  // countOnly: for records that have no win rate at all. A game where the
-  // selection was split across both teams produced a winner AND a loser
-  // among them, so the group neither won nor lost it. Rendering that as
-  // "0%" beside "0W 0L" reads as "this squad always loses", which is the
-  // opposite of true — those games simply do not belong to the squad.
-  function statCard(label, r, hint, countOnly) {
+  function statCard(label, r, hint) {
     var p = pctOf(r);
-    var big = countOnly
-      ? r.g + '<i>' + (r.g === 1 ? " game" : " games") + "</i>"
-      : (p === null ? "—" : p.toFixed(0) + "<i>%</i>");
-    var sub = countOnly
-      ? "neither won nor lost by the group"
-      : r.g + (r.g === 1 ? " game · " : " games · ") +
-        "<b>" + r.w + "W</b> <i>" + r.l + "L</i>";
     return '<div class="duo-stat">' +
       '<p class="duo-stat__label">' + esc(label) + "</p>" +
-      '<p class="duo-stat__big">' + big + "</p>" +
-      '<p class="duo-stat__sub">' + sub + "</p>" +
+      '<p class="duo-stat__big">' + (p === null ? "—" : p.toFixed(0) + "<i>%</i>") + "</p>" +
+      '<p class="duo-stat__sub">' + r.g + (r.g === 1 ? " game · " : " games · ") +
+        "<b>" + r.w + "W</b> <i>" + r.l + "L</i></p>" +
       (hint ? '<p class="duo-stat__hint">' + esc(hint) + "</p>" : "") +
       "</div>";
   }
@@ -765,10 +761,37 @@
       var sq = squad(sel);
       h += '<div class="duo-head"><div><h3>' + esc(sel.join("  +  ")) + "</h3>" +
         "<p>" + sel.length + " players selected</p></div></div>";
+      /* The second card used to read "Split up — 9 games, neither won nor
+         lost by the group", which is true and completely unhelpful: a bare
+         count of games with no result attached. For two people those games
+         have an obvious meaning — it is the head-to-head — so show that
+         instead. For three or more there is no single scoreline, so name
+         each player's record and say plainly what the card is counting. */
+      var opp;
+      if (sel.length === 2) {
+        var va = sq.versus[sel[0]], vb = sq.versus[sel[1]];
+        opp = '<div class="duo-stat">' +
+          '<p class="duo-stat__label">Head to head</p>' +
+          '<p class="duo-stat__big">' + va.w + '<i class="vs">&ndash;</i>' + vb.w + "</p>" +
+          '<p class="duo-stat__sub">' + esc(sel[0]) + " won " + va.w +
+            " &middot; " + esc(sel[1]) + " won " + vb.w + "</p>" +
+          '<p class="duo-stat__hint">' + sq.split.g +
+            (sq.split.g === 1 ? " game" : " games") + " on opposite teams</p></div>";
+      } else {
+        opp = '<div class="duo-stat">' +
+          '<p class="duo-stat__label">Against each other</p>' +
+          '<p class="duo-stat__big">' + sq.split.g +
+            "<i>" + (sq.split.g === 1 ? " game" : " games") + "</i></p>" +
+          '<p class="duo-stat__sub">split across both teams, so there is ' +
+            "no shared result</p>" +
+          '<p class="duo-stat__hint">' + sel.map(function (n) {
+            return esc(n) + " " + sq.versus[n].w + "&ndash;" + sq.versus[n].l;
+          }).join(" &middot; ") + "</p></div>";
+      }
+
       h += '<div class="duo-stats">' +
         statCard("On the same team", sq.together, "all " + sel.length + " together") +
-        statCard("Split up", sq.split, "they were on opposing sides", true) +
-        "</div>";
+        opp + "</div>";
 
       h += '<p class="d-sub">Each of them, when the squad was not together</p>' +
         '<div class="card table-card"><div class="table-scroll">' +
