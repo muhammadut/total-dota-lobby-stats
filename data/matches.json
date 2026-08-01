@@ -884,6 +884,33 @@
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 15, "kills": 3, "deaths": 2, "assists": 17, "net_worth": 7515, "last_hits": 17, "denies": 0, "gpm": 266},
         {"name": "Soooze [<MC>]", "side": "dire", "hero": "Night Stalker", "hero_level": 17, "kills": 3, "deaths": 8, "assists": 11, "net_worth": 11520, "last_hits": 133, "denies": 13, "gpm": 357}
       ]
+    },
+    {
+      "source_ref": "discord-1532930433862598667",
+      "dota_match_id": null,
+      "played_on": "2026-07-31",
+      "played_at": "2026-07-31 21:58",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 14,
+      "dire_score": 46,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by trollmitsu and pulled by tools/discord_pull.py (message 1532930433862598667). The Dire carries the explicit WINNER badge; both headings generic so both team names NULL. No match id or duration. played_at is the Discord upload time. Checksums are exact on both sides: radiant 14 kills = score 14 = dire deaths 14, and dire 46 kills = score 46 = radiant deaths 46 -- no tower or neutral gap anywhere, so all four columns cross-validate with nothing left over. That is the second consecutive match tonight to land perfectly on all four columns. Every K/D/A digit re-read at 4x and both scores at 7x. The BOUNTY RUNES column is beginning at the right edge, so GPM sits clear of the frame and needs no clipping check; XPM and HEAL stay NULL. Downlander went 14/0/18 on Spectre, a fourteen-kill game without dying once. No new names. 'SpArtAAAAAAAA [WEPAK]' measured on the pitch-8 apex lattice as SpArt plus EIGHT A's with the capital A in third position -- byte-identical lattice to the 17:23 capture (S at 140, A at 155, t at 165, then A's at 171 through 227), i.e. the short spelling again rather than the SpaRt-plus-ten form seen at 19:57. CLIENT FINGERPRINT: gold counter reads 165,140, the same value as trollmitsu's 19:57 capture. Gold is stable within a session but drifts across days, which is why the CLAUDE.md gold-counter table no longer matches hurrali's current client.",
+      "players": [
+        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Queen of Pain", "hero_level": 19, "kills": 5, "deaths": 5, "assists": 5, "net_worth": 14274, "last_hits": 203, "denies": 4, "gpm": 481},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Necrophos", "hero_level": 17, "kills": 2, "deaths": 10, "assists": 5, "net_worth": 15382, "last_hits": 283, "denies": 2, "gpm": 504},
+        {"name": "SavaGe!", "side": "radiant", "hero": "Phoenix", "hero_level": 14, "kills": 4, "deaths": 13, "assists": 4, "net_worth": 7170, "last_hits": 45, "denies": 1, "gpm": 290},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 14, "kills": 0, "deaths": 11, "assists": 7, "net_worth": 5932, "last_hits": 20, "denies": 1, "gpm": 219},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Lifestealer", "hero_level": 17, "kills": 3, "deaths": 7, "assists": 3, "net_worth": 13265, "last_hits": 227, "denies": 19, "gpm": 437},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Jakiro", "hero_level": 16, "kills": 5, "deaths": 4, "assists": 20, "net_worth": 11246, "last_hits": 77, "denies": 3, "gpm": 385},
+        {"name": "UT", "side": "dire", "hero": "Doom", "hero_level": 18, "kills": 5, "deaths": 5, "assists": 18, "net_worth": 14650, "last_hits": 117, "denies": 3, "gpm": 463},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Lina", "hero_level": 24, "kills": 15, "deaths": 2, "assists": 9, "net_worth": 25668, "last_hits": 366, "denies": 6, "gpm": 824},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Hoodwink", "hero_level": 15, "kills": 7, "deaths": 3, "assists": 19, "net_worth": 8972, "last_hits": 29, "denies": 1, "gpm": 302},
+        {"name": "Downlander", "side": "dire", "hero": "Spectre", "hero_level": 20, "kills": 14, "deaths": 0, "assists": 18, "net_worth": 21421, "last_hits": 287, "denies": 14, "gpm": 660}
+      ]
     }
   ]
 }
