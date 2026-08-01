@@ -231,10 +231,31 @@
   // onto each player rather than computed inside aggregate() — the sort
   // comparator, the drawer and the Duos header all read p.rating, and
   // they must never disagree about which setting produced it.
+  /* The raw lower bound tops out around 44 in a season this size, which
+     reads like a broken percentage sitting next to a 69.2% win rate.
+     Doubling it puts the field on a 0-100 scale with a fixed, meaningful
+     ceiling: 100 is where the bound reaches 50%, i.e. where a record
+     PROVES its owner beats a coin flip at the chosen confidence.
+
+     The anchor is a constant, not a normalisation against the current
+     field, so a player's rating never moves because somebody else
+     played a game. Doubling is monotonic, so the order you approved is
+     untouched. Scores above 100 are possible and are not an error --
+     they mean the case is proven with room to spare -- but only on the
+     most lenient setting, where the current best is 101. */
+  var SCALE = 2;
   function rescore() {
     cur.players.forEach(function (p) {
-      p.rating = wilson(p.wins, p.games, state.evidence);
+      p.rating = wilson(p.wins, p.games, state.evidence) * SCALE;
     });
+  }
+  // Fixed bands, because the scale itself has fixed meaning: 70 is most
+  // of the way to proven, 55 is a clearly winning record with evidence
+  // behind it. Below that the number is not yet saying much, so it stays
+  // grey rather than being coloured red -- a 3-2 record is not a failure,
+  // it is an unfinished sentence.
+  function ratingTier(r) {
+    return r >= 70 ? " is-elite" : r >= 55 ? " is-strong" : "";
   }
 
   /* ── Masthead ─────────────────────────────────────────────────── */
@@ -367,7 +388,7 @@
         '<td class="c-kda">' + p.kills + " / " + p.deaths + " / " + p.assists + "</td>" +
         "<td>" + rat(p.kda) + "</td>" +
         '<td class="c-opt dim">' + num(p.avgGpm) + "</td>" +
-        '<td class="c-rating"><span class="rating' + (p.rating >= 50 ? " is-over" : "") + '">' +
+        '<td class="c-rating"><span class="rating' + ratingTier(p.rating) + '">' +
           p.rating.toFixed(1) + "</span></td>";
       tr.addEventListener("click", function () { openDrawer(p); });
       tr.addEventListener("keydown", function (e) {

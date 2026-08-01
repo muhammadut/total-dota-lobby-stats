@@ -464,13 +464,23 @@ tr.is-lead .rank{ color:var(--ink); }
    weight than the columns it summarises. 50 is exactly lobby average
    (five winners and five losers per match), so crossing it is the one
    thing worth a colour — a tinted pill, not another saturated hue. */
-.c-rating{ width:5.2rem; }
+.c-rating{ width:5.6rem; }
 .rating{
+  display:inline-block; min-width:3.5rem; text-align:center;
   font-family:var(--mono); font-size:.84rem; font-weight:500;
-  color:var(--ink-2); padding:.16rem .45rem; border-radius:var(--r-sm);
+  color:var(--ink-3); padding:.2rem .5rem; border-radius:var(--r-sm);
   background:var(--paper-2);
 }
-.rating.is-over{ color:var(--radiant); background:var(--radiant-bg); font-weight:600; }
+/* Two green steps, no red. Green already means "winning" everywhere else
+   in this interface, so it carries over without teaching a new colour;
+   the bottom of the table stays grey because a thin record is unproven,
+   not bad, and colouring it red would say the opposite. */
+.rating.is-strong{ color:var(--radiant); background:var(--radiant-bg); font-weight:600; }
+.rating.is-elite{
+  color:#fff; font-weight:700;
+  background:linear-gradient(180deg, #1fa768, var(--radiant));
+  box-shadow:0 1px 2px rgba(23,145,90,.28), 0 3px 8px -3px rgba(23,145,90,.45);
+}
 
 /* ── Duos ───────────────────────────────────────────────────────── */
 .chips{
