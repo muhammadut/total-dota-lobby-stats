@@ -1023,6 +1023,33 @@
         {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 17, "kills": 1, "deaths": 6, "assists": 23, "net_worth": 12005, "last_hits": 65, "denies": 1, "gpm": 321},
         {"name": "HURR [PK_]", "side": "dire", "hero": "Ursa", "hero_level": 29, "kills": 27, "deaths": 0, "assists": 8, "net_worth": 37384, "last_hits": 434, "denies": 20, "gpm": 880}
       ]
+    },
+    {
+      "source_ref": "discord-1533296439172792350",
+      "dota_match_id": null,
+      "played_on": "2026-08-01",
+      "played_at": "2026-08-01 22:12",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Hello Madafaka!",
+      "dire_team_name": null,
+      "radiant_score": 29,
+      "dire_score": 30,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by ut70 and pulled by tools/discord_pull.py (message 1533296439172792350). The Radiant heading reads 'Hello Madafaka!' but the WINNER badge is on The Dire, whose heading is generic; radiant_team_name is recorded and dire_team_name stays NULL. A ONE-POINT GAME, 30-29, tying the 50-49 of message 1533215464023654411 as the narrowest margin on record. No match id or duration. Checksums are exact on both sides: radiant 29 kills = score 29 = dire deaths 29, and dire 30 kills = score 30 = radiant deaths 30, with no tower or neutral gap anywhere, so all four columns cross-validate with nothing left over. Every K/D/A digit, all ten names and both headings re-read at zoom. The extended columns are recorded; rightmost ink ends at x=5086-5087 of 5120, leaving 32-33 pixels of clear padding, so nothing is cut. As with the other wide captures the trailing group header is clipped to 'DAMAG...' and the RAW column is identified by position -- HERO and BUILDING under DAMAGE DEALT, then RAW as Dota's DAMAGE RECEIVED -- not by reading the label. damage_reduced_pct is off-screen and stays NULL. 'SpArtAAAAAAAA [WEPAK]' wraps onto two lines here, and measured on this capture's own pitch-17 apex lattice it is SpArt plus EIGHT A's (S at 280, A at 312, t at 334, then A's at 347 through 466), the fourth consecutive capture to give eight. beetlebum [FUBU] makes only its second appearance, having been confirmed by the user as a different person from old rebel [FUBU]. No new names.",
+      "players": [
+        {"name": "UT", "side": "radiant", "hero": "Doom", "hero_level": 18, "kills": 2, "deaths": 5, "assists": 21, "net_worth": 11950, "last_hits": 110, "denies": 2, "gpm": 366, "xpm": 512, "hero_damage": 10065, "building_damage": 437, "healing": 0, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 41300},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Juggernaut", "hero_level": 22, "kills": 3, "deaths": 5, "assists": 4, "net_worth": 18860, "last_hits": 352, "denies": 14, "gpm": 544, "xpm": 733, "hero_damage": 12074, "building_damage": 56, "healing": 5687, "bounty_runes": 1, "outposts": 0, "damage_received_raw": 33888},
+        {"name": "TigerX [GB]", "side": "radiant", "hero": "Disruptor", "hero_level": 14, "kills": 4, "deaths": 9, "assists": 14, "net_worth": 7352, "last_hits": 25, "denies": 6, "gpm": 250, "xpm": 325, "hero_damage": 10529, "building_damage": 25, "healing": 0, "bounty_runes": 1, "outposts": 0, "damage_received_raw": 25475},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 24, "kills": 14, "deaths": 3, "assists": 7, "net_worth": 22633, "last_hits": 397, "denies": 22, "gpm": 684, "xpm": 916, "hero_damage": 23259, "building_damage": 1169, "healing": 179, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 27388},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Jakiro", "hero_level": 15, "kills": 6, "deaths": 8, "assists": 17, "net_worth": 8505, "last_hits": 39, "denies": 8, "gpm": 242, "xpm": 360, "hero_damage": 8337, "building_damage": 910, "healing": 194, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 23139},
+        {"name": "samundar khan", "side": "dire", "hero": "Axe", "hero_level": 19, "kills": 6, "deaths": 7, "assists": 11, "net_worth": 14416, "last_hits": 160, "denies": 2, "gpm": 437, "xpm": 560, "hero_damage": 15796, "building_damage": 427, "healing": 0, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 36070},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Hoodwink", "hero_level": 17, "kills": 1, "deaths": 6, "assists": 13, "net_worth": 8551, "last_hits": 17, "denies": 0, "gpm": 258, "xpm": 475, "hero_damage": 11141, "building_damage": 194, "healing": 255, "bounty_runes": 1, "outposts": 1, "damage_received_raw": 14914},
+        {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Lion", "hero_level": 16, "kills": 6, "deaths": 9, "assists": 7, "net_worth": 8853, "last_hits": 26, "denies": 6, "gpm": 300, "xpm": 385, "hero_damage": 8684, "building_damage": 0, "healing": 0, "bounty_runes": 0, "outposts": 0, "damage_received_raw": 17939},
+        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Medusa", "hero_level": 25, "kills": 11, "deaths": 3, "assists": 6, "net_worth": 29681, "last_hits": 497, "denies": 13, "gpm": 843, "xpm": 998, "hero_damage": 32511, "building_damage": 14812, "healing": 0, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 45792},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Ember Spirit", "hero_level": 24, "kills": 6, "deaths": 4, "assists": 8, "net_worth": 17267, "last_hits": 196, "denies": 1, "gpm": 500, "xpm": 864, "hero_damage": 21110, "building_damage": 710, "healing": 0, "bounty_runes": 6, "outposts": 0, "damage_received_raw": 33598}
+      ]
     }
   ]
 }
