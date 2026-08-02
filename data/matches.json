@@ -1050,6 +1050,33 @@
         {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Medusa", "hero_level": 25, "kills": 11, "deaths": 3, "assists": 6, "net_worth": 29681, "last_hits": 497, "denies": 13, "gpm": 843, "xpm": 998, "hero_damage": 32511, "building_damage": 14812, "healing": 0, "bounty_runes": 5, "outposts": 0, "damage_received_raw": 45792},
         {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Ember Spirit", "hero_level": 24, "kills": 6, "deaths": 4, "assists": 8, "net_worth": 17267, "last_hits": 196, "denies": 1, "gpm": 500, "xpm": 864, "hero_damage": 21110, "building_damage": 710, "healing": 0, "bounty_runes": 6, "outposts": 0, "damage_received_raw": 33598}
       ]
+    },
+    {
+      "source_ref": "discord-1533304755605213237",
+      "dota_match_id": null,
+      "played_on": "2026-08-01",
+      "played_at": "2026-08-01 22:45",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 53,
+      "dire_score": 25,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by stoicheart_62488 and pulled by tools/discord_pull.py (message 1533304755605213237). The Radiant carries the explicit WINNER badge; both headings generic so both team names NULL. No match id or duration. TIMEZONE: the filename says Dota_2_2026.08.02-07.45 while Discord received it at 2026-08-01 22:45 local, a gap of exactly 9 hours, matching the offset already on file between the user (UTC-4) and stoicheart (UTC+5). played_on follows the Discord clock, which is server-side and absolute; the capturing client had already rolled over to 2 August. Checksums are exact on both sides: radiant 53 kills = score 53 = dire deaths 53, and dire 25 kills = score 25 = radiant deaths 25, with no tower or neutral gap anywhere, so all four columns cross-validate with nothing left over. Every K/D/A digit re-read at 4x, both scores at 7x, all ten names at 5x. The BOUNTY RUNES column is beginning at the right edge, so GPM sits clear of the frame; XPM, HEAL and beyond stay NULL. FOUR OF THE TEN NAMES ARE ALIAS SPELLINGS RATHER THAN CANONICAL ONES -- 'sesto [M.C]' (HypermodeL), '____Tiger X____ [GB]' (TigerX), 'cpx22 [<MC>]' (Mandark) and 'vAnzOr' (vAnzO) -- and all four resolve through existing merges, so none creates a row. That is the highest count of alias spellings in a single match so far and is a reminder that the merge table is load-bearing, not cosmetic. '____Tiger X____' measured four leading and four trailing underscores on a pitch-7 lattice, matching the canonical spelling. No new names.",
+      "players": [
+        {"name": "Stoic", "side": "radiant", "hero": "Storm Spirit", "hero_level": 26, "kills": 15, "deaths": 1, "assists": 17, "net_worth": 26315, "last_hits": 366, "denies": 4, "gpm": 715},
+        {"name": "sesto [M.C]", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 25, "kills": 18, "deaths": 4, "assists": 12, "net_worth": 27947, "last_hits": 389, "denies": 13, "gpm": 749},
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Rubick", "hero_level": 24, "kills": 3, "deaths": 3, "assists": 33, "net_worth": 14126, "last_hits": 120, "denies": 1, "gpm": 438},
+        {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Disruptor", "hero_level": 19, "kills": 1, "deaths": 12, "assists": 32, "net_worth": 10396, "last_hits": 26, "denies": 1, "gpm": 324},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Underlord", "hero_level": 25, "kills": 16, "deaths": 5, "assists": 26, "net_worth": 22251, "last_hits": 184, "denies": 14, "gpm": 574},
+        {"name": "cpx22 [<MC>]", "side": "dire", "hero": "Lina", "hero_level": 21, "kills": 8, "deaths": 8, "assists": 8, "net_worth": 18091, "last_hits": 292, "denies": 9, "gpm": 513},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Vengeful Spirit", "hero_level": 19, "kills": 4, "deaths": 12, "assists": 8, "net_worth": 13226, "last_hits": 217, "denies": 12, "gpm": 385},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Faceless Void", "hero_level": 24, "kills": 8, "deaths": 9, "assists": 12, "net_worth": 20165, "last_hits": 349, "denies": 6, "gpm": 568},
+        {"name": "vAnzOr", "side": "dire", "hero": "Hoodwink", "hero_level": 15, "kills": 2, "deaths": 9, "assists": 14, "net_worth": 7938, "last_hits": 76, "denies": 0, "gpm": 271},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Lich", "hero_level": 15, "kills": 3, "deaths": 15, "assists": 10, "net_worth": 7355, "last_hits": 10, "denies": 7, "gpm": 245}
+      ]
     }
   ]
 }
