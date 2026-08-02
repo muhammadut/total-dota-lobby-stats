@@ -996,6 +996,33 @@
         {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Ancient Apparition", "hero_level": 20, "kills": 3, "deaths": 12, "assists": 13, "net_worth": 7898, "last_hits": 52, "denies": 0, "gpm": 241, "xpm": 452, "hero_damage": 8732, "building_damage": 0, "healing": 0, "bounty_runes": 2, "outposts": 0, "damage_received_raw": 31635},
         {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 27, "kills": 5, "deaths": 5, "assists": 10, "net_worth": 31025, "last_hits": 647, "denies": 3, "gpm": 676, "xpm": 942, "hero_damage": 19459, "building_damage": 2553, "healing": 0, "bounty_runes": 3, "outposts": 0, "damage_received_raw": 75902}
       ]
+    },
+    {
+      "source_ref": "discord-1533269462344794172",
+      "dota_match_id": null,
+      "played_on": "2026-08-01",
+      "played_at": "2026-08-01 20:25",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 19,
+      "dire_score": 48,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to Discord by hurrali_32751 and pulled by tools/discord_pull.py (message 1533269462344794172). The Dire carries the explicit WINNER badge; both headings generic so both team names NULL. No match id or duration. Checksums are exact on both sides: radiant 19 kills = score 19 = dire deaths 19, and dire 48 kills = score 48 = radiant deaths 48, with no tower or neutral gap anywhere, so all four columns cross-validate with nothing left over. HURR [PK_] WENT 27/0/8 ON URSA -- twenty-seven kills without dying once, on 37,384 net at 880 GPM. Both halves of that line are checksum-protected rather than merely re-read: the 27 is carried by the dire kill chain that sums exactly to the dire score of 48, and the 0 by the dire-deaths chain that sums exactly to the radiant score of 19, so neither digit can be wrong without breaking an equality. Both were also re-read at 4x, along with every other K/D/A, both scores at 7x and all ten names at 5x. It ties the 27-kill high set by Rogue Agent on 2026-07-31 (message 1532826395087077497) and is the first time anyone has reached double-digit kills with a clean sheet -- the previous best deathless games were 10/0/13 and 2/0/12. The BOUNTY RUNES column is beginning at the right edge, so GPM sits clear of the frame; XPM, HEAL and beyond stay NULL. Client gold reads 63,830 against 61,170 on this poster's 2026-07-31 capture, another datapoint that the gold counter drifts and cannot fingerprint a client across days. No new names.",
+      "players": [
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Rubick", "hero_level": 16, "kills": 3, "deaths": 13, "assists": 5, "net_worth": 8228, "last_hits": 40, "denies": 1, "gpm": 252},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 24, "kills": 7, "deaths": 7, "assists": 6, "net_worth": 23021, "last_hits": 464, "denies": 18, "gpm": 625},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Puck", "hero_level": 24, "kills": 4, "deaths": 7, "assists": 6, "net_worth": 17114, "last_hits": 347, "denies": 6, "gpm": 500},
+        {"name": "vAnzO", "side": "radiant", "hero": "Winter Wyvern", "hero_level": 16, "kills": 4, "deaths": 11, "assists": 8, "net_worth": 8182, "last_hits": 35, "denies": 0, "gpm": 244},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 17, "kills": 1, "deaths": 10, "assists": 10, "net_worth": 10932, "last_hits": 186, "denies": 3, "gpm": 318},
+        {"name": "samundar khan", "side": "dire", "hero": "Axe", "hero_level": 22, "kills": 6, "deaths": 7, "assists": 20, "net_worth": 19272, "last_hits": 183, "denies": 4, "gpm": 472},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Outworld Destroyer", "hero_level": 26, "kills": 12, "deaths": 1, "assists": 14, "net_worth": 24716, "last_hits": 293, "denies": 11, "gpm": 605},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Grimstroke", "hero_level": 20, "kills": 2, "deaths": 5, "assists": 27, "net_worth": 13547, "last_hits": 31, "denies": 1, "gpm": 349},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 17, "kills": 1, "deaths": 6, "assists": 23, "net_worth": 12005, "last_hits": 65, "denies": 1, "gpm": 321},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Ursa", "hero_level": 29, "kills": 27, "deaths": 0, "assists": 8, "net_worth": 37384, "last_hits": 434, "denies": 20, "gpm": 880}
+      ]
     }
   ]
 }
