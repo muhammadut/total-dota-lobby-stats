@@ -17,7 +17,7 @@ Musa's Aug 4-10 nightly schedule.
 import atexit
 import json
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,12 +29,20 @@ from find_slot import team_readiness
 
 
 # ── Back up real state at import time; restore on exit (even on error) ──
-_BACKUP_PATHS = [L.SCHEDULING, L.DISCORD_PLAYERS, L.PLAYERS_TZ, L.TEAMS_FILE]
-_BACKUP = {p: p.read_text(encoding="utf-8") for p in _BACKUP_PATHS if p.exists()}
+_BACKUP_PATHS = [L.SCHEDULING, L.DISCORD_PLAYERS, L.PLAYERS_TZ, L.TEAMS_FILE,
+                 L.AVAIL_PENDING]
+# None means "did not exist before the run" -- restore has to DELETE those,
+# not skip them, or a test run leaves a queue of fake pending entries behind
+# and !status starts reporting imaginary people waiting.
+_BACKUP = {p: (p.read_text(encoding="utf-8") if p.exists() else None)
+           for p in _BACKUP_PATHS}
 
 def _restore():
     for p, text in _BACKUP.items():
-        p.write_text(text, encoding="utf-8")
+        if text is None:
+            p.unlink(missing_ok=True)
+        else:
+            p.write_text(text, encoding="utf-8")
     print("  [restored real state]")
 
 atexit.register(_restore)
@@ -58,6 +66,7 @@ def reset_state():
     sched = L.load_scheduling()
     sched["availability"] = {}
     L.save_json(L.SCHEDULING, sched)
+    L.save_json(L.AVAIL_PENDING, {"pending": [], "resolved": []})
 
 
 def check(name, condition, actual=None):
@@ -493,6 +502,123 @@ r = L.do_register("Soooze gmt", "soooze", "222000000000000077",
                   L.load_discord_players(), False)
 check("register without --new still prompts for an unknown nick",
       "Registered" not in r, r)
+
+
+# ═════════════════════════════════════════════════════════════════════
+#  The rewrite queue — an unparseable !avail must be KEPT, not dropped
+#
+#  Two players (Khuni Billa, HURR) hit a parse error in the live channel
+#  and never re-posted, so their availability is missing from this week
+#  entirely. The parser getting better does not fix the ones already
+#  lost; keeping the message does.
+# ═════════════════════════════════════════════════════════════════════
+group("!avail rewrite queue")
+
+import avail_llm                                             # noqa: E402
+
+reset_state()
+L.do_register("KHUNI_BILLA PKT", "ugi_ali9839", UID_UGI,
+              L.load_discord_players(), False)
+
+r = L.do_avail("fri sat sun", "ugi_ali9839", UID_UGI,
+               L.load_discord_players(), msg_id="9001")
+check("queue — the parser's own complaint still leads the reply",
+      "Couldn't parse" in r, r)
+check("queue — the reply says the message was kept",
+      "#1" in r and "kept" in r.lower(), r)
+check("queue — invites plain English",
+      "plain English" in r, r)
+
+pend = L.load_pending()["pending"]
+check("queue — one entry recorded", len(pend) == 1, pend)
+check("queue — keeps the raw text verbatim",
+      pend and pend[0]["raw"] == "fri sat sun", pend)
+check("queue — remembers who it was",
+      pend and pend[0]["player"] == "Khuni Billa [UGI|]", pend)
+check("queue — keeps the discord message id for the link",
+      pend and pend[0]["message_id"] == "9001", pend)
+
+# Re-typing the identical line is what people do when nothing answers.
+L.do_avail("fri sat sun", "ugi_ali9839", UID_UGI,
+           L.load_discord_players(), msg_id="9002")
+check("queue — retyping the same line does not stack a second entry",
+      len(L.load_pending()["pending"]) == 1, L.load_pending()["pending"])
+
+L.do_avail("sometime next week maybe", "ugi_ali9839", UID_UGI,
+           L.load_discord_players(), msg_id="9003")
+check("queue — a genuinely different message does get its own entry",
+      len(L.load_pending()["pending"]) == 2, L.load_pending()["pending"])
+
+r = L.do_status()
+check("status — an undrained queue is visible in the channel",
+      "Waiting on a closer read" in r and "**2**" in r, r)
+
+# A message that parses must never end up in the queue.
+reset_state()
+L.do_register("KHUNI_BILLA PKT", "ugi_ali9839", UID_UGI,
+              L.load_discord_players(), False)
+_tomorrow = date.today() + timedelta(days=1)
+_good = f"{_tomorrow.strftime('%b').lower()} {_tomorrow.day} 9pm to 11pm"
+r = L.do_avail(_good, "ugi_ali9839", UID_UGI, L.load_discord_players())
+check("queue — a parseable message is accepted, not queued",
+      "Got it" in r and not L.load_pending()["pending"], r)
+
+
+# ═════════════════════════════════════════════════════════════════════
+#  vet() — what the model is allowed to hand back
+#
+#  The model rewrites free text into the canonical grammar and nothing
+#  else, so every rewrite has to survive the SAME parser a player's
+#  typing would have. These are the cases where a plausible-looking
+#  rewrite must still be refused.
+# ═════════════════════════════════════════════════════════════════════
+group("avail_llm.vet — rewrites that must be refused")
+
+_today = date.today()
+_ws, _we = _today, _today + timedelta(days=8)
+
+for label, canonical, want_ok in [
+    ("a normal rewrite is accepted",
+     f"{_tomorrow.strftime('%b').lower()} {_tomorrow.day} 9pm to 6am", True),
+    ("empty rewrite", "", False),
+    ("None rewrite", None, False),
+    ("prose instead of the grammar", "he is free most evenings", False),
+    ("a time with no date", "9pm to 6am", False),
+    ("a date outside the league week",
+     f"{(_today + timedelta(days=30)).strftime('%b').lower()} "
+     f"{(_today + timedelta(days=30)).day} 9pm to 11pm", False),
+    ("a date in the past",
+     f"{(_today - timedelta(days=3)).strftime('%b').lower()} "
+     f"{(_today - timedelta(days=3)).day} 9pm to 11pm", False),
+]:
+    windows, why = avail_llm.vet(canonical, _ws, _we, _today)
+    check(f"vet — {label}", (windows is not None) == want_ok, why or windows)
+
+# The week bounds never start before today: a rewrite must not be able to
+# fill in days that have already gone.
+_ws2, _we2 = avail_llm.week_bounds({"week_of": "2020-01-01"}, _today)
+check("vet — week_bounds clamps a stale week_of forward to today",
+      _ws2 == _today, _ws2)
+
+
+# ═════════════════════════════════════════════════════════════════════
+#  Preview rendering — a window crossing midnight UTC must not read
+#  backwards. vAnzO's entire week rendered as "23:00–22:00".
+# ═════════════════════════════════════════════════════════════════════
+group("!avail preview — windows that cross midnight UTC")
+
+reset_state()
+L.do_register("Soma GMT", "soma3031", "222000000000000088",
+              L.load_discord_players(), False)
+r = L.do_avail(f"{_tomorrow.strftime('%b').lower()} {_tomorrow.day} 12am to 11pm",
+               "soma3031", "222000000000000088", L.load_discord_players())
+check("preview — the end stamp carries its own date when it lands on the "
+      "next UTC day",
+      "Got it" in r and r.count("Aug") + r.count("Sep") >= 2, r)
+check("preview — no longer renders as an end before its start",
+      "23:00–22:00 UTC" not in r, r)
+
+reset_state()
 
 
 print(f"\n{'═' * 60}")

@@ -38,6 +38,11 @@ Understood in the channel (case-insensitive):
     !avail R42 Sat 20-23                 as above, for a specific round.
     !avail clear                         wipe your own availability in the
                                          (single) open round.
+
+Anything !avail cannot parse is KEPT in data/avail_pending.json rather
+than thrown back at the player -- see tools/avail_llm.py, which reads
+the queue with a model and writes the result back through this file's
+own do_avail(). No model runs in here.
     !find                                approver: rank top 3 slots for
                                          the first open round.
     !find R42                            approver: same, specific round.
@@ -70,6 +75,7 @@ SCHEDULING = ROOT / "data" / "scheduling.json"
 PLAYERS_TZ = ROOT / "data" / "players_tz.json"
 DISCORD_PLAYERS = ROOT / "data" / "discord_players.json"
 TEAMS_FILE = ROOT / "data" / "teams.json"
+AVAIL_PENDING = ROOT / "data" / "avail_pending.json"
 
 MARK = ROOT / "data" / "discord_league_watermark.txt"
 
@@ -139,6 +145,59 @@ def load_teams() -> dict:
     return load_json(TEAMS_FILE, default={"teams": []})
 
 
+# ── The rewrite queue ─────────────────────────────────────────────────
+#
+# When the regex parser cannot read an !avail message, throwing an error
+# at the player and forgetting the message is the worst of both worlds:
+# they are told they are wrong, and the thing they typed is gone. Every
+# rejection in this channel so far has been a missing feature, not user
+# error -- `fri sat sun`, `Fri Sat 20-23`, `aug7 ... or ...`. Two of those
+# players never re-posted, so their availability is simply absent from
+# this week's numbers.
+#
+# So a failure is kept, not dropped. tools/avail_llm.py drains this queue
+# with a model, which is allowed to rewrite the free text into the
+# canonical grammar and NOTHING ELSE -- the string it produces still has
+# to survive _parse_avail() and every guard in do_avail(). The model never
+# produces windows, so it cannot invent a time that the deterministic
+# parser would have rejected.
+
+def load_pending() -> dict:
+    return load_json(AVAIL_PENDING, default={
+        "_comment": [
+            "!avail messages the regex parser could not read.",
+            "Drained by tools/avail_llm.py; see that file for the contract.",
+        ],
+        "pending": [], "resolved": []})
+
+
+def enqueue_pending(raw: str, uname: str, uid: str, player: str | None,
+                    err: str, msg_id: str | None) -> int:
+    """
+    Record an unparseable !avail. Returns the queue position shown to the
+    user. Re-posting the same text does not stack up a second entry --
+    people retype the identical line when they get no answer, and three
+    copies of one request would read as three people waiting.
+    """
+    q = load_pending()
+    now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    for e in q["pending"]:
+        if e.get("discord_uid") == str(uid) and e.get("raw", "").strip() == raw.strip():
+            e["at"] = now
+            e["message_id"] = msg_id or e.get("message_id")
+            save_json(AVAIL_PENDING, q)
+            return e["id"]
+    nid = 1 + max([e.get("id", 0) for e in q["pending"] + q["resolved"]] or [0])
+    q["pending"].append({
+        "id": nid, "at": now,
+        "discord_uid": str(uid), "discord_name": uname,
+        "player": player, "raw": raw.strip(),
+        "parser_error": err, "message_id": msg_id,
+    })
+    save_json(AVAIL_PENDING, q)
+    return nid
+
+
 # ── Author -> player resolution ───────────────────────────────────────
 
 def player_for_author(uid: str, uname: str, dp: dict) -> str | None:
@@ -171,6 +230,9 @@ HELP = (
     "  Also OK: `Sat 8pm-10pm` · `Mon Wed Fri 8pm-11pm` · `Aug 5 20:00-22:00`\n"
     "  · `10PM to 2AM` (past midnight is fine) · `Aug 7 6pm-10pm or 12am-6am`\n"
     "`!avail clear` — remove your availability this week\n"
+    "  If none of that fits, **just write it in plain English** — "
+    "`!avail every night after 9 my time`. I'll keep it and come back to "
+    "you with exactly what I understood.\n"
     "\n**Anyone:**\n"
     "`!who` — who has registered, and in which timezone\n"
     "`!readiness` — per-team % ready this week + who's missing\n"
@@ -220,6 +282,14 @@ def do_status() -> str:
     parts.append(f"Registered with a timezone: **{setup_n}/{roster_n}**"
                  + ("  (`!who` for the list)" if setup_n < roster_n else ""))
     parts.append(f"Players who have posted availability this week: **{len(avail)}**")
+
+    # An undrained rewrite queue is a person whose availability is missing
+    # and who thinks they already posted it. That has to be visible from
+    # inside the channel, not only to whoever runs the tools.
+    waiting = load_pending().get("pending", [])
+    if waiting:
+        parts.append(f"⏳ Waiting on a closer read: **{len(waiting)}** "
+                     f"({', '.join(sorted({e.get('player') or e.get('discord_name','?') for e in waiting}))})")
 
     r = find_slot.team_readiness(avail, teams)
     ready_pct = ", ".join(
@@ -964,7 +1034,8 @@ def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | N
     return round_id, windows, None
 
 
-def do_avail(args: str, uname: str, uid: str, dp: dict) -> str:
+def do_avail(args: str, uname: str, uid: str, dp: dict,
+             msg_id: str | None = None) -> str:
     """
     !avail <windows>  OR  !avail clear
     New model: writes to sched.availability[player], one entry per player
@@ -974,10 +1045,9 @@ def do_avail(args: str, uname: str, uid: str, dp: dict) -> str:
         return _do_avail_clear(uname, uid, dp)
 
     _, windows, err = _parse_avail(args)   # first return (round_id) is ignored now
-    if err:
-        return err
-    if not windows:
-        return "No windows found. Try `!avail Aug 3 8PM to 10PM`."
+    if err or not windows:
+        return _queue_for_rewrite(args, uname, uid, dp,
+                                  err or "No usable windows found.", msg_id)
 
     player = player_for_author(uid, uname, dp)
     if not player:
@@ -1027,9 +1097,13 @@ def do_avail(args: str, uname: str, uid: str, dp: dict) -> str:
                 e_utc = tz_map.to_utc(tz, w["day"], w["end_local"],   week_of)
                 label = w["day"]
             tz_short = tz.split("/")[-1].replace("_", " ")
+            # Print the end's date too when the window crosses midnight UTC,
+            # otherwise a perfectly good window renders as "23:00–22:00" and
+            # reads as backwards. vAnzO's whole week looked broken this way.
+            e_fmt = (e_utc.strftime('%H:%M') if e_utc.date() == s_utc.date()
+                     else e_utc.strftime('%a %d %b %H:%M'))
             preview.append(f"  {label} {w['start_local']}–{w['end_local']} {tz_short}"
-                           f"  →  {s_utc.strftime('%a %d %b %H:%M')}"
-                           f"–{e_utc.strftime('%H:%M')} UTC")
+                           f"  →  {s_utc.strftime('%a %d %b %H:%M')}–{e_fmt} UTC")
         except Exception as e:
             preview.append(f"  (couldn't render: {e})")
 
@@ -1040,6 +1114,29 @@ def do_avail(args: str, uname: str, uid: str, dp: dict) -> str:
     tail = _readiness_tail(on_team, readiness, sched, teams, ptz, dp)
 
     return f"Got it, **{player}**:\n```\n{body}\n```\n{tail}"
+
+
+def _queue_for_rewrite(args: str, uname: str, uid: str, dp: dict,
+                       err: str, msg_id: str | None) -> str:
+    """
+    The parser said no. Keep the message, tell the truth about what
+    happens next, and invite plain English rather than a third attempt at
+    guessing the grammar.
+
+    Deliberately still leads with the parser's specific complaint: for
+    someone who made a small typo, that one line is the whole fix and a
+    queue would just be slower.
+    """
+    player = player_for_author(uid, uname, dp)
+    n = enqueue_pending(args, uname, uid, player, err, msg_id)
+    return (
+        f"{err}\n"
+        f"I've kept what you wrote (queued as **#{n}**) — nothing is lost, "
+        f"and you don't have to fight the format.\n"
+        f"**Just say it in plain English** and I'll read it properly, e.g.\n"
+        f"```\n!avail every night after 9 my time, and all day Sunday\n```\n"
+        f"I'll reply here with exactly what I understood before it counts."
+    )
 
 
 def _do_avail_clear(uname, uid, dp) -> str:
@@ -1455,7 +1552,7 @@ def _handle(msgs, token, channel, allow, args) -> int:
                 reply = ("Only approvers can confirm a slot." if not privileged
                          else do_confirm(tail, uname))
             elif cmd == "avail":
-                reply = do_avail(tail, uname, uid, dp)
+                reply = do_avail(tail, uname, uid, dp, msg_id=m["id"])
             elif cmd == "find":
                 reply = ("Only approvers can run the finder." if not privileged
                          else do_find(tail))

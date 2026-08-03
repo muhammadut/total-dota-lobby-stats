@@ -28,7 +28,8 @@ python tools/crop.py shot.png --rows --tab scoreboard
 python load.py && python export_web.py
 
 python tools/discord_league.py --watch  # league bot, live (see "The league")
-python tools/test_league_commands.py    # 111 cases; run after any league change
+python tools/avail_llm.py [--apply]     # read the !avail the regex couldn't
+python tools/test_league_commands.py    # 132 cases; run after any league change
 ```
 
 **Reconcile AFTER the ingest, never before.** A screenshot is "failed"
@@ -187,10 +188,12 @@ data/teams.json        rosters; canonical name + aka + backup stand-in
 data/scheduling.json   week_of, availability, upcoming, archive
 data/players_tz.json   canonical name -> IANA zone
 data/discord_players.json   discord uid -> canonical name
+data/avail_pending.json     !avail messages the regex could not read
 tools/discord_league.py     the bot (plain Python, NO LLM at runtime)
+tools/avail_llm.py          drains that queue, with a model
 tools/find_slot.py          DST-safe slot ranking
 tools/tz_map.py             zone aliases
-tools/test_league_commands.py   111 cases, run it after any change
+tools/test_league_commands.py   132 cases, run it after any change
 ```
 
 **The bot is a poller, not a daemon.** `python tools/discord_league.py`
@@ -227,6 +230,35 @@ shipped a stale build once.
   (`GMT+1`, a fixed offset that is wrong all winter).
 - **Read the channel before theorising.** Every real bug this week was
   found in the message log, not the code.
+
+### A rejected `!avail` is kept, not dropped (added 2026-08-03)
+
+Widening the regex only helps the *next* person. `fri sat sun` (Khuni
+Billa) and `aug7 ... or ...` (HURR) were both refused, neither re-posted,
+and both are missing from this week's numbers — the fix shipped after the
+data was already lost. So a parse failure now writes the message to
+`data/avail_pending.json` and says so, and `!status` shows the backlog so
+an undrained queue is loud rather than silent.
+
+`tools/avail_llm.py` drains it with a model. **The model rewrites free
+text into the canonical grammar and nothing else** — the string it
+returns is fed through the same `_parse_avail()` and written through the
+same `do_avail()`, so it cannot express a window the deterministic parser
+would have refused, and every existing guard (roster, declared timezone,
+no past dates) still runs. On top of that a rewrite is refused if it
+doesn't parse, lands outside the league week, or comes back
+`confidence: low` (override with `--include-low`). Everything applied is
+echoed into the channel quoting the player's original words, so the
+person who typed it is the last check.
+
+Calibration as observed: it declined `fri sat sun` (no times stated) and
+`cant play this week sorry` (a decline, not a window), and marked every
+inferred end time `low`. Do not "fix" that caution — inventing a window
+nobody stated is exactly the silent-wrong-number failure.
+
+**Nothing LLM runs inside the 3s poll loop.** The bot's only job on a
+failure is to keep the message; reading it happens when someone runs the
+tool.
 
 ### `automerge.py` picks the established name as canonical
 
