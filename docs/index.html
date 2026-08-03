@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=0ec41fa0">
+<link rel="stylesheet" href="style.css?v=27767db5">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111316'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%23e8554a' stroke-width='2'/%3E%3Cpath d='M16 11l4.6 5-4.6 5-4.6-5z' fill='%2317915a'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -46,6 +46,8 @@
 <div class="tabbar">
   <nav class="tabs glass" role="tablist" aria-label="Sections">
     <button class="tab is-active" role="tab" aria-selected="true"  data-view="standings">Standings</button>
+    <button class="tab"           role="tab" aria-selected="false" data-view="teams">Teams</button>
+    <button class="tab"           role="tab" aria-selected="false" data-view="coord">Coord</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="duos">Duos</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="matches">Matches</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="heroes">Heroes</button>
@@ -104,6 +106,56 @@
       </div>
     </div>
     <p class="note"><b>Rating</b> measures how far a record goes towards <em>proving</em> its owner is better than a coin flip — which is the only thing that means anything when every match makes exactly five winners and five losers. <b>100 is that proof</b>; a 1–0 player scores about 26, because one game proves nothing however it went. Green marks the records that are most of the way there. <b>Games count</b> sets how much proof is demanded, and so how much simply turning up is worth — a 3–1 record ranks 6th on <b>Less</b>, 7th on <b>More</b>, 9th on <b>Most</b>, while a 26-game 18–8 season takes 1st on either of the stricter two.</p>
+  </section>
+
+  <section id="view-teams" class="view">
+    <div class="sec-head">
+      <div>
+        <h2>Teams</h2>
+        <p>Four teams playing continuously through <b>Dec 31, 2026</b> for a <b>$500 prize</b>. Standings rank by the same <b>Rating</b> that drives the individual board — a lower-bound on team win rate, so more games at a good rate always beats fewer at a great one. Teams below <b>80% of the league median pace</b> at the season's end are ineligible for the prize.</p>
+      </div>
+    </div>
+
+    <div class="league-hud" id="leagueHud"></div>
+
+    <div class="card table-card">
+      <div class="table-scroll">
+        <table class="grid" id="teamStandings">
+          <thead>
+            <tr>
+              <th class="c-rank" scope="col">#</th>
+              <th class="c-player" scope="col">Team</th>
+              <th class="c-num" scope="col">GP</th>
+              <th class="c-num" scope="col">W</th>
+              <th class="c-num" scope="col">L</th>
+              <th class="c-bar" scope="col">Win rate</th>
+              <th class="c-num" scope="col">%</th>
+              <th class="c-num" scope="col" title="Games per opponent slot (matches ÷ 3)">Pace</th>
+              <th class="c-num" scope="col" title="Status vs. 80% of league median pace">Status</th>
+              <th class="c-num c-rating" scope="col" title="Wilson score lower bound of team win rate">Rating</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="teams-grid" id="teamsGrid" aria-label="Team rosters"></div>
+
+    <p class="note"><b>Team assignment is inferred</b> from the roster majority on each side of every match — if 3 or more players on one side belong to a team, that side is counted as that team's. Matches predating the league (July 2026) still show under Standings but do not affect team records until they're explicitly tagged during ingest.</p>
+  </section>
+
+  <section id="view-coord" class="view">
+    <div class="sec-head">
+      <div>
+        <h2>Coord</h2>
+        <p>Match scheduling across four timezones. Confirmed matches show up in <b>Next Match</b>; anything a captain is currently trying to schedule shows up in <b>Open rounds</b> with the top three UTC slots the finder found. All availability is posted in <b>#dota-league-2026</b> on Discord — this tab is read-only.</p>
+      </div>
+    </div>
+
+    <div id="coordBody"></div>
+
+    <p class="note">Slot ranking prefers windows where both teams have <b>3 or more players</b> available (a game is playable with one stand-in). Times are computed with full DST awareness for each player's declared timezone. If a slot straddles a DST transition, the local wall-clock reflects the rule in effect on that date.</p>
   </section>
 
   <section id="view-duos" class="view">
@@ -203,8 +255,8 @@
   <div class="drawer__body" id="drawerBody"></div>
 </aside>
 
-<script src="heroes.js?v=0ec41fa0"></script>
-<script src="data.js?v=0ec41fa0"></script>
-<script src="app.js?v=0ec41fa0"></script>
+<script src="heroes.js?v=27767db5"></script>
+<script src="data.js?v=27767db5"></script>
+<script src="app.js?v=27767db5"></script>
 </body>
 </html>

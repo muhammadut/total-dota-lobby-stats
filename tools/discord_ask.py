@@ -66,10 +66,13 @@ def approvers():
 
 
 def post(token, channel, text):
+    # allow_mentions.parse=["users"] lets <@id> in bot messages actually
+    # notify the user (required for the league readiness pings). Roles and
+    # @everyone are still blocked -- the bot must never mass-ping.
     req = urllib.request.Request(
         f"{API}/channels/{channel}/messages",
         data=json.dumps({"content": text,
-                         "allowed_mentions": {"parse": []}}).encode("utf-8"),
+                         "allowed_mentions": {"parse": ["users"]}}).encode("utf-8"),
         headers={"Authorization": "Bot " + token,
                  "Content-Type": "application/json",
                  "User-Agent": "DotaLobbyStats/1.0"},

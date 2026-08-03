@@ -688,3 +688,321 @@ tr.is-lead .rank{ color:var(--ink); }
   padding:2.6rem 1rem; margin:0;
 }
 td.none{ padding:2.2rem 1rem; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TEAMS VIEW
+   Four fixed rosters + team standings + league HUD.
+   Colour discipline: team chips carry the identity, but the surfaces
+   stay paper/white. Only the tier dot uses saturated hue (Radiant
+   green for on-pace, Dire red for at-risk) so the meaning is inherited
+   from the rest of the app.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* League HUD strip — season, countdown, matches played, prize. */
+.league-hud{ margin:1.1rem 0 1.4rem; }
+.hud{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--r-md);
+  padding:1rem 1.3rem;
+  display:flex; flex-wrap:wrap; gap:1.4rem 2.4rem;
+  align-items:baseline;
+  box-shadow:var(--sh-1);
+}
+.hud__cell{ display:flex; flex-direction:column; gap:.15rem; }
+.hud__label{
+  font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
+}
+.hud__value{
+  font-size:1.35rem; font-weight:700; color:var(--ink);
+  letter-spacing:-.015em; line-height:1;
+}
+.hud__cell--prize{ margin-left:auto; }
+.hud__cell--prize .hud__value{
+  color:var(--radiant); font-variant-numeric:tabular-nums;
+}
+
+/* Team chip — small square badge with the team number.
+   Four distinct hues at similar visual weight, all sitting quietly. */
+.team-chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.8rem; height:1.8rem; border-radius:var(--r-sm);
+  font-weight:700; font-size:.85rem; color:#fff;
+  flex:0 0 auto;
+  font-variant-numeric:tabular-nums;
+}
+.team-chip--1{ background:#3b4a63; }   /* slate blue */
+.team-chip--2{ background:#8b5e34; }   /* bronze */
+.team-chip--3{ background:#2f6b5b; }   /* muted teal */
+.team-chip--4{ background:#8b3d5c; }   /* muted plum */
+/* Open pool chip -- deliberately outlined, not filled, so it doesn't read
+   as a fifth team. Same size and weight as the numbered chips. */
+.team-chip--pool{
+  background:transparent; color:var(--ink-3);
+  border:1.5px dashed var(--ink-4);
+}
+
+/* Team standings table — row shows chip + team name in the player cell.
+   Reuses .grid, .meter, .rating tokens from the individual board. */
+#teamStandings .who{ gap:.7rem; }
+#teamStandings .who__name{ font-weight:600; }
+#teamStandings .who__hero{ color:var(--ink-4); font-size:.78rem; }
+
+/* Ineligible row: muted; the standings still shows them (they're still
+   playing) but signals they won't be in the prize race unless they climb. */
+#teamStandings tr.is-inelig{ opacity:.6; }
+#teamStandings tr.is-inelig .rating{ color:var(--ink-3); }
+
+/* Tier dot — 5 states. Only green/red are saturated (inheriting the
+   meaning from Radiant/Dire); yellow/orange are warm neutrals; empty
+   is gray for pre-league rows. */
+.tier{ text-align:center; }
+.tier-dot{
+  display:inline-block; width:.72rem; height:.72rem;
+  border-radius:var(--r-pill);
+  vertical-align:middle;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06);
+}
+.tier--green  .tier-dot{ background:var(--radiant); }
+.tier--yellow .tier-dot{ background:#d9a441; }
+.tier--orange .tier-dot{ background:#cf7838; }
+.tier--red    .tier-dot{ background:var(--dire); }
+.tier--empty  .tier-dot{ background:var(--ink-4); opacity:.5; }
+
+/* Roster grid — four cards, one per team.
+   Two columns on wide screens, one on narrow. */
+.teams-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:1rem;
+  margin:1.6rem 0 .6rem;
+}
+.team-card{
+  padding:1rem 1.15rem 1.1rem;
+  display:flex; flex-direction:column; gap:.85rem;
+}
+.team-card__head{
+  display:flex; align-items:center; gap:.65rem;
+  padding-bottom:.65rem;
+  border-bottom:1px solid var(--line-2);
+}
+.team-card__name{
+  font-weight:700; font-size:1.05rem; color:var(--ink);
+  letter-spacing:-.01em;
+}
+.team-card__meta{
+  margin-left:auto;
+  font-size:.75rem; color:var(--ink-3); font-weight:500;
+}
+.team-card__body{ display:flex; flex-direction:column; gap:.7rem; }
+.team-card__section{ display:flex; flex-direction:column; gap:.28rem; }
+.team-card__role{
+  font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
+}
+.team-card__players{
+  list-style:none; margin:0; padding:0;
+  display:flex; flex-direction:column; gap:.15rem;
+}
+.team-card__player{
+  font-size:.9rem; color:var(--ink);
+  padding:.2rem .35rem;
+  border-radius:var(--r-sm);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.team-card__player.is-standin{
+  color:var(--ink-2); font-style:italic;
+  background:var(--paper-2);
+}
+/* Canonical name below the friendly nickname when they differ. */
+.team-card__canonical{
+  display:block;
+  font-size:.7rem; color:var(--ink-4); font-weight:400;
+  font-family:var(--mono);
+  margin-top:.05rem;
+}
+/* Backup notation for a substitutable slot ("Beetlebum / Musa"). */
+.team-card__backup-sep{ color:var(--ink-4); margin:0 .15rem; }
+.team-card__backup{
+  color:var(--ink-3); font-weight:500;
+  font-style:italic;
+}
+/* Open Pool card visually distinct from the four numbered team cards. */
+.team-card--pool{
+  border:1px dashed var(--line);
+  background:linear-gradient(180deg, var(--surface), var(--paper-2) 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   COORD VIEW
+   Read-only scheduler surface: Next Match card + Open rounds with
+   ranked slots. Times come pre-rendered from Python (find_slot.py)
+   so the browser doesn't run zoneinfo math.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.coord-section{ margin-bottom:2rem; }
+.coord-section__title{
+  font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
+  margin:.4rem 0 .9rem;
+}
+
+/* Reused chip for the "Next Match" and "Open rounds" empty states. */
+.empty-card{
+  padding:1.6rem 1.4rem;
+  display:flex; flex-direction:column; gap:.55rem;
+}
+.empty-card__tag{
+  font-size:.65rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
+}
+.empty-card p{
+  margin:0; color:var(--ink-2); font-size:.94rem; line-height:1.55;
+}
+.empty-card code{
+  background:var(--paper-2); color:var(--ink); padding:.08rem .32rem;
+  border-radius:var(--r-sm); font-family:var(--mono); font-size:.86em;
+}
+
+/* Next-Match card — hero of the whole page when a match is scheduled. */
+.next-match{
+  padding:1.5rem 1.6rem;
+  display:flex; flex-direction:column; gap:1.05rem;
+  border:1px solid var(--line);
+  background:
+    linear-gradient(180deg, var(--surface), var(--surface)),
+    linear-gradient(135deg, rgba(23,145,90,.05), rgba(208,64,46,.03));
+  background-clip:padding-box, border-box;
+}
+.next-match__head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  border-bottom:1px solid var(--line-2); padding-bottom:.7rem;
+}
+.next-match__tag{
+  font-size:.66rem; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--radiant); font-weight:700;
+}
+.next-match__utc{
+  font-family:var(--mono); font-size:.9rem; color:var(--ink-2);
+}
+.next-match__pair{
+  display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+  font-size:1.3rem; font-weight:700; letter-spacing:-.015em;
+}
+.next-match__vs{
+  color:var(--ink-3); font-weight:400; font-size:1rem;
+  padding:0 .3rem;
+}
+.next-match__tzs{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:.6rem 1.2rem;
+}
+
+/* Reusable tz row — used inside next-match and slot cards. */
+.tz-row{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:.6rem;
+  border-bottom:1px dashed var(--line-2); padding:.32rem 0;
+  font-family:var(--mono); font-size:.85rem;
+}
+.tz-row__label{ color:var(--ink-3); font-weight:500; }
+.tz-row__time{ color:var(--ink); font-weight:600; }
+
+/* Round card — one per open scheduling round. */
+.round{
+  padding:1.2rem 1.35rem;
+  display:flex; flex-direction:column; gap:.85rem;
+  margin-bottom:1rem;
+}
+.round__head{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem;
+  padding-bottom:.7rem; border-bottom:1px solid var(--line-2);
+}
+.round__id{
+  font-family:var(--mono); font-size:.78rem;
+  padding:.18rem .45rem; border-radius:var(--r-sm);
+  background:var(--paper-2); color:var(--ink-2); font-weight:600;
+}
+.round__matchup{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-weight:600; font-size:1rem;
+}
+.round__meta{
+  margin-left:auto;
+  color:var(--ink-3); font-size:.82rem;
+}
+.round__note{
+  color:var(--ink-3); font-size:.85rem; font-style:italic;
+  padding:.35rem .7rem; background:var(--paper-2);
+  border-radius:var(--r-sm);
+}
+.round__slots{ display:flex; flex-direction:column; gap:.7rem; }
+.round__warnings{
+  list-style:none; margin:.4rem 0 0; padding:.55rem .85rem;
+  background:var(--paper-2); border-radius:var(--r-sm);
+  color:var(--ink-2); font-size:.82rem;
+}
+.round__warnings li{ padding:.12rem 0; }
+
+/* Individual slot inside a round. */
+.slot{
+  border:1px solid var(--line);
+  border-radius:var(--r-md); padding:.85rem 1rem;
+  background:var(--surface);
+  display:flex; flex-direction:column; gap:.65rem;
+}
+.slot--best{
+  border-color:var(--radiant);
+  box-shadow:0 0 0 3px rgba(23,145,90,.09);
+}
+.slot--empty{
+  color:var(--ink-3); font-size:.9rem;
+  padding:1rem; text-align:center; font-style:italic;
+  background:var(--paper-2); border-style:dashed;
+}
+.slot__head{
+  display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap;
+  padding-bottom:.5rem; border-bottom:1px dashed var(--line-2);
+}
+.slot__idx{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.5rem; height:1.5rem; border-radius:var(--r-pill);
+  background:var(--ink); color:#fff;
+  font-size:.78rem; font-weight:700; flex:0 0 auto;
+}
+.slot--best .slot__idx{ background:var(--radiant); }
+.slot__utc{
+  font-family:var(--mono); font-weight:700; color:var(--ink);
+  font-size:.92rem;
+}
+.slot__dur{
+  color:var(--ink-3); font-size:.8rem;
+}
+.slot__total{
+  margin-left:auto;
+  font-size:.85rem; color:var(--ink-2); font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.slot__body{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.8rem 1.5rem;
+}
+@media (max-width:640px){
+  .slot__body{ grid-template-columns:1fr; }
+}
+.slot__tzs, .slot__teams{ display:flex; flex-direction:column; gap:.15rem; }
+.slot__team-row{
+  display:flex; align-items:center; gap:.55rem;
+  font-size:.85rem; padding:.22rem 0;
+}
+.slot__team-avail{
+  font-family:var(--mono); font-weight:600; color:var(--ink);
+  min-width:2.2rem;
+}
+.slot__team-missing{
+  color:var(--ink-3); font-size:.78rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}

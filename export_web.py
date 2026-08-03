@@ -20,6 +20,12 @@ from pathlib import Path
 ROOT = Path(__file__).parent
 DB = ROOT / "dota_stats.db"
 OUT = ROOT / "docs" / "data.js"
+TEAMS = ROOT / "data" / "teams.json"
+SCHEDULING = ROOT / "data" / "scheduling.json"
+PLAYERS_TZ = ROOT / "data" / "players_tz.json"
+
+# Path for importing tools.find_slot
+sys.path.insert(0, str(ROOT / "tools"))
 
 
 def rows(cur, sql, args=()):
@@ -78,6 +84,20 @@ def main() -> int:
 
     years = sorted({m["year"] for m in matches if m["year"]}, reverse=True)
 
+    # League roster. Optional — if data/teams.json is absent, the Teams
+    # tab shows an empty state rather than crashing. Comments (keys prefixed
+    # with _) are stripped so they never travel to the browser.
+    league = None
+    if TEAMS.exists():
+        raw = json.loads(TEAMS.read_text(encoding="utf-8"))
+        league = {k: v for k, v in raw.items() if not k.startswith("_")}
+
+    # Coord block: confirmed upcoming matches + open scheduling rounds with
+    # their currently-best slots. The slot ranking runs HERE (Python) rather
+    # than in the browser because zoneinfo does DST math correctly and the
+    # browser would need heavy tzdata polyfills otherwise.
+    coord = build_coord(league)
+
     payload = {
         "meta": {
             "years": years,
@@ -85,6 +105,8 @@ def main() -> int:
             "generated": None,   # stamped by the caller if ever needed
         },
         "matches": matches,
+        "league": league,
+        "coord": coord,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -102,6 +124,63 @@ def main() -> int:
     sync_hero_slugs(cur)
     stamp_assets()
     return 0
+
+
+def build_coord(league: dict | None) -> dict | None:
+    """
+    Emit LOBBY.coord: upcoming confirmed matches + open scheduling rounds
+    with their currently top-ranked slots.
+
+    Runs find_slot for each open round so the browser doesn't have to
+    replicate the DST-safe UTC math. Failure of any single round to
+    compute is caught and reported inline -- the tab shows what it can
+    rather than blanking out.
+    """
+    if not SCHEDULING.exists() or not league:
+        return None
+
+    import find_slot   # imported lazily; only needed when scheduling data exists
+
+    sched   = json.loads(SCHEDULING.read_text(encoding="utf-8"))
+    teams   = json.loads(TEAMS.read_text(encoding="utf-8"))
+    tz_data = (json.loads(PLAYERS_TZ.read_text(encoding="utf-8"))
+               if PLAYERS_TZ.exists() else {"players": {}})
+
+    team_names = {t["id"]: t["name"] for t in teams["teams"]}
+
+    open_rounds_out = []
+    for r in sched.get("rounds", []):
+        if r.get("status") != "collecting":
+            continue
+        entry = {
+            "round_id":     r["round_id"],
+            "match_up":     r["match_up"],
+            "match_up_names": [team_names.get(tid, f"Team {tid}") for tid in r["match_up"]],
+            "week_of":      r.get("week_of"),
+            "opened_at":    r.get("opened_at"),
+            "opened_by":    r.get("opened_by"),
+            "note":         r.get("note"),
+            "respondents":  [e["player"] for e in r.get("availability", [])],
+            "roster_size":  sum(len(t["roster"]) for t in teams["teams"] if t["id"] in r["match_up"]),
+            "slots":        [],
+            "warnings":     [],
+        }
+        try:
+            rosters = find_slot.team_rosters(teams, r["match_up"])
+            grid    = find_slot.compute_availability(r, tz_data)
+            slots   = find_slot.rank_slots(grid, rosters, top=3)
+            entry["warnings"] = find_slot.warnings(r, rosters, tz_data)
+            # Serialise slots (find_slot.slots_as_json handles this)
+            payload = find_slot.slots_as_json(r, slots, rosters)
+            entry["slots"] = payload["slots"]
+        except Exception as e:
+            entry["warnings"].append(f"slot ranking failed: {e}")
+        open_rounds_out.append(entry)
+
+    return {
+        "upcoming":    sched.get("upcoming", []),
+        "open_rounds": open_rounds_out,
+    }
 
 
 # Display name -> Valve's internal hero name, where the two differ.

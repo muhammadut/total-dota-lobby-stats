@@ -1,0 +1,256 @@
+{
+  "_comment": [
+    "Fixed rosters for the 2026-fall league (Aug 1 -- Dec 31, 2026).",
+    "",
+    "Roster fields (per player):",
+    "  name    -- CANONICAL display_name (matches Steam scoreboard). Used for",
+    "             team inference on ingested screenshots and for individual stats.",
+    "  role    -- 'core' | 'support' | 'stand_in'. 5 non-stand_in per team,",
+    "             1 stand_in per team. Display-only apart from stand_in.",
+    "  aka     -- friendly nicknames used by !register so players don't have to",
+    "             know the canonical Steam name ('Cpx' -> 'Mandark [<MC>]').",
+    "  backup  -- optional. Canonical name of the stand-in who can substitute",
+    "             FOR THIS SLOT if the primary can't play. Slots without `backup`",
+    "             can't be filled by anyone -- the primary must play.",
+    "",
+    "Substitution semantics (from the 2026-08-03 roster refresh):",
+    "  A stand-in listed as `backup` for a slot can fill that slot ONLY. The",
+    "  same stand-in may back up multiple slots (Musa covers 3 in Team 4) but",
+    "  can only fill one per match. Slots without `backup` are un-substitutable.",
+    "",
+    "open_pool: players who registered via `!register` in Discord but aren't",
+    "on any team's fixed roster. Captains can pull from the pool for stand-ins.",
+    "The pool is written by tools/discord_league.py, never by hand."
+  ],
+  "season": {
+    "id": "2026-fall",
+    "name": "Fall 2026",
+    "start_at": "2026-08-01T00:00:00Z",
+    "end_at": "2026-12-31T23:59:59Z",
+    "qualification_floor_pct": 0.8,
+    "prize_usd": 500
+  },
+  "teams": [
+    {
+      "id": 1,
+      "name": "Team 1",
+      "roster": [
+        {
+          "name": "HURR [PK_]",
+          "role": "core",
+          "aka": [
+            "Hurr"
+          ]
+        },
+        {
+          "name": "Mandark [<MC>]",
+          "role": "core",
+          "aka": [
+            "Cpx",
+            "cpx22"
+          ]
+        },
+        {
+          "name": "UT",
+          "role": "core",
+          "aka": [
+            "UT"
+          ],
+          "backup": "TigerX [GB]"
+        },
+        {
+          "name": "SOMA [L3vi]",
+          "role": "support",
+          "aka": [
+            "Soma"
+          ],
+          "backup": "TigerX [GB]"
+        },
+        {
+          "name": "Obno[X]iouS- 不快な [M.C]",
+          "role": "support",
+          "aka": [
+            "Obnoxious",
+            "Faraz"
+          ]
+        },
+        {
+          "name": "TigerX [GB]",
+          "role": "stand_in",
+          "aka": [
+            "TigerX"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Team 2",
+      "roster": [
+        {
+          "name": "Stoic",
+          "role": "core",
+          "aka": [
+            "Stoic",
+            "Sameed"
+          ]
+        },
+        {
+          "name": "Downlander",
+          "role": "core",
+          "aka": [
+            "Downlander"
+          ]
+        },
+        {
+          "name": "samundar khan",
+          "role": "core",
+          "aka": [
+            "xxx",
+            "rtz",
+            "samundar"
+          ]
+        },
+        {
+          "name": "vAnzO",
+          "role": "support",
+          "aka": [
+            "Vanzo",
+            "vanzo",
+            "SavaGe"
+          ],
+          "backup": "¤GerM¤ [LIB0G]"
+        },
+        {
+          "name": "Oden jr",
+          "role": "support",
+          "aka": [
+            "Oden",
+            "Oden jr"
+          ],
+          "backup": "¤GerM¤ [LIB0G]"
+        },
+        {
+          "name": "¤GerM¤ [LIB0G]",
+          "role": "stand_in",
+          "aka": [
+            "Germ",
+            "GerM",
+            "dotagerm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Team 3",
+      "roster": [
+        {
+          "name": "Shami",
+          "role": "core",
+          "aka": [
+            "Shami"
+          ]
+        },
+        {
+          "name": "Seeker(swap commends) [<MC>]",
+          "role": "core",
+          "aka": [
+            "Seeker"
+          ]
+        },
+        {
+          "name": "SpArtAAAAAAAA [WEPAK]",
+          "role": "core",
+          "aka": [
+            "Sparta",
+            "Spartaaaa"
+          ]
+        },
+        {
+          "name": "MODE:IG.BASHIRA™",
+          "role": "support",
+          "aka": [
+            "Bashira",
+            "BASHIRA"
+          ],
+          "backup": "Soooze [<MC>]"
+        },
+        {
+          "name": "Trollmitsu [<MC>]",
+          "role": "support",
+          "aka": [
+            "Trollmitsu"
+          ],
+          "backup": "Soooze [<MC>]"
+        },
+        {
+          "name": "Soooze [<MC>]",
+          "role": "stand_in",
+          "aka": [
+            "Sooze",
+            "Soooze"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Team 4",
+      "roster": [
+        {
+          "name": "beetlebum [FUBU]",
+          "role": "core",
+          "aka": [
+            "Beetlebum"
+          ],
+          "backup": "Musa"
+        },
+        {
+          "name": "X MEN Junior :) [Mkrs.]",
+          "role": "core",
+          "aka": [
+            "Xmen"
+          ],
+          "backup": "Gillu"
+        },
+        {
+          "name": "Rogue Agent [|T|z|]",
+          "role": "core",
+          "aka": [
+            "Rogue Agent",
+            "Rogue"
+          ],
+          "backup": "Musa"
+        },
+        {
+          "name": "Khuni Billa [UGI|]",
+          "role": "support",
+          "aka": [
+            "Khuni Billa",
+            "Khuni"
+          ],
+          "backup": "Musa"
+        },
+        {
+          "name": "Asta",
+          "role": "support",
+          "aka": [
+            "Asta"
+          ]
+        },
+        {
+          "name": "Musa",
+          "role": "stand_in",
+          "aka": [
+            "Musa",
+            "HELL-ANGEL",
+            "HELL-ANGEL-",
+            "sroshnak01"
+          ]
+        }
+      ]
+    }
+  ],
+  "open_pool": []
+}

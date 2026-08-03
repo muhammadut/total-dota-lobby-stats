@@ -953,6 +953,467 @@
     window.addEventListener("hashchange", fromHash);
   }
 
+  /* ── Teams (league) ───────────────────────────────────────────────
+     The Teams tab shows the four fixed rosters and a team-level
+     standings table using the SAME Wilson rating as the individual
+     board — win-rate lower bound, so 5-0 does not beat 12-2.
+
+     Which team each side of a match belongs to is INFERRED here, not
+     stored in the data yet. Rule: if ≥3 of the 5 players on a side
+     appear on a team's roster (any role, including stand-in), that
+     side counts as that team's. A side that fits neither team, or
+     both teams equally, is skipped for team standings. This is the
+     "3 of 5" floor from the pre-mortem — strict enough to reject
+     mostly-mixed rosters, loose enough to accept legitimate matches
+     with a stand-in and a friend filling in. */
+
+  var LEAGUE = D.league || null;
+
+  // player name -> team id lookup. Rebuilt only when LEAGUE changes,
+  // which is never in a session.
+  var PLAYER_TEAM = {};
+  if (LEAGUE) {
+    LEAGUE.teams.forEach(function (t) {
+      t.roster.forEach(function (r) { PLAYER_TEAM[r.name] = t.id; });
+    });
+  }
+
+  function inferSide(rosterList) {
+    // rosterList is 5 player entries on one side. Returns team id or null.
+    var counts = {};
+    rosterList.forEach(function (r) {
+      var tid = PLAYER_TEAM[r.name];
+      if (tid) counts[tid] = (counts[tid] || 0) + 1;
+    });
+    var best = null, bestN = 0, tied = false;
+    Object.keys(counts).forEach(function (k) {
+      var n = counts[k];
+      if (n > bestN) { best = Number(k); bestN = n; tied = false; }
+      else if (n === bestN) { tied = true; }
+    });
+    // Only tag when a majority (≥3) belongs to a single team, unambiguously.
+    return (bestN >= 3 && !tied) ? best : null;
+  }
+
+  function aggregateTeams(ms) {
+    if (!LEAGUE) return null;
+    var T = {};
+    LEAGUE.teams.forEach(function (t) {
+      T[t.id] = { id: t.id, name: t.name, roster: t.roster,
+                  games: 0, wins: 0, losses: 0,
+                  opponents: {} };
+    });
+
+    var seasonStart = LEAGUE.season && LEAGUE.season.start_at
+      ? LEAGUE.season.start_at.slice(0, 10) : null;
+
+    ms.forEach(function (m) {
+      // Only count matches that fall within the season, if a start is set.
+      var d = m.played_on || m.played_at || "";
+      if (seasonStart && d && d < seasonStart) return;
+
+      var rTeam = inferSide(m.radiant);
+      var dTeam = inferSide(m.dire);
+      if (!rTeam || !dTeam || rTeam === dTeam) return;
+
+      var rWon = m.winning_side === "radiant";
+      var tR = T[rTeam], tD = T[dTeam];
+      tR.games++; tD.games++;
+      if (rWon) { tR.wins++; tD.losses++; }
+      else      { tD.wins++; tR.losses++; }
+      tR.opponents[dTeam] = (tR.opponents[dTeam] || 0) + 1;
+      tD.opponents[rTeam] = (tD.opponents[rTeam] || 0) + 1;
+    });
+
+    // Compute pace, rating, status.
+    var teams = LEAGUE.teams.map(function (t) { return T[t.id]; });
+    teams.forEach(function (t) {
+      t.winPct = t.games ? (t.wins / t.games) * 100 : 0;
+      t.rating = wilson(t.wins, t.games, state.evidence) * SCALE;
+      // Pace: games per opponent slot. Always /3, not /distinct-faced
+      // (which would perversely reward playing only one opponent).
+      t.pace = t.games / 3;
+    });
+
+    // League median pace and qualification floor.
+    var paces = teams.map(function (t) { return t.pace; }).sort(function (a, b) { return a - b; });
+    var median = paces.length
+      ? (paces.length % 2
+          ? paces[(paces.length - 1) / 2]
+          : (paces[paces.length / 2 - 1] + paces[paces.length / 2]) / 2)
+      : 0;
+    var floorPct = (LEAGUE.season && LEAGUE.season.qualification_floor_pct) || 0.80;
+    var floor = median * floorPct;
+
+    teams.forEach(function (t) {
+      var r = median ? t.pace / median : 1;
+      var tier;
+      if (t.pace === 0 && median === 0) tier = "empty";       // no league games yet
+      else if (r >= 1.00)               tier = "green";
+      else if (r >= 0.80)               tier = "yellow";
+      else if (r >= 0.70)               tier = "orange";
+      else                              tier = "red";
+      t.tier = tier;
+      t.eligible = t.pace >= floor;
+    });
+
+    // Rank: rating desc, then wins desc, then name asc.
+    teams.sort(function (a, b) {
+      return (b.rating - a.rating) || (b.wins - a.wins)
+          || a.name.localeCompare(b.name);
+    });
+
+    return { teams: teams, median: median, floor: floor,
+             totalMatches: teams.reduce(function (s, t) { return s + t.games; }, 0) / 2 };
+  }
+
+  var TIER_LABEL = { green: "On pace", yellow: "Below median",
+                     orange: "Warning", red: "At risk", empty: "—" };
+
+  function drawLeagueHud(agg) {
+    var wrap = $("#leagueHud");
+    if (!wrap) return;
+    if (!LEAGUE) { wrap.innerHTML = ""; return; }
+    var s = LEAGUE.season || {};
+    var end = s.end_at ? new Date(s.end_at) : null;
+    var now = new Date();
+    var daysLeft = end ? Math.max(0, Math.ceil((end - now) / 86400000)) : null;
+    var prize = s.prize_usd != null ? "$" + s.prize_usd.toLocaleString("en-US") : "";
+    var totalMatches = agg ? agg.totalMatches : 0;
+
+    wrap.innerHTML =
+      '<div class="hud card">' +
+        '<div class="hud__cell">' +
+          '<div class="hud__label">Season</div>' +
+          '<div class="hud__value">' + esc(s.name || "—") + '</div>' +
+        '</div>' +
+        '<div class="hud__cell">' +
+          '<div class="hud__label">Days left</div>' +
+          '<div class="hud__value">' + (daysLeft != null ? daysLeft : "—") + '</div>' +
+        '</div>' +
+        '<div class="hud__cell">' +
+          '<div class="hud__label">League matches</div>' +
+          '<div class="hud__value">' + totalMatches + '</div>' +
+        '</div>' +
+        '<div class="hud__cell hud__cell--prize">' +
+          '<div class="hud__label">Prize</div>' +
+          '<div class="hud__value">' + esc(prize) + '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function drawTeamStandings(agg) {
+    var tb = $("#teamStandings tbody");
+    if (!tb) return;
+    tb.innerHTML = "";
+    if (!agg) {
+      tb.innerHTML = '<tr><td colspan="10" class="none">' +
+        'League roster not loaded. Add data/teams.json and re-export.</td></tr>';
+      return;
+    }
+    agg.teams.forEach(function (t, i) {
+      var tr = el("tr");
+      tr.style.setProperty("--i", i);
+      if (i === 0 && t.games > 0) tr.classList.add("is-lead");
+      if (!t.eligible && agg.floor > 0) tr.classList.add("is-inelig");
+      tr.innerHTML =
+        '<td><span class="rank">' + (i + 1) + "</span></td>" +
+        '<td class="c-player"><span class="who">' +
+          '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
+          '<span><span class="who__name">' + esc(t.name) + "</span>" +
+          '<span class="who__hero">' + t.roster.length + " players</span>" +
+          "</span></span></td>" +
+        "<td>" + t.games + "</td>" +
+        '<td class="w-num">' + t.wins + "</td>" +
+        '<td class="l-num">' + t.losses + "</td>" +
+        '<td><div class="meter"><span style="width:' + t.winPct.toFixed(1) + '%"></span></div></td>' +
+        '<td class="pct">' + (t.games ? pct(t.winPct) : "—") + "</td>" +
+        '<td>' + (t.games ? t.pace.toFixed(1) : "—") + "</td>" +
+        '<td class="tier tier--' + t.tier + '" title="' + esc(TIER_LABEL[t.tier]) + '">' +
+          '<span class="tier-dot"></span></td>' +
+        '<td class="c-rating"><span class="rating' + ratingTier(t.rating) + '">' +
+          (t.games ? t.rating.toFixed(1) : "—") + "</span></td>";
+      tb.appendChild(tr);
+    });
+  }
+
+  var ROLE_LABEL = { core: "Core", support: "Support", stand_in: "Stand-in" };
+
+  function drawRosterGrid() {
+    var wrap = $("#teamsGrid");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    if (!LEAGUE) return;
+    LEAGUE.teams.forEach(function (t) {
+      var card = el("div", "team-card card");
+      var byRole = { core: [], support: [], stand_in: [] };
+      t.roster.forEach(function (r) { (byRole[r.role] || byRole.core).push(r); });
+      // Header
+      var head = el("div", "team-card__head");
+      head.innerHTML =
+        '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
+        '<span class="team-card__name">' + esc(t.name) + '</span>' +
+        '<span class="team-card__meta">' + t.roster.length + ' players</span>';
+      card.appendChild(head);
+      // Look up friendly display for any canonical name (e.g. r.backup names
+      // "TigerX [GB]" but the roster shows him elsewhere as "TigerX").
+      function friendlyOf(canonical) {
+        var hit = t.roster.filter(function (x) { return x.name === canonical; })[0];
+        if (hit && hit.aka && hit.aka.length) return hit.aka[0];
+        return canonical;
+      }
+
+      // Roster rows -- show aka when set (friendly nickname), fall back to name.
+      // Slots with a `backup` render as "Primary / Backup" (matches the source
+      // spreadsheet's "Beetlebum/Musa" notation).
+      var body = el("div", "team-card__body");
+      ["core", "support", "stand_in"].forEach(function (role) {
+        var group = byRole[role];
+        if (!group.length) return;
+        var section = el("div", "team-card__section");
+        section.innerHTML = '<div class="team-card__role">' + esc(ROLE_LABEL[role]) + '</div>';
+        var list = el("ul", "team-card__players");
+        group.forEach(function (r) {
+          var li = el("li", "team-card__player" + (role === "stand_in" ? " is-standin" : ""));
+          var display = (r.aka && r.aka.length) ? r.aka[0] : r.name;
+          var mainLine = esc(display);
+          if (r.backup) {
+            mainLine += ' <span class="team-card__backup-sep">/</span> ' +
+                        '<span class="team-card__backup">' + esc(friendlyOf(r.backup)) + '</span>';
+          }
+          // Show canonical as subtitle when the display differs from the name.
+          var subtitle = (display !== r.name)
+            ? '<span class="team-card__canonical">' + esc(r.name) + '</span>' : '';
+          li.innerHTML = mainLine + subtitle;
+          list.appendChild(li);
+        });
+        section.appendChild(list);
+        body.appendChild(section);
+      });
+      card.appendChild(body);
+      wrap.appendChild(card);
+    });
+
+    // Open Pool card — appended AFTER the 4 team cards. Only rendered
+    // when there's at least one player in the pool. Same "team-card" shell
+    // so it visually belongs; distinct chip so it doesn't read as a 5th team.
+    var pool = LEAGUE.open_pool || [];
+    if (pool.length) {
+      var pcard = el("div", "team-card team-card--pool card");
+      var phead = el("div", "team-card__head");
+      phead.innerHTML =
+        '<span class="team-chip team-chip--pool" title="Open Pool">◇</span>' +
+        '<span class="team-card__name">Open Pool</span>' +
+        '<span class="team-card__meta">' + pool.length +
+          (pool.length === 1 ? ' player' : ' players') + '</span>';
+      pcard.appendChild(phead);
+      var pbody = el("div", "team-card__body");
+      var psec = el("div", "team-card__section");
+      psec.innerHTML = '<div class="team-card__role">Available</div>';
+      var plist = el("ul", "team-card__players");
+      pool.forEach(function (p) {
+        var li = el("li", "team-card__player");
+        li.innerHTML = esc(p.name);
+        plist.appendChild(li);
+      });
+      psec.appendChild(plist);
+      pbody.appendChild(psec);
+      pcard.appendChild(pbody);
+      wrap.appendChild(pcard);
+    }
+  }
+
+  function drawTeams() {
+    if (!LEAGUE) {
+      drawTeamStandings(null);
+      drawRosterGrid();
+      drawLeagueHud(null);
+      return;
+    }
+    var agg = aggregateTeams(cur.matches);
+    drawLeagueHud(agg);
+    drawTeamStandings(agg);
+    drawRosterGrid();
+  }
+
+  /* ── Coord (scheduling) ─────────────────────────────────────────
+     Read-only display of confirmed upcoming matches + open scheduling
+     rounds. Input happens in Discord (#dota-league-2026); this tab
+     renders whatever the last export knew about.
+
+     All the DST-safe UTC math ran in Python at export time (see
+     export_web.py::build_coord). The browser just formats what it's
+     given. This keeps zoneinfo out of the browser -- Intl.DateTimeFormat
+     has patchy IANA support in older mobile browsers. */
+
+  var COORD = D.coord || null;
+
+  var TZ_LABELS = [
+    ["Karachi",  "Asia/Karachi"],
+    ["New York", "America/New_York"],
+    ["Riyadh",   "Asia/Riyadh"],
+    ["Berlin",   "Europe/Berlin"]
+  ];
+
+  function fmtLocal(iso) {
+    // iso is already in the local zone from Python; just re-render the
+    // human-readable part. Falls back to the raw ISO if Date parsing fails.
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso;
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    // Extract the hour/minute portion from ISO (avoid Date.getHours which
+    // would apply the BROWSER's tz, undoing the Python conversion).
+    var m = iso.match(/T(\d{2}):(\d{2})/);
+    var hhmm = m ? (m[1] + ":" + m[2]) : "??:??";
+    return days[d.getUTCDay()] + " " + hhmm;
+  }
+
+  function fmtUtc(iso) {
+    var m = iso.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (!m) return iso;
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var date = new Date(iso);
+    return days[date.getUTCDay()] + " " + Number(m[3]) + " " + MON[Number(m[2]) - 1]
+           + " · " + m[4] + ":" + m[5] + " UTC";
+  }
+
+  function renderNextMatch(m) {
+    // Confirmed upcoming match. Shape from scheduling.json's `upcoming`.
+    var tzRows = TZ_LABELS.map(function (pair) {
+      // We need per-tz rendering. If the confirmed match doesn't carry
+      // it, fall back to UTC only. (find_slot output includes renderings
+      // for confirmed matches; if a raw upcoming entry is written by
+      // hand it may not.)
+      var r = (m.renderings || []).filter(function (x) {
+        return x.iana === pair[1] || x.zone_label === pair[0];
+      })[0];
+      var when = r ? fmtLocal(r.local) : "—";
+      return '<div class="tz-row"><span class="tz-row__label">' + esc(pair[0]) +
+             '</span><span class="tz-row__time">' + esc(when) + '</span></div>';
+    }).join("");
+
+    return '<div class="next-match card">' +
+      '<div class="next-match__head">' +
+        '<span class="next-match__tag">Next Match</span>' +
+        '<span class="next-match__utc">' + esc(fmtUtc(m.start_utc)) + '</span>' +
+      '</div>' +
+      '<div class="next-match__pair">' +
+        '<span class="team-chip team-chip--' + m.match_up[0] + '">' + m.match_up[0] + '</span>' +
+        '<span class="next-match__name">' + esc(m.match_up_names[0]) + '</span>' +
+        '<span class="next-match__vs">vs</span>' +
+        '<span class="next-match__name">' + esc(m.match_up_names[1]) + '</span>' +
+        '<span class="team-chip team-chip--' + m.match_up[1] + '">' + m.match_up[1] + '</span>' +
+      '</div>' +
+      '<div class="next-match__tzs">' + tzRows + '</div>' +
+    '</div>';
+  }
+
+  function renderSlot(slot, idx) {
+    var tzRows = slot.renderings.map(function (r) {
+      return '<div class="tz-row"><span class="tz-row__label">' + esc(r.zone_label) +
+             '</span><span class="tz-row__time">' + esc(fmtLocal(r.local)) + '</span></div>';
+    }).join("");
+
+    var teamRows = Object.keys(slot.per_team).sort().map(function (tid) {
+      var n = slot.per_team[tid];
+      var missing = (slot.missing[tid] || []).slice(0, 3).join(", ");
+      var more = (slot.missing[tid] || []).length > 3
+        ? ' <span class="dim">(+' + (slot.missing[tid].length - 3) + ' more)</span>' : "";
+      return '<div class="slot__team-row">' +
+        '<span class="team-chip team-chip--' + tid + '">' + tid + '</span>' +
+        '<span class="slot__team-avail">' + n + '/' + (n + (slot.missing[tid] || []).length) + '</span>' +
+        (missing ? '<span class="slot__team-missing">missing: ' + esc(missing) + more + '</span>' : '') +
+      '</div>';
+    }).join("");
+
+    var playable = Object.keys(slot.per_team).every(function (k) { return slot.per_team[k] >= 3; });
+
+    return '<div class="slot' + (idx === 0 && playable ? ' slot--best' : '') + '">' +
+      '<div class="slot__head">' +
+        '<span class="slot__idx">' + (idx + 1) + '</span>' +
+        '<span class="slot__utc">' + esc(fmtUtc(slot.start_utc)) + '</span>' +
+        '<span class="slot__dur">' + slot.duration_min + " min window</span>" +
+        '<span class="slot__total">' + slot.total + " available</span>" +
+      '</div>' +
+      '<div class="slot__body">' +
+        '<div class="slot__tzs">' + tzRows + '</div>' +
+        '<div class="slot__teams">' + teamRows + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderRound(r) {
+    var slotsHtml = r.slots && r.slots.length
+      ? r.slots.map(renderSlot).join("")
+      : '<div class="slot slot--empty">No overlapping windows yet — waiting for more availability.</div>';
+
+    var warnsHtml = (r.warnings || []).length
+      ? '<ul class="round__warnings">' +
+          r.warnings.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join("") +
+        '</ul>'
+      : "";
+
+    return '<div class="round card">' +
+      '<div class="round__head">' +
+        '<span class="round__id">Round ' + esc(r.round_id) + '</span>' +
+        '<span class="round__matchup">' +
+          '<span class="team-chip team-chip--' + r.match_up[0] + '">' + r.match_up[0] + '</span>' +
+          esc(r.match_up_names[0]) + ' vs ' + esc(r.match_up_names[1]) +
+          '<span class="team-chip team-chip--' + r.match_up[1] + '">' + r.match_up[1] + '</span>' +
+        '</span>' +
+        '<span class="round__meta">' +
+          r.respondents.length + '/' + r.roster_size + ' responded' +
+          (r.week_of ? ' · week of ' + esc(r.week_of) : '') +
+        '</span>' +
+      '</div>' +
+      (r.note ? '<div class="round__note">' + esc(r.note) + '</div>' : '') +
+      '<div class="round__slots">' + slotsHtml + '</div>' +
+      warnsHtml +
+    '</div>';
+  }
+
+  function drawCoord() {
+    var wrap = $("#coordBody");
+    if (!wrap) return;
+    if (!COORD) {
+      wrap.innerHTML = '<p class="none">Scheduling data not loaded. Add data/scheduling.json and re-export.</p>';
+      return;
+    }
+
+    var chunks = [];
+
+    // Next-match card(s)
+    if (COORD.upcoming && COORD.upcoming.length) {
+      chunks.push('<div class="coord-section">' +
+        COORD.upcoming.map(renderNextMatch).join("") +
+      '</div>');
+    } else {
+      chunks.push('<div class="coord-section coord-section--empty">' +
+        '<div class="empty-card card">' +
+          '<span class="empty-card__tag">Next Match</span>' +
+          '<p>No confirmed match yet. Once a captain runs <code>!confirm N</code> in Discord, the winner appears here.</p>' +
+        '</div>' +
+      '</div>');
+    }
+
+    // Open rounds
+    if (COORD.open_rounds && COORD.open_rounds.length) {
+      chunks.push('<div class="coord-section">' +
+        '<h3 class="coord-section__title">Open scheduling rounds</h3>' +
+        COORD.open_rounds.map(renderRound).join("") +
+      '</div>');
+    } else {
+      chunks.push('<div class="coord-section coord-section--empty">' +
+        '<div class="empty-card card">' +
+          '<span class="empty-card__tag">Open rounds</span>' +
+          '<p>No scheduling round is open. A captain can start one with <code>!schedule Team X vs Team Y</code>.</p>' +
+        '</div>' +
+      '</div>');
+    }
+
+    wrap.innerHTML = chunks.join("");
+  }
+
   /* ── Render ───────────────────────────────────────────────────── */
   function renderAll() {
     applyYear();
@@ -963,6 +1424,8 @@
     drawMatches();
     drawHeroes();
     drawDuos();
+    drawTeams();
+    drawCoord();
     var none = cur.matches.length === 0;
     $("#empty").hidden = !none;
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {
