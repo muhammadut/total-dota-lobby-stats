@@ -170,6 +170,7 @@ HELP = (
     "  Also OK: `Sat 8pm-10pm` · `Aug 5 20:00-22:00` · `10PM to 2AM` (midnight OK)\n"
     "`!avail clear` — remove your availability this week\n"
     "\n**Anyone:**\n"
+    "`!who` — who has registered, and in which timezone\n"
     "`!readiness` — per-team % ready this week + who's missing\n"
     "`!find` — top slots for every pairing that has both teams ≥1 avail\n"
     "`!find 1 vs 3` — top 3 slots for a specific pair\n"
@@ -205,8 +206,17 @@ def do_status() -> str:
     upcoming = sched.get("upcoming", [])
     week    = sched.get("week_of", "?")
 
+    dp = load_discord_players().get("players", {})
+    ptz = load_players_tz().get("players", {})
+    roster_n = sum(len(t.get("roster", [])) for t in teams["teams"])
+    setup_n = sum(1 for n in set(dp.values()) if ptz.get(n))
+
     parts = [f"**League status — week of {week}**"]
     parts.append(f"Site: {site}#teams")
+    # Registration first: availability percentages are misleading while
+    # most of the league still cannot post availability at all.
+    parts.append(f"Registered with a timezone: **{setup_n}/{roster_n}**"
+                 + ("  (`!who` for the list)" if setup_n < roster_n else ""))
     parts.append(f"Players who have posted availability this week: **{len(avail)}**")
 
     r = find_slot.team_readiness(avail, teams)
@@ -226,6 +236,52 @@ def do_status() -> str:
     else:
         parts.append("No confirmed upcoming match yet.")
     return "\n".join(parts)
+
+
+def do_who() -> str:
+    """
+    !who -- who has registered, and in which timezone.
+
+    !status and !readiness both answer "who has posted availability THIS
+    WEEK", which resets every !newweek. Neither answers the prior
+    question -- who has done the one-time setup at all -- so chasing
+    stragglers meant reading two JSON files by hand. A player with no
+    timezone cannot post availability that means anything, so this is
+    the number that actually gates the league starting.
+    """
+    teams = load_teams()
+    dp = load_discord_players().get("players", {})
+    tz = load_players_tz().get("players", {})
+    claimed = set(dp.values())
+
+    total = done = 0
+    lines = ["**Registration — who has set themselves up**"]
+    for t in teams["teams"]:
+        row = []
+        for r in t.get("roster", []):
+            total += 1
+            nick = (r.get("aka") or [r["name"]])[0]
+            zone = tz.get(r["name"])
+            if r["name"] in claimed and zone:
+                done += 1
+                # Trailing element of the IANA name is the readable bit:
+                # "Europe/London" -> "London". Nobody needs the continent.
+                row.append(f"✅{nick} `{zone.split('/')[-1].replace('_', ' ')}`")
+            else:
+                row.append(f"⬜{nick}")
+        lines.append(f"**{t['name']}** " + " · ".join(row))
+
+    pool = teams.get("open_pool") or []
+    if pool:
+        lines.append("**Open pool** " + " · ".join(
+            f"{p if isinstance(p, str) else p.get('name', '?')}" for p in pool))
+
+    lines.append(f"\n**{done} of {total}** registered with a timezone.")
+    if done < total:
+        lines.append("Not set up yet? `!register YourNick YourZone` — "
+                     "e.g. `!register Cpx PKT`. Zones: PKT, ET, PT, AST, "
+                     "CET, GMT, IST, or `UTC+5`.")
+    return "\n".join(lines)
 
 
 def do_register(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> str:
@@ -1247,6 +1303,8 @@ def _handle(msgs, token, channel, allow, args) -> int:
                 reply = do_help()
             elif cmd == "status":
                 reply = do_status()
+            elif cmd in ("who", "registered", "players"):
+                reply = do_who()
             elif cmd == "register":
                 reply = do_register(tail, uname, uid, dp, privileged)
                 dp = load_discord_players()   # refresh in case do_register wrote

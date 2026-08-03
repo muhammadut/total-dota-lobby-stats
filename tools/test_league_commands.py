@@ -303,6 +303,32 @@ r = L.do_confirm("bad input", "ut70")
 check("confirm bad input — error message",
       "Format" in r, r)
 
+
+# ═════════════════════════════════════════════════════════════════════
+#  !who
+# ═════════════════════════════════════════════════════════════════════
+group("!who")
+
+reset_state()                       # nobody registered
+r = L.do_who()
+n_roster = sum(len(t["roster"]) for t in L.load_teams()["teams"])
+check("who — lists every team", all(t["name"] in r for t in L.load_teams()["teams"]), r)
+check("who — counts 0 when nobody is registered", f"**0 of {n_roster}**" in r, r)
+check("who — prompts the unregistered", "!register" in r, r)
+# Must stay inside Discord's 2000-char message limit at full roster size.
+check("who — fits in one Discord message", len(r) < 2000, f"{len(r)} chars")
+
+# Registering someone must move the count and show their zone.
+L.do_register("Hurr GMT", "hurrali", "222000000000000002", L.load_discord_players(),
+              privileged=False)
+r = L.do_who()
+check("who — counts a registered player", f"**1 of {n_roster}**" in r, r)
+check("who — shows their timezone", "London" in r, r)
+check("who — marks them done", "✅Hurr" in r, r)
+
+r = L.do_status()
+check("status — reports the registration count too", "Registered with a timezone" in r, r)
+
 # Re-confirming must REPLACE, not append. Two bookings for one game put
 # the same fixture on the Coord tab twice, the stale one carrying an
 # out-of-date `missing` roster, with nothing to say which is current.
