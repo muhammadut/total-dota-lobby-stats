@@ -129,8 +129,8 @@ returns False, disabling the co-occurrence guard.
 
 ## Status — as of 2026-08-03
 
-**38 matches, 380 appearances, 31 people, 17 merges, 3 recorded
-non-merges.** 2026-07-24 → 2026-08-01. Every match 5v5, none dateless,
+**41 matches, 410 appearances, 31 people, 17 merges, 3 recorded
+non-merges.** 2026-07-24 → 2026-08-02. Every match 5v5, none dateless,
 nobody holding two slots, live site byte-identical to the build.
 
 The ingest pipeline is no longer a rehearsal — it has run daily for a
@@ -153,10 +153,21 @@ week on real screenshots from six different posters. What that surfaced:
   stoicheart's client is UTC+5 against the user's UTC−4, so his files
   are named with tomorrow's date. Confirmed twice at exactly 9h.
 
-**The cloud workflow has still NEVER RUN.** No repo secrets are set.
+**The cloud workflow HAS now run, and failed — correctly.** The 09:00 UTC
+schedule fired for the first time on 2026-08-03 and died in 8s at the very
+first step, `discord_pull.py`, with `DISCORD_BOT_TOKEN:` empty. No repo
+secrets are set. That is the good failure: loud, immediate, and *before*
+the model step, so it cost nothing.
+
 Needed: `DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID`, `DISCORD_APPROVERS`
 (`539898067957186560,364832153843793920,1149675111557890048`), and
 `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or `ANTHROPIC_API_KEY`.
+
+**Set `DISCORD_APPROVERS` in the same sitting as the bot token, not
+after.** Known-unfixed #3 below is dormant only because the pull fails
+first; the moment a token makes the run get further, an unset approver
+list makes `privileged = (not allow)` true for everyone in the channel.
+
 Triage has still never seen a deliberately bad image.
 
 ### Dashboard — Rating, Duos, clickable heroes
