@@ -474,6 +474,27 @@ check("newweek — availability wiped", not sched.get("availability"))
 # ═════════════════════════════════════════════════════════════════════
 reset_state()
 
+
+
+# ═════════════════════════════════════════════════════════════════════
+#  --new flag, as mangled by autocorrect
+# ═════════════════════════════════════════════════════════════════════
+group("--new flag (dash variants)")
+
+for dash, label in [("--", "plain"), ("—", "em-dash (autocorrect)"),
+                    ("–", "en-dash"), ("-", "single")]:
+    reset_state()
+    r = L.do_register(f"Soooze gmt {dash}new", "soooze", "222000000000000077",
+                      L.load_discord_players(), False)
+    check(f"register --new works with {label} {dash!r}", "Registered" in r, r)
+
+reset_state()
+r = L.do_register("Soooze gmt", "soooze", "222000000000000077",
+                  L.load_discord_players(), False)
+check("register without --new still prompts for an unknown nick",
+      "Registered" not in r, r)
+
+
 print(f"\n{'═' * 60}")
 print(f"  {passes} passed · {fails} failed")
 if failures:

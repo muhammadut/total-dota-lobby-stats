@@ -358,7 +358,11 @@ def do_register(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> 
     # and want to go straight to Open Pool. This is how we handle the
     # legitimate "I really am a new player" case after the suggestion prompt.
     force_new = False
-    m = re.search(r"\s+--(?:new|pool)\s*$", txt, re.I)
+    # Accept the em/en dashes too. Discord and phone keyboards autocorrect
+    # "--" into "—", so the flag the bot itself just told someone to type
+    # arrives mangled and is rejected. Soooze hit this twice in a row and
+    # gave up; the bot was refusing its own instructions.
+    m = re.search(r"\s+[-–—]{1,2}(?:new|pool)\s*$", txt, re.I)
     if m:
         force_new = True
         txt = txt[:m.start()].strip()
