@@ -18,6 +18,15 @@
     "  same stand-in may back up multiple slots (Musa covers 3 in Team 4) but",
     "  can only fill one per match. Slots without `backup` are un-substitutable.",
     "",
+    "2026-08-03: Team 3's stand-in changed from Soooze [<MC>] to",
+    "  Beast Mode [Mn5tR], per the captains' roster sheet -- in all three",
+    "  places, the stand_in slot and the Bashira and Trollmitsu backups.",
+    "  Soooze is no longer on any roster. He is NOT in open_pool either:",
+    "  that list is written by !register and must not be edited by hand,",
+    "  so if he wants back in he registers himself. Beast Mode had tried",
+    "  to !register and been refused for exactly this reason -- he was the",
+    "  team's stand-in on paper but not in this file.",
+    "",
     "open_pool: players who registered via `!register` in Discord but aren't",
     "on any team's fixed roster. Captains can pull from the pool for stand-ins.",
     "The pool is written by tools/discord_league.py, never by hand."
@@ -174,7 +183,7 @@
             "Bashira",
             "BASHIRA"
           ],
-          "backup": "Soooze [<MC>]"
+          "backup": "Beast Mode [Mn5tR]"
         },
         {
           "name": "Trollmitsu [<MC>]",
@@ -182,14 +191,16 @@
           "aka": [
             "Trollmitsu"
           ],
-          "backup": "Soooze [<MC>]"
+          "backup": "Beast Mode [Mn5tR]"
         },
         {
-          "name": "Soooze [<MC>]",
+          "name": "Beast Mode [Mn5tR]",
           "role": "stand_in",
           "aka": [
-            "Sooze",
-            "Soooze"
+            "BeastMode",
+            "Beast Mode",
+            "beastmode",
+            "Beastmode"
           ]
         }
       ]
