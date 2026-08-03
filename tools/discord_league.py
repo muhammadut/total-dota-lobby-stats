@@ -1137,6 +1137,15 @@ def watch(token: str, channel: str, allow, args) -> int:
     only genuinely unrecoverable ones (bad token, missing channel) stop
     the loop, and those stop it loudly.
     """
+    # Python block-buffers stdout when it is a pipe rather than a terminal,
+    # so a backgrounded watcher writes NOTHING to its log for the first 8KB
+    # -- it looks dead exactly when you most want to know it is alive.
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+        sys.stderr.reconfigure(line_buffering=True)
+    except AttributeError:                       # pragma: no cover
+        pass
+
     delay, backoff = args.interval, args.interval
     print(f"  watching every {delay}s — Ctrl+C to stop")
     while True:
