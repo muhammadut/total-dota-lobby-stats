@@ -93,7 +93,29 @@ def config():
     return tok, str(chan)
 
 
-def api(path, token):
+class DiscordHTTPError(Exception):
+    """
+    An HTTP failure from the Discord API, carrying the status code.
+
+    api() below turns these into sys.exit with a human explanation, which
+    is right for a script you run by hand. A long-running listener needs
+    the opposite: it has to tell "your token is wrong, stop" apart from
+    "the wifi blipped, try again in a moment", and a process that exits
+    on the second one is a bot that goes quiet without anyone noticing.
+    So the raising form is the primitive and api() is the wrapper.
+    """
+    def __init__(self, code: int, body: str = ""):
+        super().__init__(f"HTTP {code}: {body}")
+        self.code, self.body = code, body
+
+    @property
+    def transient(self) -> bool:
+        """True if retrying later could plausibly work."""
+        return self.code == 429 or self.code >= 500
+
+
+def api_raw(path, token):
+    """As api(), but raises DiscordHTTPError instead of exiting."""
     req = urllib.request.Request(
         API + path,
         headers={"Authorization": "Bot " + token,
@@ -102,7 +124,13 @@ def api(path, token):
         with urllib.request.urlopen(req, timeout=30) as r:
             return json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", "replace")[:300]
+        raise DiscordHTTPError(e.code, e.read().decode("utf-8", "replace")[:300]) from None
+
+
+def api(path, token):
+    try:
+        return api_raw(path, token)
+    except DiscordHTTPError as e:
         if e.code == 401:
             sys.exit("  401 Unauthorized — the bot token is wrong or was regenerated.")
         if e.code == 403:
@@ -112,8 +140,8 @@ def api(path, token):
             sys.exit("  404 Not Found — wrong channel id, or the bot was never added\n"
                      "  to that server.")
         if e.code == 429:
-            sys.exit(f"  429 Rate limited. Wait and retry. {body}")
-        sys.exit(f"  HTTP {e.code}: {body}")
+            sys.exit(f"  429 Rate limited. Wait and retry. {e.body}")
+        sys.exit(f"  HTTP {e.code}: {e.body}")
 
 
 def check(token, channel) -> int:

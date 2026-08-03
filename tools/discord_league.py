@@ -5,9 +5,17 @@ Its own watermark file so it never steps on discord_commands.py (which reads
 the #lobby-stats channel). Uses the plain REST API over urllib -- same as
 the rest of the bot code.
 
-    python tools/discord_league.py            # process new commands
+    python tools/discord_league.py            # process new commands, once
+    python tools/discord_league.py --watch    # stay up and answer live
     python tools/discord_league.py --dry-run  # parse and reply-preview only
     python tools/discord_league.py --all      # ignore the watermark
+
+Without --watch this is a batch job: it answers whatever was typed since
+the last run and exits. Nothing is listening in between, so a command
+typed while it is not running gets silence until somebody runs it again.
+--watch is the fix -- it polls every few seconds and answers as people
+type, and it is written to survive network drops rather than exit on the
+first one.
 
 Understood in the channel (case-insensitive):
 
@@ -43,12 +51,15 @@ import argparse
 import json
 import re
 import sys
+import time
+import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
-from discord_pull import api, config as lobby_config      # noqa: E402
+from discord_pull import (api, api_raw, DiscordHTTPError,   # noqa: E402
+                          config as lobby_config)
 from discord_ask import approvers, post as post_msg       # noqa: E402
 import find_slot                                          # noqa: E402
 import tz_map                                             # noqa: E402
@@ -1092,23 +1103,116 @@ def do_confirm(args: str, uname: str) -> str:
 
 # ── Main loop ─────────────────────────────────────────────────────────
 
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__,
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--dry-run", action="store_true")
-    ap.add_argument("--all", action="store_true", help="ignore the watermark")
-    args = ap.parse_args()
+def poll_once(token: str, channel: str, allow, args) -> int:
+    """
+    Process every unread command once. Returns how many were answered.
 
-    token, channel = league_channel()
-    allow = approvers()
-
+    Raises DiscordHTTPError on API failure rather than exiting, so the
+    watch loop can decide whether it is worth retrying.
+    """
     after = None if args.all else (MARK.read_text(encoding="utf-8").strip()
                                    if MARK.exists() else None)
     q = f"/channels/{channel}/messages?limit=50"
     if after:
         q += "&after=" + after
-    msgs = sorted(api(q, token), key=lambda m: int(m["id"]))
+    msgs = sorted(api_raw(q, token), key=lambda m: int(m["id"]))
+    return _handle(msgs, token, channel, allow, args)
 
+
+def watch(token: str, channel: str, allow, args) -> int:
+    """
+    Poll forever so commands are answered as they are typed.
+
+    Discord has no way to push to a plain-REST client, so "instant" here
+    means a short poll: at the default 3s the worst case a user waits is
+    3s and the average is 1.5s, which in a chat window reads as instant.
+    One request per interval is 0.33/s against a global budget of 50/s,
+    so the cost of being responsive is negligible.
+
+    THE POINT OF THIS FUNCTION IS THAT IT DOES NOT DIE. A one-shot script
+    can exit on any error and a human sees it. A listener that exits on a
+    dropped packet just stops answering, and nobody finds out until
+    somebody complains that the bot ignored them -- which is exactly the
+    failure that started this. So transient errors back off and retry;
+    only genuinely unrecoverable ones (bad token, missing channel) stop
+    the loop, and those stop it loudly.
+    """
+    delay, backoff = args.interval, args.interval
+    print(f"  watching every {delay}s — Ctrl+C to stop")
+    while True:
+        try:
+            n = poll_once(token, channel, allow, args)
+            if n:
+                print(f"    ({n} handled)")
+            backoff = delay                      # healthy: reset the penalty
+        except DiscordHTTPError as e:
+            if not e.transient:
+                print(f"\n  STOPPING — {e}", file=sys.stderr)
+                print("  This will not fix itself: check the token, the channel "
+                      "id, and the bot's channel permissions.", file=sys.stderr)
+                return 1
+            backoff = min(backoff * 2, 300)
+            print(f"    {e.code} — retrying in {backoff}s", file=sys.stderr)
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
+            # Network down, DNS failure, laptop asleep. Always temporary.
+            backoff = min(backoff * 2, 300)
+            print(f"    network: {e} — retrying in {backoff}s", file=sys.stderr)
+        except KeyboardInterrupt:
+            print("\n  stopped")
+            return 0
+        except Exception as e:
+            # A bug in one command handler must not take the bot down with
+            # it; the message that triggered it is already past the
+            # watermark, so the loop moves on rather than wedging on it.
+            backoff = min(backoff * 2, 300)
+            print(f"    unexpected {type(e).__name__}: {e} — continuing in {backoff}s",
+                  file=sys.stderr)
+        try:
+            time.sleep(backoff)
+        except KeyboardInterrupt:
+            print("\n  stopped")
+            return 0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--all", action="store_true", help="ignore the watermark")
+    ap.add_argument("--watch", action="store_true",
+                    help="stay running and answer commands as they arrive")
+    ap.add_argument("--interval", type=float, default=3.0, metavar="SEC",
+                    help="seconds between polls in --watch mode (default 3)")
+    args = ap.parse_args()
+
+    token, channel = league_channel()
+    allow = approvers()
+
+    if args.watch:
+        if args.all:
+            return ap.error("--all replays the whole channel; not for --watch.")
+        return watch(token, channel, allow, args)
+
+    try:
+        poll_once(token, channel, allow, args)
+    except DiscordHTTPError as e:
+        return _explain(e)
+    return 0
+
+
+def _explain(e: DiscordHTTPError) -> int:
+    """One-shot mode: name the broken thing rather than dumping a status."""
+    msg = {401: "the bot token is wrong or was regenerated",
+           403: "the bot cannot read that channel — give it View Channel "
+                "+ Read Message History",
+           404: "wrong channel id, or the bot was never added to that server",
+           429: "rate limited; wait and retry"}.get(e.code, e.body)
+    print(f"  {e.code} — {msg}", file=sys.stderr)
+    return 1
+
+
+def _handle(msgs, token, channel, allow, args) -> int:
+    """Dispatch each message to its command and reply. Advances the mark."""
     newest, acted = None, 0
     dp = load_discord_players()
 
@@ -1171,9 +1275,12 @@ def main() -> int:
 
     if newest and not args.dry_run:
         MARK.write_text(newest, encoding="utf-8")
-    print(f"\n  {acted} command(s) handled"
-          + (f", watermark {newest}" if newest and not args.dry_run else ""))
-    return 0
+    # In --watch this runs every few seconds, so only speak when something
+    # actually happened; a heartbeat line per poll would bury the real ones.
+    if acted or not getattr(args, "watch", False):
+        print(f"  {acted} command(s) handled"
+              + (f", watermark {newest}" if newest and not args.dry_run else ""))
+    return acted
 
 
 if __name__ == "__main__":
