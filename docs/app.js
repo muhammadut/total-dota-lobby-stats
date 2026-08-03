@@ -1323,18 +1323,29 @@
      very long page in which every week looks the same; side by side, the
      shape of the season is visible at a glance and the current week can
      be scrolled to. */
-  function renderTimelineSeries(s) {
+  /* One match = one box with the two teams stacked, the way a tournament
+     bracket draws it. A flat "A vs B" line reads as a list of text; a
+     stacked pair reads as a fixture, and leaves an obvious place for each
+     team's series score to land once results are recorded. */
+  function renderMatchBox(s) {
     var late = s.slot === 2;
-    return '<div class="tl-series' + (late ? " is-late" : "") + '">' +
-      '<div class="tl-series__when">' +
-        '<span class="tl-dot' + (late ? " is-late" : "") + '"></span>' +
+    var sc = s.score || [0, 0];
+    var played = (s.games || []).length > 0;
+    function row(i) {
+      var tid = s.teams[i];
+      var won = played && sc[i] > sc[1 - i];
+      return '<div class="mb-row' + (won ? " is-won" : "") + '">' +
+        '<span class="team-chip team-chip--' + tid + '">' + tid + '</span>' +
+        '<span class="mb-team">' + esc(fxTeam(tid)) + '</span>' +
+        '<span class="mb-score">' + (played ? sc[i] : "–") + '</span>' +
+      '</div>';
+    }
+    return '<div class="mb' + (late ? " is-late" : "") + '">' +
+      '<div class="mb-when">' +
+        '<span class="mb-slot">' + (late ? "Late" : "Early") + '</span>' +
         esc(fxWindow(s)) +
       '</div>' +
-      '<div class="tl-series__teams">' +
-        '<span class="team-chip team-chip--' + s.teams[0] + '">' + s.teams[0] + '</span>' +
-        '<span class="tl-vs">vs</span>' +
-        '<span class="team-chip team-chip--' + s.teams[1] + '">' + s.teams[1] + '</span>' +
-      '</div>' +
+      row(0) + row(1) +
     '</div>';
   }
 
@@ -1345,7 +1356,7 @@
           return '<div class="tl-night">' +
             '<div class="tl-night__day">' + esc(n.day) + " " +
               esc(dayLabel(n.date)) + '</div>' +
-            n.series.map(renderTimelineSeries).join("") +
+            n.series.map(renderMatchBox).join("") +
           '</div>';
         }).join("");
         var isCur = w.week === cur;
@@ -1369,10 +1380,12 @@
 
   function drawList(host, cur) {
     host.innerHTML = FX.weeks.map(function (w) {
-      var nights = w.nights.map(function (n) {
-        return '<div class="fx-night">' +
-          '<div class="fx-night__day">' + esc(n.day) + " " +
-            esc(dayLabel(n.date)) + '</div>' +
+      var nights = w.nights.map(function (n, i) {
+        return '<div class="fx-night' + (i % 2 ? " is-alt" : "") + '">' +
+          '<div class="fx-night__day">' +
+            '<span class="fx-night__dow">' + esc(n.day) + '</span>' +
+            '<span class="fx-night__date">' + esc(dayLabel(n.date)) + '</span>' +
+          '</div>' +
           '<div class="fx-night__body">' +
             n.series.map(renderSeries).join("") +
           '</div>' +

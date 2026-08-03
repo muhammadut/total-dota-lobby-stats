@@ -286,6 +286,19 @@ The Schedule tab has two layouts, **Timeline** (default, one column per
 week scrolling sideways, current week scrolled into view) and **List**.
 Both were asked for; keep both.
 
+Timeline draws each match as a **box with the two teams stacked**, after
+the TI bracket overview — a flat `A vs B` line reads as prose, a stacked
+pair reads as a fixture and leaves an obvious slot for each team's score.
+There are no connector lines between columns and there must not be: this
+is a round-robin, nothing progresses from one week to the next, and
+bracket arrows would imply a knockout that does not exist.
+
+In List, a night is a **block, not another row**. It first shipped with
+the same hairline between nights as between the matches inside them, so
+Saturday and Sunday ran together as four identical lines. The seam
+between nights is now a full rule, alternate nights are tinted, and the
+date is stacked under the weekday.
+
 ### Team records come from fixtures, never from inference (2026-08-03)
 
 The Teams tab used to **infer** which team each side of a match belonged
