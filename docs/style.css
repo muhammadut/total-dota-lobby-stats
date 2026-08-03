@@ -1032,16 +1032,24 @@ td.none{ padding:2.2rem 1rem; }
   padding:.2rem .5rem; border-radius:var(--r-pill);
 }
 
+/* Nights are separate blocks with air between them. A tint alone was far
+   too weak -- Saturday and Sunday still read as one run of four rows. */
+.fx-week__body{ padding:.6rem; display:flex; flex-direction:column; gap:.6rem; }
+
 /* A night is a block, not another row. It used to carry the same hairline
    as the series inside it, so Saturday and Sunday ran together visually
    -- four near-identical lines with no seam. Now the seam between nights
    is a full rule and every other night is tinted. */
-.fx-night{ display:flex; align-items:stretch; border-top:2px solid var(--line); }
-.fx-night:first-child{ border-top:0; }
-.fx-night.is-alt{ background:rgba(22,23,26,.018); }
+.fx-night{
+  display:flex; align-items:stretch;
+  border:1px solid var(--line); border-radius:var(--r-sm);
+  overflow:hidden; background:var(--surface);
+}
+.fx-night.is-alt{ background:rgba(22,23,26,.022); }
 .fx-night__day{
   flex:0 0 7.6rem; padding:.85rem 1rem;
   border-right:1px solid var(--line);
+  background:rgba(22,23,26,.028);
   display:flex; flex-direction:column; justify-content:center; gap:.1rem;
 }
 .fx-night__dow{
@@ -1057,16 +1065,19 @@ td.none{ padding:2.2rem 1rem; }
 }
 .fx-series:first-child{ border-top:0; }
 
+/* Which slot a match is in is the single most consequential thing on
+   this row -- one is an evening, the other is 3 AM. Both badges are
+   therefore solid and legible at a glance. Slate and amber, never the
+   Radiant green or Dire red, which mean something else everywhere. */
 .fx-slot{
-  flex:0 0 auto; font-size:.68rem; font-weight:700; letter-spacing:.05em;
-  text-transform:uppercase; color:var(--ink-3);
-  border:1px solid var(--line); border-radius:var(--r-pill);
-  padding:.16rem .5rem;
+  flex:0 0 auto; font-size:.68rem; font-weight:800; letter-spacing:.06em;
+  text-transform:uppercase; color:#fff; background:#4a5464;
+  border-radius:var(--r-pill); padding:.2rem .58rem;
 }
-.fx-slot.is-late{ color:#8a5a10; border-color:rgba(138,90,16,.28); background:rgba(138,90,16,.06); }
+.fx-slot.is-late{ background:#b6791b; color:#fff; }
 
 .fx-when{
-  flex:0 0 13.5rem; font-size:.82rem; color:var(--ink-2);
+  flex:0 0 13.5rem; font-size:.84rem; color:var(--ink); font-weight:550;
   font-variant-numeric:tabular-nums;
 }
 .fx-teams{ flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:.45rem; }
@@ -1145,16 +1156,17 @@ td.none{ padding:2.2rem 1rem; }
 }
 .mb-when{
   display:flex; align-items:center; gap:.4rem;
-  padding:.3rem .5rem; font-size:.68rem; color:var(--ink-3);
+  padding:.32rem .5rem; font-size:.7rem; color:var(--ink-2); font-weight:600;
   background:rgba(22,23,26,.028); border-bottom:1px solid var(--line-2);
   font-variant-numeric:tabular-nums;
 }
 .mb-slot{
-  font-size:.58rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ink-4); border:1px solid var(--line); border-radius:var(--r-pill);
-  padding:.06rem .34rem; flex:0 0 auto;
+  font-size:.6rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; background:#4a5464; border-radius:var(--r-pill);
+  padding:.1rem .4rem; flex:0 0 auto;
 }
-.mb.is-late .mb-slot{ color:#8a5a10; border-color:rgba(138,90,16,.3); background:rgba(138,90,16,.07); }
+.mb.is-late .mb-slot{ background:#b6791b; }
+.mb.is-late .mb-when{ background:rgba(182,121,27,.09); }
 
 .mb-row{
   display:flex; align-items:center; gap:.45rem;
