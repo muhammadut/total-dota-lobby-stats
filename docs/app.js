@@ -1285,15 +1285,16 @@
     return t ? t.name : "Team " + id;
   }
 
-  /* The chip IS the team's name — every team is called "Team <n>", so
-     printing "1 Team 1 vs Team 2 2" said everything twice and made the
-     row wider than the column it lived in. Chips only. */
+  /* One button per team, carrying the whole name — not a numbered dot
+     next to the same words in plain text, which said everything twice. */
   function renderSeries(s) {
     var slotCls = s.slot === 2 ? " is-late" : "";
     var who = s.teams
-      ? '<span class="team-chip team-chip--' + s.teams[0] + '">' + s.teams[0] + '</span>' +
+      ? '<span class="team-pill team-pill--' + s.teams[0] + '">' +
+          esc(fxTeam(s.teams[0])) + '</span>' +
         '<span class="fx-vs">vs</span>' +
-        '<span class="team-chip team-chip--' + s.teams[1] + '">' + s.teams[1] + '</span>'
+        '<span class="team-pill team-pill--' + s.teams[1] + '">' +
+          esc(fxTeam(s.teams[1])) + '</span>'
       : '<span class="fx-tbd">' + esc(s.label || "To be decided") + '</span>';
     var bo = s.best_of === 5 ? "best of 5" : "best of 3";
     return '<div class="fx-series' + slotCls + '">' +
@@ -1337,6 +1338,7 @@
       var won = played && sc[i] > sc[1 - i];
       return '<div class="mb-row' + (won ? " is-won" : "") + '">' +
         '<span class="team-chip team-chip--' + tid + '">' + tid + '</span>' +
+        '<span class="mb-team">' + esc(fxTeam(tid)) + '</span>' +
         '<span class="mb-score">' + (played ? sc[i] : "–") + '</span>' +
       '</div>';
     }

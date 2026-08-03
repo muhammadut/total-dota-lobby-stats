@@ -1072,7 +1072,7 @@ td.none{ padding:2.2rem 1rem; }
    tracks make alignment a property of the layout rather than a hope. */
 .fx-series{
   display:grid;
-  grid-template-columns:4.9rem 15.5rem max-content 1fr;
+  grid-template-columns:4.9rem 15.5rem 16rem 1fr;
   align-items:center; gap:.85rem;
   padding:.62rem 1rem; border-top:1px solid var(--line-2);
 }
@@ -1093,12 +1093,23 @@ td.none{ padding:2.2rem 1rem; }
   flex:0 0 13.5rem; font-size:.84rem; color:var(--ink); font-weight:550;
   font-variant-numeric:tabular-nums;
 }
-.fx-teams{ display:flex; align-items:center; gap:.5rem; }
+.fx-teams{ display:flex; align-items:center; gap:.55rem; }
 .fx-vs{ font-size:.74rem; color:var(--ink-4); font-style:italic; }
 .fx-tbd{ font-size:.86rem; color:var(--ink-3); font-style:italic; }
 .fx-bo{ font-size:.74rem; color:var(--ink-4); text-align:right; }
 
-.fx-series .team-chip{ width:1.75rem; height:1.75rem; font-size:.86rem; }
+/* The team button: the colour and the name in ONE element, equal width
+   on both sides so every row's "vs" sits on the same axis. */
+.team-pill{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:6.2rem; padding:.32rem .7rem; border-radius:var(--r-pill);
+  font-size:.82rem; font-weight:650; color:#fff; letter-spacing:-.01em;
+  white-space:nowrap;
+}
+.team-pill--1{ background:#3b4a63; }
+.team-pill--2{ background:#8b5e34; }
+.team-pill--3{ background:#2f6b5b; }
+.team-pill--4{ background:#8b3d5c; }
 
 @media (max-width:760px){
   .fx-night{ display:block; }
@@ -1188,12 +1199,17 @@ td.none{ padding:2.2rem 1rem; }
 .mb.is-late .mb-when{ background:rgba(182,121,27,.09); }
 
 .mb-row{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:.34rem .55rem;
+  display:flex; align-items:center; gap:.45rem;
+  padding:.36rem .5rem;
 }
 .mb-row + .mb-row{ border-top:1px solid var(--line-2); }
 .mb-row.is-won{ background:var(--radiant-bg); }
-.mb-row .team-chip{ width:1.8rem; height:1.8rem; font-size:.88rem; }
+.mb-row .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
+.mb-team{
+  flex:1 1 auto; min-width:0; font-size:.84rem; font-weight:600; color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.mb-row.is-won .mb-team{ font-weight:750; }
 .mb-score{
   flex:0 0 auto; font-size:.8rem; font-weight:700; color:var(--ink-4);
   font-variant-numeric:tabular-nums; min-width:1ch; text-align:right;
