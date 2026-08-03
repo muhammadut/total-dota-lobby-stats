@@ -200,6 +200,8 @@ data/scheduling.json   week_of, availability, upcoming, archive
 data/players_tz.json   canonical name -> IANA zone
 data/discord_players.json   discord uid -> canonical name
 data/avail_pending.json     !avail messages the regex could not read
+data/fixtures.json          the season schedule (GENERATED — never hand-edit)
+tools/make_fixtures.py      generates it, and self-checks fairness
 tools/discord_league.py     the bot (plain Python, NO LLM at runtime)
 tools/avail_llm.py          drains that queue, with a model
 tools/find_slot.py          DST-safe slot ranking
@@ -241,6 +243,39 @@ shipped a stale build once.
   (`GMT+1`, a fixed offset that is wrong all winter).
 - **Read the channel before theorising.** Every real bug this week was
   found in the message log, not the code.
+
+### The season schedule (added 2026-08-03)
+
+Fixed weekly fixtures, decided up front, replacing "find a slot when both
+teams are ready". Four teams split into two matches exactly three ways —
+`(1v2,3v4)`, `(1v3,2v4)`, `(1v4,2v3)` — and each split is one night: two
+best-of-three series, one per slot, so every team plays once and can watch
+the other. Cycling the three splits over 12 nights gives 4 full cycles.
+
+```
+Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
+6 weekends regular season + 2 playoff weekends, 8 Aug -> 27 Sep
+each team: 12 best-of-threes, 6 of them late; every pair meets 4x
+```
+
+**`make_fixtures.py` refuses to write a schedule that isn't fair** — it
+checks that every pair meets equally often, that the 3 AM slot is shared
+evenly, and that every team plays the same number of series. Those are
+exactly the errors nobody notices until the season is over.
+
+**Slot 2 is the next calendar day.** A Saturday-night late match is Sunday
+3 AM; a Sunday-night one is Monday 3 AM, a work morning. The site prints
+the weekday with every time for this reason.
+
+**Times are 12-hour everywhere, on the user's explicit instruction.** The
+Schedule tab renders each series into every league timezone at *export*
+time (`export_web.py::build_fixtures`) so the browser never does timezone
+maths — same reasoning as `build_coord`.
+
+`LEAGUE_ZONES` in `export_web.py` is a fixed list, not derived from
+`players_tz.json`: the people in the most awkward zones (Malaysia at
+2 AM–5 AM) are exactly the ones who haven't registered, so deriving it
+would quietly drop the worst-affected row.
 
 ### A rejected `!avail` is kept, not dropped (added 2026-08-03)
 

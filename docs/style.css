@@ -1006,3 +1006,79 @@ td.none{ padding:2.2rem 1rem; }
   color:var(--ink-3); font-size:.78rem;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
+
+/* ── Schedule (season fixtures) ─────────────────────────────────────
+   A week is a card; a night is a row inside it; a series is a line.
+   Colour stays rationed: team chips carry their existing identity
+   colours and the only new accent is the "late slot" marker, because
+   3 AM is the one thing on this tab a player must not misread. */
+
+.fx-week{ margin:0 0 .85rem; overflow:hidden; }
+.fx-week.is-current{ border-color:var(--ink-4); box-shadow:var(--sh-2), 0 0 0 2px rgba(22,23,26,.05); }
+
+.fx-week__head{
+  display:flex; align-items:center; gap:.6rem;
+  padding:.7rem 1rem; border-bottom:1px solid var(--line-2);
+  background:linear-gradient(180deg, rgba(22,23,26,.016), transparent);
+}
+.fx-week__n{ font-weight:650; font-size:.9rem; color:var(--ink); letter-spacing:-.01em; }
+.fx-week__phase{
+  font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--ink-3);
+}
+.fx-week__now{
+  margin-left:auto; font-size:.7rem; font-weight:700; letter-spacing:.04em;
+  text-transform:uppercase; color:#fff; background:var(--ink);
+  padding:.2rem .5rem; border-radius:var(--r-pill);
+}
+
+.fx-night{ display:flex; align-items:stretch; border-top:1px solid var(--line-2); }
+.fx-night:first-child{ border-top:0; }
+.fx-night__day{
+  flex:0 0 7.2rem; padding:.8rem 1rem;
+  font-size:.82rem; font-weight:600; color:var(--ink-2);
+  border-right:1px solid var(--line-2);
+  display:flex; align-items:center;
+}
+.fx-night__body{ flex:1 1 auto; min-width:0; }
+
+.fx-series{
+  display:flex; align-items:center; gap:.75rem;
+  padding:.62rem 1rem; border-top:1px solid var(--line-2);
+}
+.fx-series:first-child{ border-top:0; }
+
+.fx-slot{
+  flex:0 0 auto; font-size:.68rem; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--ink-3);
+  border:1px solid var(--line); border-radius:var(--r-pill);
+  padding:.16rem .5rem;
+}
+.fx-slot.is-late{ color:#8a5a10; border-color:rgba(138,90,16,.28); background:rgba(138,90,16,.06); }
+
+.fx-when{
+  flex:0 0 13.5rem; font-size:.82rem; color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.fx-teams{ flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:.45rem; }
+.fx-name{
+  font-size:.88rem; font-weight:550; color:var(--ink);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.fx-vs{ font-size:.74rem; color:var(--ink-4); font-style:italic; flex:0 0 auto; }
+.fx-tbd{ font-size:.86rem; color:var(--ink-3); font-style:italic; }
+.fx-bo{ flex:0 0 auto; font-size:.74rem; color:var(--ink-4); }
+
+.fx-series .team-chip{ width:1.45rem; height:1.45rem; font-size:.74rem; }
+
+@media (max-width:760px){
+  .fx-night{ display:block; }
+  .fx-night__day{
+    border-right:0; border-bottom:1px solid var(--line-2);
+    padding:.55rem 1rem; flex:none;
+  }
+  .fx-series{ flex-wrap:wrap; gap:.4rem .6rem; }
+  .fx-when{ flex:0 0 auto; }
+  .fx-teams{ flex:1 0 100%; }
+  .fx-bo{ margin-left:auto; }
+}

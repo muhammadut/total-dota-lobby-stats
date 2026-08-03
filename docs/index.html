@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=e1e85269">
+<link rel="stylesheet" href="style.css?v=d6e0b685">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111316'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%23e8554a' stroke-width='2'/%3E%3Cpath d='M16 11l4.6 5-4.6 5-4.6-5z' fill='%2317915a'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -47,6 +47,7 @@
   <nav class="tabs glass" role="tablist" aria-label="Sections">
     <button class="tab is-active" role="tab" aria-selected="true"  data-view="standings">Standings</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="teams">Teams</button>
+    <button class="tab"           role="tab" aria-selected="false" data-view="schedule">Schedule</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="coord">Coord</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="duos">Duos</button>
     <button class="tab"           role="tab" aria-selected="false" data-view="matches">Matches</button>
@@ -143,6 +144,23 @@
     <div class="teams-grid" id="teamsGrid" aria-label="Team rosters"></div>
 
     <p class="note"><b>Team assignment is inferred</b> from the roster majority on each side of every match — if 3 or more players on one side belong to a team, that side is counted as that team's. Matches predating the league (July 2026) still show under Standings but do not affect team records until they're explicitly tagged during ingest.</p>
+  </section>
+
+  <section id="view-schedule" class="view">
+    <div class="sec-head">
+      <div>
+        <h2>Schedule</h2>
+        <p>Every week of the season. Two <b>best-of-three</b> matches a night, Saturday and Sunday — one team pair plays the early slot, the other the late one, so whoever isn't playing can watch. Pick your country to see every time in your own clock.</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="segmented glass" id="fxZone" role="group" aria-label="Show times in"></div>
+    </div>
+
+    <div id="scheduleBody"></div>
+
+    <p class="note">The late slot starts at <b>3:00 AM in Pakistan</b>, which is the next morning — a Saturday-night late match is really Sunday at 3 AM, and a Sunday-night one lands on Monday. Each team takes the late slot <b>6 times out of 12</b>, and every pair of teams meets <b>4 times</b> before the playoffs. Times are worked out with full daylight-saving awareness for each country.</p>
   </section>
 
   <section id="view-coord" class="view">
@@ -255,8 +273,8 @@
   <div class="drawer__body" id="drawerBody"></div>
 </aside>
 
-<script src="heroes.js?v=e1e85269"></script>
-<script src="data.js?v=e1e85269"></script>
-<script src="app.js?v=e1e85269"></script>
+<script src="heroes.js?v=d6e0b685"></script>
+<script src="data.js?v=d6e0b685"></script>
+<script src="app.js?v=d6e0b685"></script>
 </body>
 </html>

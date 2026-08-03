@@ -173,7 +173,10 @@
     // 99%. Deliberately stricter than the textbook 95%: this is a
     // participation league, and a four-game record should not sit
     // alongside a twenty-game one.
-    evidence: 2.576
+    evidence: 2.576,
+    // Schedule times default to Pakistan: it is the league's reference
+    // clock, the one the slots were chosen in, and where most players are.
+    fxZone: "Pakistan"
   };
   var cur = { matches: [], players: [], heroes: [] };
 
@@ -1246,6 +1249,108 @@
      given. This keeps zoneinfo out of the browser -- Intl.DateTimeFormat
      has patchy IANA support in older mobile browsers. */
 
+  /* ── Schedule (season fixtures) ───────────────────────────────────
+     The whole season, week by week. Every series arrives from
+     export_web.py already rendered into each league timezone (see
+     build_fixtures), so switching country here is a lookup, not a
+     conversion -- the browser never does timezone maths.
+
+     Times are 12-hour throughout. The league reads this tab to decide
+     when to show up, and "23:00" is one mental conversion away from
+     turning up twelve hours late. */
+
+  var FX = D.fixtures || null;
+
+  function fxZones() {
+    var first = FX && FX.weeks[0] && FX.weeks[0].nights[0].series[0];
+    return (first && first.local) ? first.local.map(function (l) { return l.label; }) : [];
+  }
+
+  function drawZonePicker() {
+    var host = $("#fxZone");
+    if (!host || !FX) return;
+    var zones = fxZones();
+    if (!zones.length) return;
+    host.innerHTML = '<span class="seg-label">Times in</span>' +
+      zones.map(function (z) {
+        return '<button class="seg' + (z === state.fxZone ? " is-on" : "") +
+               '" data-zone="' + esc(z) + '">' + esc(z) + "</button>";
+      }).join("");
+    Array.prototype.forEach.call(host.querySelectorAll(".seg"), function (b) {
+      b.addEventListener("click", function () {
+        state.fxZone = b.getAttribute("data-zone");
+        drawZonePicker();
+        drawSchedule();
+      });
+    });
+  }
+
+  function fxWindow(s) {
+    var hit = (s.local || []).filter(function (l) { return l.label === state.fxZone; })[0];
+    return hit ? hit.window : s.pkt_window;
+  }
+
+  function fxTeam(id) {
+    var t = ((D.league && D.league.teams) || []).filter(function (x) { return x.id === id; })[0];
+    return t ? t.name : "Team " + id;
+  }
+
+  function renderSeries(s) {
+    var slotCls = s.slot === 2 ? " is-late" : "";
+    var who = s.teams
+      ? '<span class="team-chip team-chip--' + s.teams[0] + '">' + s.teams[0] + '</span>' +
+        '<span class="fx-name">' + esc(fxTeam(s.teams[0])) + '</span>' +
+        '<span class="fx-vs">vs</span>' +
+        '<span class="fx-name">' + esc(fxTeam(s.teams[1])) + '</span>' +
+        '<span class="team-chip team-chip--' + s.teams[1] + '">' + s.teams[1] + '</span>'
+      : '<span class="fx-tbd">' + esc(s.label || "To be decided") + '</span>';
+    var bo = s.best_of === 5 ? "best of 5" : "best of 3";
+    return '<div class="fx-series' + slotCls + '">' +
+      '<span class="fx-slot' + slotCls + '">' + (s.slot === 2 ? "Late" : "Early") + '</span>' +
+      '<span class="fx-when">' + esc(fxWindow(s)) + '</span>' +
+      '<span class="fx-teams">' + who + '</span>' +
+      '<span class="fx-bo">' + bo + '</span>' +
+    '</div>';
+  }
+
+  function drawSchedule() {
+    var host = $("#scheduleBody");
+    if (!host) return;
+    if (!FX || !FX.weeks || !FX.weeks.length) {
+      host.innerHTML = '<div class="coord-section coord-section--empty">' +
+        'No schedule has been generated yet.</div>';
+      return;
+    }
+    var today = new Date().toISOString().slice(0, 10);
+    host.innerHTML = FX.weeks.map(function (w) {
+      var nights = w.nights.map(function (n) {
+        var d = n.date.split("-");
+        var label = n.day + " " + Number(d[2]) + " " + MON[Number(d[1]) - 1];
+        return '<div class="fx-night">' +
+          '<div class="fx-night__day">' + esc(label) + '</div>' +
+          '<div class="fx-night__body">' +
+            n.series.map(renderSeries).join("") +
+          '</div>' +
+        '</div>';
+      }).join("");
+      // "Now" = the first week whose last night has not yet passed.
+      var last = w.nights[w.nights.length - 1].date;
+      var isNext = last >= today;
+      var seen = FX.weeks.filter(function (x) {
+        return x.nights[x.nights.length - 1].date >= today;
+      })[0];
+      var current = isNext && seen && seen.week === w.week;
+      return '<div class="fx-week card' + (current ? " is-current" : "") + '">' +
+        '<div class="fx-week__head">' +
+          '<span class="fx-week__n">Week ' + w.week + '</span>' +
+          '<span class="fx-week__phase">' + esc(w.phase) + '</span>' +
+          (current ? '<span class="fx-week__now">This week</span>' : '') +
+        '</div>' +
+        '<div class="fx-week__body">' + nights + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
   var COORD = D.coord || null;
 
   var TZ_LABELS = [
@@ -1426,6 +1531,8 @@
     drawDuos();
     drawTeams();
     drawCoord();
+    drawZonePicker();
+    drawSchedule();
     var none = cur.matches.length === 0;
     $("#empty").hidden = !none;
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {

@@ -23,6 +23,7 @@ OUT = ROOT / "docs" / "data.js"
 TEAMS = ROOT / "data" / "teams.json"
 SCHEDULING = ROOT / "data" / "scheduling.json"
 PLAYERS_TZ = ROOT / "data" / "players_tz.json"
+FIXTURES = ROOT / "data" / "fixtures.json"
 
 # Path for importing tools.find_slot
 sys.path.insert(0, str(ROOT / "tools"))
@@ -97,6 +98,7 @@ def main() -> int:
     # than in the browser because zoneinfo does DST math correctly and the
     # browser would need heavy tzdata polyfills otherwise.
     coord = build_coord(league)
+    fixtures = build_fixtures()
 
     payload = {
         "meta": {
@@ -107,6 +109,7 @@ def main() -> int:
         "matches": matches,
         "league": league,
         "coord": coord,
+        "fixtures": fixtures,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -196,6 +199,64 @@ HERO_SPECIAL = {
     "Wraith King": "skeleton_king", "Zeus": "zuus",
 }
 CDN = "https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes"
+
+
+# The zones the league actually spans, from the captains' roster sheet.
+# Fixed rather than derived from players_tz.json, because the people in the
+# most awkward zones (Malaysia especially) are exactly the ones who have not
+# registered yet -- deriving it would quietly drop the worst-affected row.
+# Anything anyone HAS registered gets unioned in, so it stays truthful.
+LEAGUE_ZONES = [
+    ("Pakistan", "Asia/Karachi"),
+    ("Saudi", "Asia/Riyadh"),
+    ("Sweden", "Europe/Stockholm"),
+    ("UK", "Europe/London"),
+    ("US East", "America/New_York"),
+    ("Malaysia", "Asia/Kuala_Lumpur"),
+]
+
+
+def build_fixtures() -> dict | None:
+    """
+    Emit LOBBY.fixtures: the season schedule with each series pre-rendered
+    into every league timezone.
+
+    The conversion happens HERE for the same reason build_coord's does --
+    zoneinfo gets DST right and the browser would need a tzdata polyfill to
+    match it. Times are formatted 12-hour on the way out because that is how
+    the league reads them; a 24-hour string is one mental conversion away
+    from a player showing up twelve hours late.
+    """
+    if not FIXTURES.exists():
+        return None
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    data = json.loads(FIXTURES.read_text(encoding="utf-8"))
+
+    zones = list(LEAGUE_ZONES)
+    if PLAYERS_TZ.exists():
+        known = set(json.loads(PLAYERS_TZ.read_text(encoding="utf-8"))
+                    .get("players", {}).values())
+        have = {z for _, z in zones}
+        for z in sorted(known - have):
+            zones.append((z.split("/")[-1].replace("_", " "), z))
+
+    def fmt(dt):
+        return dt.strftime("%a %I:%M %p").replace(" 0", " ")
+
+    for wk in data.get("weeks", []):
+        for night in wk.get("nights", []):
+            for s in night.get("series", []):
+                start = datetime.fromisoformat(s["start_utc"])
+                end = datetime.fromisoformat(s["end_utc"])
+                s["local"] = [
+                    {"label": label,
+                     "window": f"{fmt(start.astimezone(ZoneInfo(z)))} - "
+                               f"{fmt(end.astimezone(ZoneInfo(z)))}"}
+                    for label, z in zones
+                ]
+    return {k: v for k, v in data.items() if not k.startswith("_")}
 
 
 def sync_hero_slugs(cur) -> None:
