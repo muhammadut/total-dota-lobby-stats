@@ -95,6 +95,270 @@
           "end_local": "06:00"
         }
       ]
+    },
+    "Stoic": {
+      "declared_at": "2026-08-03T10:17:58.533443Z",
+      "declared_in_tz": "Asia/Karachi",
+      "windows": [
+        {
+          "date": "2026-08-04",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-11",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        }
+      ]
+    },
+    "Oden jr": {
+      "declared_at": "2026-08-03T12:06:55.115149Z",
+      "declared_in_tz": "Asia/Karachi",
+      "windows": [
+        {
+          "date": "2026-08-04",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-11",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        }
+      ]
+    },
+    "SOMA [L3vi]": {
+      "declared_at": "2026-08-03T12:31:18.677304Z",
+      "declared_in_tz": "Europe/London",
+      "windows": [
+        {
+          "date": "2026-08-04",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "19:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-11",
+          "start_local": "00:00",
+          "end_local": "01:00"
+        }
+      ]
+    },
+    "vAnzO": {
+      "declared_at": "2026-08-03T15:47:04.820272Z",
+      "declared_in_tz": "Europe/London",
+      "windows": [
+        {
+          "date": "2026-08-04",
+          "start_local": "00:00",
+          "end_local": "23:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "00:00",
+          "end_local": "23:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "00:00",
+          "end_local": "07:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "00:00",
+          "end_local": "07:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "12:00",
+          "end_local": "23:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "12:00",
+          "end_local": "23:00"
+        }
+      ]
     }
   },
   "upcoming": [

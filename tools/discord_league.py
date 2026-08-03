@@ -286,6 +286,46 @@ def do_who() -> str:
     return "\n".join(lines)
 
 
+def resolve_zone(text: str):
+    """
+    Resolve a timezone the way people write it, not the way a parser wants.
+
+    tz_map.resolve wants one clean token. Someone typing their timezone
+    into a chat box does not: `UK (GMT+1)` was rejected outright, which
+    is a strange thing to tell a person who just told you exactly where
+    they are, twice.
+
+    Tries, in order: the string as given; the parenthetical removed
+    (`UK (GMT+1)` -> `UK`); the parenthetical alone (`-> GMT+1`); then
+    each bare word. Outside-the-brackets wins over inside deliberately --
+    `UK` maps to Europe/London and follows DST, while `GMT+1` is a fixed
+    offset that would be an hour wrong every winter.
+
+    Returns an IANA name, or None if nothing resolved.
+    """
+    if not text:
+        return None
+    raw = text.strip()
+    inner = re.findall(r"[\(\[]([^\)\]]+)[\)\]]", raw)
+    outer = re.sub(r"[\(\[][^\)\]]*[\)\]]", " ", raw)
+
+    seen, cands = set(), []
+    for c in [raw, outer, *inner, *outer.split(), *[w for i in inner for w in i.split()]]:
+        c = c.strip(" ,.;:-").strip()
+        if c and c.lower() not in seen:
+            seen.add(c.lower())
+            cands.append(c)
+
+    for c in cands:
+        try:
+            z = tz_map.resolve(c)
+            if z:
+                return z
+        except Exception:
+            continue
+    return None
+
+
 def do_register(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> str:
     """
     Two forms:
@@ -341,13 +381,27 @@ def do_register(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> 
     if len(parts) < 2:
         return "Need a name AND a timezone. Try `!register Cpx PKT`."
 
+    # Prefer a split where the NAME resolves to a roster player, not just
+    # one where the tail happens to look like a timezone. "HURR UK (GMT+1)"
+    # splits two ways that both leave a valid-looking zone -- ("HURR UK",
+    # "(GMT+1)") and ("HURR", "UK (GMT+1)") -- and only the second has a
+    # real player on the left. Checking the roster first picks it; without
+    # that, the bot rejects a perfectly clear message by inventing a player
+    # called "HURR UK".
+    _teams_for_split = load_teams()
+    for split_at in range(1, len(parts)):
+        if resolve_to_roster(" ".join(parts[:split_at]), _teams_for_split)[0] \
+           and resolve_zone(" ".join(parts[split_at:])):
+            parts = [" ".join(parts[:split_at]), " ".join(parts[split_at:])]
+            break
+
     iana = None
     nick = None
     for split_at in range(len(parts) - 1, 0, -1):
         name_str = " ".join(parts[:split_at])
         tz_str   = " ".join(parts[split_at:])
         try:
-            iana = tz_map.resolve(tz_str)
+            iana = resolve_zone(tz_str)
             nick = name_str
             break
         except ValueError:
@@ -554,7 +608,7 @@ def do_tz(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> str:
 
     # Try 1: whole thing as a tz (self-service). Handles !tz Eastern time.
     try:
-        iana = tz_map.resolve(txt)
+        iana = resolve_zone(txt)
         return set_self(iana)
     except ValueError:
         pass
@@ -570,7 +624,7 @@ def do_tz(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> str:
         name_str = " ".join(parts[:split_at])
         tz_str   = " ".join(parts[split_at:])
         try:
-            iana = tz_map.resolve(tz_str)
+            iana = resolve_zone(tz_str)
         except ValueError:
             continue
         result = set_other(name_str, iana)

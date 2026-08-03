@@ -305,6 +305,39 @@ check("confirm bad input — error message",
 
 
 # ═════════════════════════════════════════════════════════════════════
+#  Timezones as people actually write them
+# ═════════════════════════════════════════════════════════════════════
+group("timezone resolution")
+
+check("tz — 'UK (GMT+1)' resolves (was rejected in-channel)",
+      L.resolve_zone("UK (GMT+1)") == "Europe/London", L.resolve_zone("UK (GMT+1)"))
+check("tz — prefers the DST-aware zone over the fixed offset",
+      L.resolve_zone("UK (GMT+1)") == "Europe/London", L.resolve_zone("UK (GMT+1)"))
+check("tz — bare parenthetical still works",
+      L.resolve_zone("(GMT+1)") is not None, L.resolve_zone("(GMT+1)"))
+check("tz — 'Eastern time'", L.resolve_zone("Eastern time") == "America/New_York")
+check("tz — 'pakistan'", L.resolve_zone("pakistan") == "Asia/Karachi")
+check("tz — trailing punctuation tolerated", L.resolve_zone("PKT,") == "Asia/Karachi")
+check("tz — nonsense still returns None", L.resolve_zone("nonsense zone") is None)
+
+# The name/zone split must prefer a real roster player on the left.
+reset_state()
+dp = L.load_discord_players()
+r = L.do_register("HURR UK (GMT+1)", "hurrali", "222000000000000002", dp, False)
+check("register — 'HURR UK (GMT+1)' binds HURR, not a player called 'HURR UK'",
+      "HURR [PK_]" in r and "HURR UK" not in r, r)
+check("register — and gets Europe/London",
+      L.load_players_tz()["players"].get("HURR [PK_]") == "Europe/London",
+      L.load_players_tz()["players"])
+
+reset_state()
+r = L.do_register("Rogue Agent Asia/Karachi", "x", "222000000000000009",
+                  L.load_discord_players(), False)
+check("register — two-word NAME still splits correctly",
+      "Rogue Agent" in r and "Registered" in r, r)
+
+
+# ═════════════════════════════════════════════════════════════════════
 #  !avail shorthand — every one of these is a line a real player typed
 #  in #dota-league-2026 and had rejected, or typed the long way because
 #  the short way did not exist.
