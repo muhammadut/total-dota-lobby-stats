@@ -293,12 +293,49 @@ check("readiness — shows progress bar",
 group("!confirm")
 
 r = L.do_confirm("1 vs 3 1", "ut70")
+# "MATCH SCHEDULED" or "MATCH RESCHEDULED" -- which one comes back depends
+# on whether this pairing is already booked for the current week, and the
+# real scheduling.json usually means it is. Both are success.
 check("confirm '1 vs 3 1' — writes upcoming or rejects with reason",
-      "MATCH SCHEDULED" in r or "No slots" in r or "out of range" in r, r)
+      "MATCH" in r or "No slots" in r or "out of range" in r, r)
 
 r = L.do_confirm("bad input", "ut70")
 check("confirm bad input — error message",
       "Format" in r, r)
+
+# Re-confirming must REPLACE, not append. Two bookings for one game put
+# the same fixture on the Coord tab twice, the stale one carrying an
+# out-of-date `missing` roster, with nothing to say which is current.
+# This is the regression that shipped on 2026-08-02.
+def _upcoming():
+    return L.load_scheduling().get("upcoming", [])
+
+def _count(pair):
+    return sum(1 for e in _upcoming() if sorted(e.get("match_up") or []) == sorted(pair))
+
+before = _count([1, 3])
+r1 = L.do_confirm("1 vs 3 1", "ut70")
+mid = _count([1, 3])
+r2 = L.do_confirm("1 vs 3 1", "ut70")
+after = _count([1, 3])
+booked = "MATCH" in r1 and "MATCH" in r2      # slots existed for the pair
+
+check("confirm twice, same slot — one booking, not two",
+      (not booked) or after == mid, f"before={before} mid={mid} after={after}")
+check("confirm twice — second reply says RESCHEDULED",
+      (not booked) or "RESCHEDULED" in r2, r2)
+
+# Reversed pairing is the same game, so it must also replace.
+r3 = L.do_confirm("3 vs 1 1", "ut70")
+check("confirm reversed pairing — still one booking",
+      (not booked) or _count([1, 3]) == mid, f"count={_count([1,3])}")
+
+# A different pairing is a different game and must be added, not swallowed.
+n_before = len(_upcoming())
+r4 = L.do_confirm("2 vs 4 1", "ut70")
+check("confirm a different pairing — added alongside",
+      "MATCH" not in r4 or len(_upcoming()) == n_before + 1,
+      f"{n_before} -> {len(_upcoming())}")
 
 
 # ═════════════════════════════════════════════════════════════════════

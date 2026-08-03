@@ -981,6 +981,34 @@ def do_find(args: str) -> str:
     return "\n\n".join(chunks)
 
 
+def _same_fixture(entry: dict, a: int, b: int,
+                  week_of: str | None, start_utc: str) -> bool:
+    """
+    Is `entry` the same booking as the one being confirmed?
+
+    Pairing is compared unordered, because `!confirm 3 vs 1` and
+    `!confirm 1 vs 3` name the same game.
+
+    WEEK, NOT TIME, is the identity where a week is known. Two teams meet
+    once per week, so re-confirming them into a *different* slot is a
+    reschedule and must replace -- keying on start time instead would
+    leave the abandoned slot sitting on the site as a second fixture,
+    which is the same bug in a different shape.
+
+    `upcoming` survives !newweek, so entries from earlier weeks are
+    legitimately separate and must NOT be replaced -- hence the week
+    check rather than pairing alone. Entries written before week_of was
+    recorded have none, so those fall back to matching on start time,
+    which is exact and cannot swallow an unrelated fixture.
+    """
+    if sorted(entry.get("match_up") or []) != sorted([a, b]):
+        return False
+    entry_week = entry.get("week_of")
+    if entry_week and week_of:
+        return entry_week == week_of
+    return entry.get("start_utc") == start_utc
+
+
 def do_confirm(args: str, uname: str) -> str:
     """
     !confirm 1 vs 3 N  -- lock slot N for the given team pair.
@@ -1015,6 +1043,7 @@ def do_confirm(args: str, uname: str) -> str:
     upcoming_entry = {
         "match_up":       [a, b],
         "match_up_names": [team_names[a], team_names[b]],
+        "week_of":        week_of,
         "start_utc":      payload["slots"][0]["start_utc"],
         "end_utc":        payload["slots"][0]["end_utc"],
         "duration_min":   payload["slots"][0]["duration_min"],
@@ -1024,15 +1053,39 @@ def do_confirm(args: str, uname: str) -> str:
         "confirmed_by":   uname,
         "confirmed_at":   datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
-    sched.setdefault("upcoming", []).append(upcoming_entry)
+
+    # Re-confirming a fixture REPLACES it; it does not add a second one.
+    #
+    # Running !confirm twice for the same pairing is normal, not a mistake:
+    # people re-run it after somebody posts availability so the booking
+    # picks up the fuller roster. Appending unconditionally turned that
+    # into two bookings for one game on the Coord tab -- and the stale one
+    # carried the OLD `missing` list, so the wrong roster was on display
+    # with nothing to say which row was current. That happened on
+    # 2026-08-02: Team 1 vs Team 3 was confirmed at 23:54 and again at
+    # 00:58, and the site showed the fixture twice.
+    upcoming = sched.setdefault("upcoming", [])
+    idx_old  = next((i for i, e in enumerate(upcoming)
+                     if _same_fixture(e, a, b, week_of, upcoming_entry["start_utc"])), None)
+    if idx_old is None:
+        upcoming.append(upcoming_entry)
+        verb = "MATCH SCHEDULED"
+    else:
+        prior = upcoming[idx_old]
+        upcoming[idx_old] = upcoming_entry
+        verb = "MATCH RESCHEDULED"
     save_json(SCHEDULING, sched)
 
     tz_lines = "\n".join(f"  {r['zone_label']}: {r['local'][11:16]}"
                          for r in payload["slots"][0]["renderings"])
-    return (f"✅ **MATCH SCHEDULED**\n"
+    moved = ""
+    if verb == "MATCH RESCHEDULED" and prior.get("start_utc") != upcoming_entry["start_utc"]:
+        moved = f"Moved from `{str(prior.get('start_utc'))[:16].replace('T', ' ')} UTC`.\n"
+    return (f"✅ **{verb}**\n"
             f"{team_names[a]} vs {team_names[b]}\n"
             f"`{chosen['start_utc'].strftime('%a %d %b · %H:%M UTC')}` "
             f"(window: {chosen['duration_min']} min)\n"
+            f"{moved}"
             f"```\n{tz_lines}\n```\n"
             f"Added to the site: https://muhammadut.github.io/total-dota-lobby-stats/#coord")
 
