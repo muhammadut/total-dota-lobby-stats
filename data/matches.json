@@ -1158,6 +1158,60 @@
         {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 17, "kills": 5, "deaths": 18, "assists": 17, "net_worth": 9782, "last_hits": 45, "denies": 2, "gpm": 298},
         {"name": "HELL-ANGEL-", "side": "dire", "hero": "Axe", "hero_level": 21, "kills": 5, "deaths": 11, "assists": 14, "net_worth": 16976, "last_hits": 228, "denies": 8, "gpm": 422}
       ]
+    },
+    {
+      "source_ref": "screenshot-7",
+      "dota_match_id": null,
+      "played_on": "2026-08-03",
+      "played_at": "2026-08-03 18:20",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 58,
+      "dire_score": 54,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only, 5120x2160 local capture. IDENTITY OVERRIDE: the Dire Abaddon slot reads `rtz [FUBU]` on screen but is recorded as UT — UT was playing on rtz's account and said so at ingest. This is a one-off for this match, NOT a merge: `rtz [FUBU]` is an existing alias of `samundar khan`, so transcribing it literally would have credited the game to the wrong person. Neither UT nor samundar khan appears elsewhere in this match, so the override creates no co-occurrence conflict. Radiant kills 55 vs score 58 is a gap of three, so the Radiant kill column was re-read at 3x and stands at 8/7/6/19/15 — three tower kills. Dire chain exact.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Leshrac", "hero_level": 30, "kills": 8, "deaths": 9, "assists": 34, "net_worth": 36648, "last_hits": 637, "denies": 10, "gpm": 750, "xpm": 1148, "hero_damage": 47458, "building_damage": 13301, "healing": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Grimstroke", "hero_level": 27, "kills": 7, "deaths": 12, "assists": 38, "net_worth": 21622, "last_hits": 205, "denies": 1, "gpm": 432, "xpm": 768, "hero_damage": 24347, "building_damage": 583, "healing": 2380},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Primal Beast", "hero_level": 29, "kills": 6, "deaths": 10, "assists": 39, "net_worth": 27154, "last_hits": 285, "denies": 1, "gpm": 514, "xpm": 983, "hero_damage": 29669, "building_damage": 1076, "healing": 0},
+        {"name": "Soooze [<MC>]", "side": "radiant", "hero": "Lifestealer", "hero_level": 30, "kills": 19, "deaths": 8, "assists": 26, "net_worth": 36414, "last_hits": 506, "denies": 10, "gpm": 747, "xpm": 1110, "hero_damage": 63956, "building_damage": 16127, "healing": 8836},
+        {"name": "-Oden", "side": "radiant", "hero": "Lich", "hero_level": 28, "kills": 15, "deaths": 15, "assists": 27, "net_worth": 20459, "last_hits": 66, "denies": 15, "gpm": 442, "xpm": 842, "hero_damage": 51427, "building_damage": 37, "healing": 125},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 30, "kills": 17, "deaths": 4, "assists": 12, "net_worth": 41406, "last_hits": 629, "denies": 13, "gpm": 758, "xpm": 1146, "hero_damage": 66280, "building_damage": 6581, "healing": 0},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 6, "deaths": 15, "assists": 34, "net_worth": 15453, "last_hits": 77, "denies": 8, "gpm": 349, "xpm": 524, "hero_damage": 24249, "building_damage": 53, "healing": 195},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Mars", "hero_level": 28, "kills": 13, "deaths": 11, "assists": 18, "net_worth": 23183, "last_hits": 364, "denies": 2, "gpm": 557, "xpm": 906, "hero_damage": 44867, "building_damage": 1161, "healing": 0},
+        {"name": "UT", "side": "dire", "hero": "Abaddon", "hero_level": 28, "kills": 10, "deaths": 12, "assists": 22, "net_worth": 31490, "last_hits": 445, "denies": 8, "gpm": 602, "xpm": 900, "hero_damage": 48300, "building_damage": 5263, "healing": 7046},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Undying", "hero_level": 25, "kills": 7, "deaths": 16, "assists": 32, "net_worth": 13400, "last_hits": 82, "denies": 1, "gpm": 324, "xpm": 638, "hero_damage": 25985, "building_damage": 218, "healing": 5347}
+      ]
+    },
+    {
+      "source_ref": "screenshot-8",
+      "dota_match_id": null,
+      "played_on": "2026-08-03",
+      "played_at": "2026-08-03 18:20",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 57,
+      "dire_score": 55,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only, 5120x2160 local capture. Dire won on the explicit WINNER badge despite scoring fewer kills (55 to 57) — the score column counts kills, not the ancient. IDENTITY OVERRIDE: the Radiant Naga Siren slot reads `rtz [FUBU]` on screen but is recorded as UT, who was playing on rtz's account. One-off for this match, NOT a merge — `rtz [FUBU]` is an existing alias of `samundar khan`, and neither UT nor samundar khan appears elsewhere in this match. Radiant kills 57 = score 57 exactly; Dire deaths 59 leaves a right-hand gap of two, so the Dire column was re-read at 3x and stands — two deaths to neutrals/Roshan/self. Dire chain triple-exact.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Earthshaker", "hero_level": 27, "kills": 19, "deaths": 9, "assists": 21, "net_worth": 23947, "last_hits": 331, "denies": 7, "gpm": 632, "xpm": 967, "hero_damage": 54833, "building_damage": 781, "healing": 0},
+        {"name": "vAnzO", "side": "radiant", "hero": "Enigma", "hero_level": 21, "kills": 7, "deaths": 15, "assists": 27, "net_worth": 13829, "last_hits": 101, "denies": 4, "gpm": 374, "xpm": 473, "hero_damage": 54300, "building_damage": 581, "healing": 125},
+        {"name": "TigerX [GB]", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 25, "kills": 9, "deaths": 15, "assists": 24, "net_worth": 18218, "last_hits": 228, "denies": 10, "gpm": 459, "xpm": 759, "hero_damage": 29882, "building_damage": 1437, "healing": 0},
+        {"name": "UT", "side": "radiant", "hero": "Naga Siren", "hero_level": 27, "kills": 18, "deaths": 7, "assists": 16, "net_worth": 27832, "last_hits": 394, "denies": 4, "gpm": 673, "xpm": 970, "hero_damage": 44602, "building_damage": 9346, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Winter Wyvern", "hero_level": 26, "kills": 4, "deaths": 9, "assists": 40, "net_worth": 13555, "last_hits": 70, "denies": 1, "gpm": 361, "xpm": 774, "hero_damage": 39447, "building_damage": 991, "healing": 8978},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Pudge", "hero_level": 28, "kills": 15, "deaths": 10, "assists": 27, "net_worth": 29011, "last_hits": 324, "denies": 10, "gpm": 636, "xpm": 987, "hero_damage": 67062, "building_damage": 7440, "healing": 0},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Necrophos", "hero_level": 28, "kills": 24, "deaths": 10, "assists": 18, "net_worth": 31106, "last_hits": 320, "denies": 8, "gpm": 734, "xpm": 1078, "hero_damage": 82441, "building_damage": 10816, "healing": 10983},
+        {"name": "beetlebum [FUBU]", "side": "dire", "hero": "Mars", "hero_level": 25, "kills": 7, "deaths": 10, "assists": 23, "net_worth": 21179, "last_hits": 204, "denies": 10, "gpm": 475, "xpm": 733, "hero_damage": 30701, "building_damage": 3619, "healing": 0},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Lich", "hero_level": 25, "kills": 7, "deaths": 11, "assists": 30, "net_worth": 17997, "last_hits": 80, "denies": 11, "gpm": 409, "xpm": 715, "hero_damage": 35367, "building_damage": 588, "healing": 125},
+        {"name": "............ [UGI|]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 2, "deaths": 18, "assists": 35, "net_worth": 12918, "last_hits": 54, "denies": 0, "gpm": 376, "xpm": 656, "hero_damage": 24619, "building_damage": 218, "healing": 0}
+      ]
     }
   ]
 }
