@@ -326,7 +326,7 @@
     },
     "vAnzO": {
       "declared_at": "2026-08-03T15:47:04.820272Z",
-      "declared_in_tz": "Europe/London",
+      "declared_in_tz": "Asia/Riyadh",
       "windows": [
         {
           "date": "2026-08-04",
@@ -358,7 +358,8 @@
           "start_local": "12:00",
           "end_local": "23:00"
         }
-      ]
+      ],
+      "tz_corrected": "Europe/London -> Asia/Riyadh (roster sheet); hours as typed"
     }
   },
   "upcoming": [

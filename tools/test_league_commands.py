@@ -621,6 +621,66 @@ check("preview — no longer renders as an end before its start",
 reset_state()
 
 
+# ═════════════════════════════════════════════════════════════════════
+#  !tz PlayerName Zone must set THAT PLAYER, not the caller
+#
+#  resolve_zone() falls back to matching individual bare words, so
+#  "TigerX Asia/Karachi" resolves to Asia/Karachi. do_tz asked "is the
+#  whole string a timezone?" first, so every `!tz Someone Zone` looked
+#  like self-service and quietly set the CALLER's timezone. Applying a
+#  roster sheet of 24 players rewrote one approver's zone 24 times and
+#  changed nobody else's.
+# ═════════════════════════════════════════════════════════════════════
+group("!tz — setting someone else's zone")
+
+reset_state()
+L.do_register("UT est", "ut70", UID_UT, L.load_discord_players(), True)
+check("tz setup — caller starts on New York",
+      L.load_players_tz()["players"].get("UT") == "America/New_York",
+      L.load_players_tz()["players"])
+
+r = L.do_tz("TigerX Asia/Karachi", "ut70", UID_UT, L.load_discord_players(), True)
+ptz = L.load_players_tz()["players"]
+check("tz — an IANA zone sets the NAMED player", ptz.get("TigerX [GB]") == "Asia/Karachi", r)
+check("tz — and does NOT touch the caller", ptz.get("UT") == "America/New_York", ptz)
+
+r = L.do_tz("Trollmitsu Europe/Stockholm", "ut70", UID_UT, L.load_discord_players(), True)
+ptz = L.load_players_tz()["players"]
+check("tz — resolves an aka to the canonical name",
+      ptz.get("Trollmitsu [<MC>]") == "Europe/Stockholm", r)
+check("tz — caller still untouched after a second call",
+      ptz.get("UT") == "America/New_York", ptz)
+
+r = L.do_tz("Stoic PKT", "ut70", UID_UT, L.load_discord_players(), True)
+check("tz — shorthand zone for another player still works",
+      L.load_players_tz()["players"].get("Stoic") == "Asia/Karachi", r)
+
+# Self-service must still work, including multi-word and parenthesised zones.
+r = L.do_tz("Eastern time", "ut70", UID_UT, L.load_discord_players(), True)
+check("tz — bare multi-word zone is self-service",
+      "your timezone" in r and L.load_players_tz()["players"].get("UT") == "America/New_York", r)
+r = L.do_tz("UK (GMT+1)", "ut70", UID_UT, L.load_discord_players(), True)
+check("tz — parenthesised zone is self-service, outside wins",
+      L.load_players_tz()["players"].get("UT") == "Europe/London", r)
+
+# Garbage must not write anything. resolve_zone returns None rather than
+# raising, so this used to reach set_self(None) and store a null zone.
+L.do_tz("UT est", "ut70", UID_UT, L.load_discord_players(), True)
+before_tz = dict(L.load_players_tz()["players"])
+r = L.do_tz("complete nonsense here", "ut70", UID_UT, L.load_discord_players(), True)
+check("tz — unparseable input writes nothing",
+      L.load_players_tz()["players"] == before_tz, r)
+check("tz — and says so", "Couldn't parse" in r, r)
+
+# A non-approver may set their own, never someone else's.
+r = L.do_tz("Stoic PKT", "someone", "999000000000000123",
+            L.load_discord_players(), False)
+check("tz — a non-approver cannot set another player's zone",
+      "Only approvers" in r, r)
+
+reset_state()
+
+
 print(f"\n{'═' * 60}")
 print(f"  {passes} passed · {fails} failed")
 if failures:

@@ -326,7 +326,7 @@ def do_who() -> str:
     tz = load_players_tz().get("players", {})
     claimed = set(dp.values())
 
-    total = done = 0
+    total = done = zoned_only = 0
     lines = ["**Registration — who has set themselves up**"]
     for t in teams["teams"]:
         row = []
@@ -334,11 +334,20 @@ def do_who() -> str:
             total += 1
             nick = (r.get("aka") or [r["name"]])[0]
             zone = tz.get(r["name"])
+            # Trailing element of the IANA name is the readable bit:
+            # "Europe/London" -> "London". Nobody needs the continent.
+            short = f" `{zone.split('/')[-1].replace('_', ' ')}`" if zone else ""
             if r["name"] in claimed and zone:
                 done += 1
-                # Trailing element of the IANA name is the readable bit:
-                # "Europe/London" -> "London". Nobody needs the continent.
-                row.append(f"✅{nick} `{zone.split('/')[-1].replace('_', ' ')}`")
+                row.append(f"✅{nick}{short}")
+            elif zone:
+                # Zone known from the captains' roster sheet, but this
+                # player has never linked their Discord -- so the bot
+                # cannot tell it is them typing, and they cannot post
+                # availability. Showing a bare ⬜ hid that we already know
+                # where they are, and made it look like more work than it is.
+                zoned_only += 1
+                row.append(f"⬜{nick}{short}")
             else:
                 row.append(f"⬜{nick}")
         lines.append(f"**{t['name']}** " + " · ".join(row))
@@ -348,7 +357,12 @@ def do_who() -> str:
         lines.append("**Open pool** " + " · ".join(
             f"{p if isinstance(p, str) else p.get('name', '?')}" for p in pool))
 
-    lines.append(f"\n**{done} of {total}** registered with a timezone.")
+    lines.append(f"\n**{done} of {total}** fully set up.")
+    if zoned_only:
+        lines.append(
+            f"{zoned_only} more already have a timezone from the roster sheet "
+            f"but haven't linked their Discord — until they do, I can't tell "
+            f"it's them typing, so they can't post availability.")
     if done < total:
         lines.append("Not set up yet? `!register YourNick YourZone` — "
                      "e.g. `!register Cpx PKT`. Zones: PKT, ET, PT, AST, "
@@ -654,57 +668,51 @@ def do_tz(args: str, uname: str, uid: str, dp: dict, privileged: bool) -> str:
     if not txt:
         return "Format: `!tz PKT` (yourself) or `!tz PlayerName PKT` (approver)."
 
-    all_players = [r["name"] for t in load_teams()["teams"] for r in t.get("roster", [])]
+    teams = load_teams()
 
-    def set_self(iana: str) -> str:
+    def write(player: str, iana: str) -> None:
+        ptz = load_players_tz()
+        ptz["players"][player] = iana
+        save_json(PLAYERS_TZ, ptz)
+
+    # Try 1: (player name | timezone).
+    #
+    # This is asked FIRST, and it is the whole fix. It used to run second,
+    # behind "does the entire string resolve as a timezone?" -- and it
+    # does, because resolve_zone() falls back to matching individual bare
+    # words. "TigerX Asia/Karachi" resolved to Asia/Karachi, so every
+    # `!tz SomeoneElse Zone` was treated as self-service and silently set
+    # the CALLER's timezone instead of the named player's. An approver
+    # fixing somebody's zone would quietly break their own. Ask the
+    # narrower question -- "does the left side name a real player?" --
+    # before the greedy one.
+    parts = txt.split()
+    for split_at in range(len(parts) - 1, 0, -1):
+        canonical, _ = resolve_to_roster(" ".join(parts[:split_at]), teams)
+        if not canonical:
+            continue
+        iana = resolve_zone(" ".join(parts[split_at:]))
+        if not iana:
+            continue
+        if not privileged:
+            return ("Only approvers can set someone else's timezone. "
+                    "To set your own, type just the zone: `!tz PKT`.")
+        write(canonical, iana)
+        return f"Set **{canonical}** timezone → `{iana}`."
+
+    # Try 2: the whole thing is a timezone -> the caller's own.
+    iana = resolve_zone(txt)
+    if iana:
         player = player_for_author(uid, uname, dp)
         if not player:
             return (f"I don't know who you are on the league — an approver runs "
                     f"`!register @{uname} as PlayerName` first, then you can `!tz {txt}`.")
-        ptz = load_players_tz()
-        ptz["players"][player] = iana
-        save_json(PLAYERS_TZ, ptz)
+        write(player, iana)
         return f"Set your timezone (**{player}**) → `{iana}`."
 
-    def set_other(name: str, iana: str) -> str | None:
-        if name in all_players:
-            resolved = name
-        else:
-            matches = [p for p in all_players if p.lower() == name.lower()]
-            if len(matches) == 1:
-                resolved = matches[0]
-            else:
-                return None       # unknown player, try a different split
-        ptz = load_players_tz()
-        ptz["players"][resolved] = iana
-        save_json(PLAYERS_TZ, ptz)
-        return f"Set **{resolved}** timezone → `{iana}`."
-
-    # Try 1: whole thing as a tz (self-service). Handles !tz Eastern time.
-    try:
-        iana = resolve_zone(txt)
-        return set_self(iana)
-    except ValueError:
-        pass
-
-    # Try 2: walk (name | tz) split points, longest-tz first, until one
-    # both resolves AND names a known player. Approver-only from here.
-    if not privileged:
-        return ("Only approvers can set someone else's timezone. "
-                "To set your own, type just the zone: `!tz PKT`.")
-
-    parts = txt.split()
-    for split_at in range(len(parts) - 1, 0, -1):
-        name_str = " ".join(parts[:split_at])
-        tz_str   = " ".join(parts[split_at:])
-        try:
-            iana = resolve_zone(tz_str)
-        except ValueError:
-            continue
-        result = set_other(name_str, iana)
-        if result is not None:
-            return result
-
+    # resolve_zone returns None rather than raising, so this path used to be
+    # unreachable: `!tz nonsense` fell into set_self(None) and wrote a null
+    # timezone over a good one.
     return (f"Couldn't parse `{txt}`. Try `!tz PKT` (yourself) or "
             f"`!tz PlayerName PKT` (approver). Known shortcuts: "
             f"PKT, ET, PT, AST, CET, GMT, IST, +5.")
