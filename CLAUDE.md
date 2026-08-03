@@ -254,14 +254,19 @@ the other. Cycling the three splits over 12 nights gives 4 full cycles.
 
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
-6 weekends regular season + 2 playoff weekends, 8 Aug -> 27 Sep
-each team: 12 best-of-threes, 6 of them late; every pair meets 4x
+42 nights over 21 weekends, 8 Aug -> 27 Dec.  NO playoffs, NO final —
+the season runs straight through, per the user's explicit instruction.
+each team: 42 best-of-threes, 21 of them late; every pair meets 14x
 ```
 
 **`make_fixtures.py` refuses to write a schedule that isn't fair** — it
-checks that every pair meets equally often, that the 3 AM slot is shared
-evenly, and that every team plays the same number of series. Those are
-exactly the errors nobody notices until the season is over.
+checks that every pair meets equally often, that every team plays the
+same number of series, and that the 3 AM slot is shared to within one
+night. Those are exactly the errors nobody notices until the season is
+over. The night count is **trimmed to a multiple of three** for the same
+reason: three nights is one full cycle of the splits, and stopping
+part-way through one would leave some pairs having met once more than
+others.
 
 **Slot 2 is the next calendar day.** A Saturday-night late match is Sunday
 3 AM; a Sunday-night one is Monday 3 AM, a work morning. The site prints
@@ -276,6 +281,26 @@ maths — same reasoning as `build_coord`.
 `players_tz.json`: the people in the most awkward zones (Malaysia at
 2 AM–5 AM) are exactly the ones who haven't registered, so deriving it
 would quietly drop the worst-affected row.
+
+The Schedule tab has two layouts, **Timeline** (default, one column per
+week scrolling sideways, current week scrolled into view) and **List**.
+Both were asked for; keep both.
+
+### Team records come from fixtures, never from inference (2026-08-03)
+
+The Teams tab used to **infer** which team each side of a match belonged
+to — 3+ players from one roster on a side meant that side "was" that
+team, for any match after the season start. That put Team 3 on 1–0 and
+Team 1 on 0–1 before a single league match had been played, off one
+ordinary inhouse game whose sides happened to line up.
+
+It was always going to do that: these people play inhouse together every
+night, in whatever mix shows up. **A guess is not a record.** Team
+records now count only matches whose `source_ref` is recorded in a
+fixture's `games` array, and the teams come from the fixture, not the
+roster. With nothing recorded yet, every team correctly reads 0.
+
+Individual standings are unaffected — every match still counts there.
 
 ### A rejected `!avail` is kept, not dropped (added 2026-08-03)
 

@@ -176,7 +176,8 @@
     evidence: 2.576,
     // Schedule times default to Pakistan: it is the league's reference
     // clock, the one the slots were chosen in, and where most players are.
-    fxZone: "Pakistan"
+    fxZone: "Pakistan",
+    fxView: "timeline"
   };
   var cur = { matches: [], players: [], heroes: [] };
 
@@ -959,43 +960,36 @@
   /* ── Teams (league) ───────────────────────────────────────────────
      The Teams tab shows the four fixed rosters and a team-level
      standings table using the SAME Wilson rating as the individual
-     board — win-rate lower bound, so 5-0 does not beat 12-2.
-
-     Which team each side of a match belongs to is INFERRED here, not
-     stored in the data yet. Rule: if ≥3 of the 5 players on a side
-     appear on a team's roster (any role, including stand-in), that
-     side counts as that team's. A side that fits neither team, or
-     both teams equally, is skipped for team standings. This is the
-     "3 of 5" floor from the pre-mortem — strict enough to reject
-     mostly-mixed rosters, loose enough to accept legitimate matches
-     with a stand-in and a friend filling in. */
+     board — win-rate lower bound, so 5-0 does not beat 12-2. */
 
   var LEAGUE = D.league || null;
 
-  // player name -> team id lookup. Rebuilt only when LEAGUE changes,
-  // which is never in a session.
-  var PLAYER_TEAM = {};
-  if (LEAGUE) {
-    LEAGUE.teams.forEach(function (t) {
-      t.roster.forEach(function (r) { PLAYER_TEAM[r.name] = t.id; });
-    });
-  }
+  /* A match counts towards a team's record ONLY if it was explicitly
+     recorded against a scheduled series. It used to be *inferred* -- any
+     match after the season start where 3+ players on one side shared a
+     team was booked as a league result. That is wrong here: these people
+     play inhouse together every night, so a casual pub game whose sides
+     happened to line up became a permanent win. It put Team 3 on 1-0 and
+     Team 1 on 0-1 before a single league match had been played.
 
-  function inferSide(rosterList) {
-    // rosterList is 5 player entries on one side. Returns team id or null.
-    var counts = {};
-    rosterList.forEach(function (r) {
-      var tid = PLAYER_TEAM[r.name];
-      if (tid) counts[tid] = (counts[tid] || 0) + 1;
+     Guessing is exactly the failure this project cannot have, so team
+     records now come only from results tied to a fixture. Until results
+     are recorded, every team correctly reads 0. */
+  function leagueGames() {
+    var out = {};
+    if (!FX) return out;
+    FX.weeks.forEach(function (w) {
+      w.nights.forEach(function (n) {
+        n.series.forEach(function (s) {
+          (s.games || []).forEach(function (g) {
+            if (g && g.source_ref) {
+              out[g.source_ref] = { teams: s.teams, winner: g.winner };
+            }
+          });
+        });
+      });
     });
-    var best = null, bestN = 0, tied = false;
-    Object.keys(counts).forEach(function (k) {
-      var n = counts[k];
-      if (n > bestN) { best = Number(k); bestN = n; tied = false; }
-      else if (n === bestN) { tied = true; }
-    });
-    // Only tag when a majority (≥3) belongs to a single team, unambiguously.
-    return (bestN >= 3 && !tied) ? best : null;
+    return out;
   }
 
   function aggregateTeams(ms) {
@@ -1007,25 +1001,21 @@
                   opponents: {} };
     });
 
-    var seasonStart = LEAGUE.season && LEAGUE.season.start_at
-      ? LEAGUE.season.start_at.slice(0, 10) : null;
+    var booked = leagueGames();
 
     ms.forEach(function (m) {
-      // Only count matches that fall within the season, if a start is set.
-      var d = m.played_on || m.played_at || "";
-      if (seasonStart && d && d < seasonStart) return;
+      var link = m.source_ref ? booked[m.source_ref] : null;
+      if (!link || !link.teams || link.teams.length !== 2) return;
 
-      var rTeam = inferSide(m.radiant);
-      var dTeam = inferSide(m.dire);
-      if (!rTeam || !dTeam || rTeam === dTeam) return;
+      var a = link.teams[0], b = link.teams[1];
+      var win = link.winner;
+      if (!T[a] || !T[b] || (win !== a && win !== b)) return;
 
-      var rWon = m.winning_side === "radiant";
-      var tR = T[rTeam], tD = T[dTeam];
-      tR.games++; tD.games++;
-      if (rWon) { tR.wins++; tD.losses++; }
-      else      { tD.wins++; tR.losses++; }
-      tR.opponents[dTeam] = (tR.opponents[dTeam] || 0) + 1;
-      tD.opponents[rTeam] = (tD.opponents[rTeam] || 0) + 1;
+      var lose = win === a ? b : a;
+      T[a].games++; T[b].games++;
+      T[win].wins++; T[lose].losses++;
+      T[a].opponents[b] = (T[a].opponents[b] || 0) + 1;
+      T[b].opponents[a] = (T[b].opponents[a] || 0) + 1;
     });
 
     // Compute pace, rating, status.
@@ -1313,6 +1303,93 @@
     '</div>';
   }
 
+  function dayLabel(iso) {
+    var d = iso.split("-");
+    return Number(d[2]) + " " + MON[Number(d[1]) - 1];
+  }
+
+  // The week in progress: the first whose last night has not yet passed.
+  // Everything before it is done, so both layouts can mark and scroll to it.
+  function currentWeek() {
+    var today = new Date().toISOString().slice(0, 10);
+    var hit = FX.weeks.filter(function (w) {
+      return w.nights[w.nights.length - 1].date >= today;
+    })[0];
+    return hit ? hit.week : null;
+  }
+
+  /* Timeline: one column per week, scrolling sideways, the way a
+     tournament bracket reads. Twenty-one weeks stacked vertically is a
+     very long page in which every week looks the same; side by side, the
+     shape of the season is visible at a glance and the current week can
+     be scrolled to. */
+  function renderTimelineSeries(s) {
+    var late = s.slot === 2;
+    return '<div class="tl-series' + (late ? " is-late" : "") + '">' +
+      '<div class="tl-series__when">' +
+        '<span class="tl-dot' + (late ? " is-late" : "") + '"></span>' +
+        esc(fxWindow(s)) +
+      '</div>' +
+      '<div class="tl-series__teams">' +
+        '<span class="team-chip team-chip--' + s.teams[0] + '">' + s.teams[0] + '</span>' +
+        '<span class="tl-vs">vs</span>' +
+        '<span class="team-chip team-chip--' + s.teams[1] + '">' + s.teams[1] + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function drawTimeline(host, cur) {
+    host.innerHTML = '<div class="tl-rail" id="tlRail">' +
+      FX.weeks.map(function (w) {
+        var nights = w.nights.map(function (n) {
+          return '<div class="tl-night">' +
+            '<div class="tl-night__day">' + esc(n.day) + " " +
+              esc(dayLabel(n.date)) + '</div>' +
+            n.series.map(renderTimelineSeries).join("") +
+          '</div>';
+        }).join("");
+        var isCur = w.week === cur;
+        var done = cur !== null && w.week < cur;
+        return '<div class="tl-col' + (isCur ? " is-current" : "") +
+                 (done ? " is-done" : "") + '"' +
+                 (isCur ? ' id="tlNow"' : "") + '>' +
+          '<div class="tl-col__head">' +
+            '<span class="tl-col__n">Week ' + w.week + '</span>' +
+            (isCur ? '<span class="tl-col__now">Now</span>' : '') +
+          '</div>' +
+          '<div class="tl-col__body">' + nights + '</div>' +
+        '</div>';
+      }).join("") +
+    '</div>';
+
+    // Bring the live week into view without yanking the whole page.
+    var rail = $("#tlRail"), now = $("#tlNow");
+    if (rail && now) rail.scrollLeft = Math.max(0, now.offsetLeft - rail.offsetLeft - 16);
+  }
+
+  function drawList(host, cur) {
+    host.innerHTML = FX.weeks.map(function (w) {
+      var nights = w.nights.map(function (n) {
+        return '<div class="fx-night">' +
+          '<div class="fx-night__day">' + esc(n.day) + " " +
+            esc(dayLabel(n.date)) + '</div>' +
+          '<div class="fx-night__body">' +
+            n.series.map(renderSeries).join("") +
+          '</div>' +
+        '</div>';
+      }).join("");
+      var isCur = w.week === cur;
+      return '<div class="fx-week card' + (isCur ? " is-current" : "") + '">' +
+        '<div class="fx-week__head">' +
+          '<span class="fx-week__n">Week ' + w.week + '</span>' +
+          '<span class="fx-week__phase">' + esc(w.week_of ? dayLabel(w.week_of) : "") + '</span>' +
+          (isCur ? '<span class="fx-week__now">This week</span>' : '') +
+        '</div>' +
+        '<div class="fx-week__body">' + nights + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
   function drawSchedule() {
     var host = $("#scheduleBody");
     if (!host) return;
@@ -1321,34 +1398,9 @@
         'No schedule has been generated yet.</div>';
       return;
     }
-    var today = new Date().toISOString().slice(0, 10);
-    host.innerHTML = FX.weeks.map(function (w) {
-      var nights = w.nights.map(function (n) {
-        var d = n.date.split("-");
-        var label = n.day + " " + Number(d[2]) + " " + MON[Number(d[1]) - 1];
-        return '<div class="fx-night">' +
-          '<div class="fx-night__day">' + esc(label) + '</div>' +
-          '<div class="fx-night__body">' +
-            n.series.map(renderSeries).join("") +
-          '</div>' +
-        '</div>';
-      }).join("");
-      // "Now" = the first week whose last night has not yet passed.
-      var last = w.nights[w.nights.length - 1].date;
-      var isNext = last >= today;
-      var seen = FX.weeks.filter(function (x) {
-        return x.nights[x.nights.length - 1].date >= today;
-      })[0];
-      var current = isNext && seen && seen.week === w.week;
-      return '<div class="fx-week card' + (current ? " is-current" : "") + '">' +
-        '<div class="fx-week__head">' +
-          '<span class="fx-week__n">Week ' + w.week + '</span>' +
-          '<span class="fx-week__phase">' + esc(w.phase) + '</span>' +
-          (current ? '<span class="fx-week__now">This week</span>' : '') +
-        '</div>' +
-        '<div class="fx-week__body">' + nights + '</div>' +
-      '</div>';
-    }).join("");
+    var cur = currentWeek();
+    if (state.fxView === "list") drawList(host, cur);
+    else drawTimeline(host, cur);
   }
 
   var COORD = D.coord || null;
@@ -1559,6 +1611,7 @@
   segment("matchSort", "sort", "matchSort", drawMatches);
   segment("duoSort",   "sort", "duoSort",   drawDuos);
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
+  segment("fxView", "fxview", "fxView", drawSchedule);
   segment("evidence",  "z", "evidence", function () {
     rescore();
     drawStandings();

@@ -44,7 +44,8 @@ def main() -> int:
     # Match ids are globally sequential, so they are the authoritative
     # chronology. The one match with no id sorts last.
     matches = rows(cur, """
-        SELECT id, dota_match_id, played_on, played_at, duration_seconds,
+        SELECT id, source_ref, dota_match_id, played_on, played_at,
+               duration_seconds,
                game_mode, radiant_team_name, dire_team_name,
                radiant_score, dire_score, winning_side, result_confidence, notes
         FROM matches
