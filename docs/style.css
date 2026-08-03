@@ -210,7 +210,14 @@ main{ max-width:var(--measure); margin:0 auto; padding:0 var(--gutter) 4rem; }
 
 .segmented{
   display:inline-flex; gap:.15rem; padding:.22rem; border-radius:var(--r-pill);
-  flex:0 0 auto;
+  flex:0 0 auto; max-width:100%;
+}
+/* A segmented control with six options (the Schedule tab's country
+   picker) measured 467px against a 430px phone, and flex:0 0 auto meant
+   it could not give -- so it pushed the whole document 54px wider than
+   the viewport and every card ran off the right edge. Let them wrap. */
+@media (max-width:760px){
+  .segmented{ flex-wrap:wrap; }
 }
 .seg{
   appearance:none; border:0; background:none; cursor:pointer; white-space:nowrap;
@@ -1059,8 +1066,14 @@ td.none{ padding:2.2rem 1rem; }
 .fx-night__date{ font-size:.9rem; font-weight:650; color:var(--ink); letter-spacing:-.01em; }
 .fx-night__body{ flex:1 1 auto; min-width:0; }
 
+/* Grid, not flex. The time column was flex:0 0 13.5rem with strings
+   longer than 13.5rem in it ("Sun 11:00 PM - Mon 2:00 AM"), so every row
+   pushed the teams a different distance and nothing lined up. Fixed
+   tracks make alignment a property of the layout rather than a hope. */
 .fx-series{
-  display:flex; align-items:center; gap:.75rem;
+  display:grid;
+  grid-template-columns:4.9rem 15.5rem max-content 1fr;
+  align-items:center; gap:.85rem;
   padding:.62rem 1rem; border-top:1px solid var(--line-2);
 }
 .fx-series:first-child{ border-top:0; }
@@ -1080,27 +1093,33 @@ td.none{ padding:2.2rem 1rem; }
   flex:0 0 13.5rem; font-size:.84rem; color:var(--ink); font-weight:550;
   font-variant-numeric:tabular-nums;
 }
-.fx-teams{ flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:.45rem; }
-.fx-name{
-  font-size:.88rem; font-weight:550; color:var(--ink);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.fx-vs{ font-size:.74rem; color:var(--ink-4); font-style:italic; flex:0 0 auto; }
+.fx-teams{ display:flex; align-items:center; gap:.5rem; }
+.fx-vs{ font-size:.74rem; color:var(--ink-4); font-style:italic; }
 .fx-tbd{ font-size:.86rem; color:var(--ink-3); font-style:italic; }
-.fx-bo{ flex:0 0 auto; font-size:.74rem; color:var(--ink-4); }
+.fx-bo{ font-size:.74rem; color:var(--ink-4); text-align:right; }
 
-.fx-series .team-chip{ width:1.45rem; height:1.45rem; font-size:.74rem; }
+.fx-series .team-chip{ width:1.75rem; height:1.75rem; font-size:.86rem; }
 
 @media (max-width:760px){
   .fx-night{ display:block; }
   .fx-night__day{
-    border-right:0; border-bottom:1px solid var(--line-2);
-    padding:.55rem 1rem; flex:none;
+    border-right:0; border-bottom:1px solid var(--line);
+    padding:.55rem 1rem; flex:none; flex-direction:row; gap:.5rem;
+    align-items:baseline;
   }
-  .fx-series{ flex-wrap:wrap; gap:.4rem .6rem; }
-  .fx-when{ flex:0 0 auto; }
-  .fx-teams{ flex:1 0 100%; }
-  .fx-bo{ margin-left:auto; }
+  /* minmax(0,...) not 1fr: a bare 1fr floors at min-content, so the long
+     "Sun 11:00 PM - Mon 2:00 AM" string pushed the whole card wider than
+     the phone and the week header ran off the screen. */
+  .fx-series{
+    grid-template-columns:4.9rem minmax(0,1fr) auto;
+    grid-template-areas:"slot when when" "slot teams bo";
+    row-gap:.4rem; gap:.55rem; padding:.62rem .7rem;
+  }
+  .fx-when{ min-width:0; }
+  .fx-slot{ grid-area:slot; align-self:start; }
+  .fx-when{ grid-area:when; }
+  .fx-teams{ grid-area:teams; }
+  .fx-bo{ grid-area:bo; }
 }
 
 /* ── Schedule · Timeline layout ─────────────────────────────────────
@@ -1169,17 +1188,12 @@ td.none{ padding:2.2rem 1rem; }
 .mb.is-late .mb-when{ background:rgba(182,121,27,.09); }
 
 .mb-row{
-  display:flex; align-items:center; gap:.45rem;
-  padding:.36rem .5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.34rem .55rem;
 }
 .mb-row + .mb-row{ border-top:1px solid var(--line-2); }
 .mb-row.is-won{ background:var(--radiant-bg); }
-.mb-row .team-chip{ width:1.4rem; height:1.4rem; font-size:.72rem; }
-.mb-team{
-  flex:1 1 auto; min-width:0; font-size:.82rem; font-weight:550; color:var(--ink);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.mb-row.is-won .mb-team{ font-weight:700; }
+.mb-row .team-chip{ width:1.8rem; height:1.8rem; font-size:.88rem; }
 .mb-score{
   flex:0 0 auto; font-size:.8rem; font-weight:700; color:var(--ink-4);
   font-variant-numeric:tabular-nums; min-width:1ch; text-align:right;
