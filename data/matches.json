@@ -1077,6 +1077,87 @@
         {"name": "vAnzOr", "side": "dire", "hero": "Hoodwink", "hero_level": 15, "kills": 2, "deaths": 9, "assists": 14, "net_worth": 7938, "last_hits": 76, "denies": 0, "gpm": 271},
         {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Lich", "hero_level": 15, "kills": 3, "deaths": 15, "assists": 10, "net_worth": 7355, "last_hits": 10, "denies": 7, "gpm": 245}
       ]
+    },
+    {
+      "source_ref": "discord-1533541892145549342",
+      "dota_match_id": null,
+      "played_on": "2026-08-02",
+      "played_at": "2026-08-02 14:27",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 54,
+      "dire_score": 45,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by soooze, dated from the Discord upload time. Capture is cropped at 1719x790 so DN/GPM/XPM are cut off and left null. A translucent Discord voice-overlay sits over the header (Lord Suzaku, ...shami, SpArtAAAAAAAA) - those are Discord handles, not a sixth player. Radiant kills 53 vs score 54: one tower kill; every other chain exact.",
+      "players": [
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Disruptor", "hero_level": 21, "kills": 4, "deaths": 11, "assists": 29, "net_worth": 12406, "last_hits": 31},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Anti-Mage", "hero_level": 29, "kills": 21, "deaths": 7, "assists": 14, "net_worth": 35334, "last_hits": 501},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Storm Spirit", "hero_level": 26, "kills": 7, "deaths": 6, "assists": 24, "net_worth": 21232, "last_hits": 231},
+        {"name": "Soooze [<MC>]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 25, "kills": 8, "deaths": 10, "assists": 30, "net_worth": 14829, "last_hits": 94},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Dawnbreaker", "hero_level": 26, "kills": 13, "deaths": 11, "assists": 17, "net_worth": 24308, "last_hits": 390},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Templar Assassin", "hero_level": 26, "kills": 6, "deaths": 8, "assists": 9, "net_worth": 24408, "last_hits": 484},
+        {"name": "vAnzO", "side": "dire", "hero": "Keeper of the Light", "hero_level": 23, "kills": 11, "deaths": 9, "assists": 18, "net_worth": 12672, "last_hits": 70},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Lina", "hero_level": 26, "kills": 20, "deaths": 7, "assists": 6, "net_worth": 26310, "last_hits": 341},
+        {"name": "Lord_TheePa [UGI|]", "side": "dire", "hero": "Lich", "hero_level": 23, "kills": 4, "deaths": 15, "assists": 26, "net_worth": 12621, "last_hits": 34},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Legion Commander", "hero_level": 22, "kills": 4, "deaths": 15, "assists": 17, "net_worth": 16474, "last_hits": 163}
+      ]
+    },
+    {
+      "source_ref": "discord-1533587225542000795",
+      "dota_match_id": null,
+      "played_on": "2026-08-02",
+      "played_at": "2026-08-02 17:28",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 52,
+      "dire_score": 50,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by soma3031, dated from the Discord upload time. Radiant kills 51 vs score 52 and Dire kills 48 vs score 50 - one and two tower kills; both score-to-enemy-deaths chains exact. Dire kill column re-read at 6x.",
+      "players": [
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Dawnbreaker", "hero_level": 27, "kills": 12, "deaths": 11, "assists": 16, "net_worth": 26293, "last_hits": 336, "denies": 6, "gpm": 567},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Storm Spirit", "hero_level": 28, "kills": 18, "deaths": 12, "assists": 14, "net_worth": 28049, "last_hits": 415, "denies": 6, "gpm": 707},
+        {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Disruptor", "hero_level": 23, "kills": 3, "deaths": 16, "assists": 30, "net_worth": 15040, "last_hits": 68, "denies": 4, "gpm": 364},
+        {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Spectre", "hero_level": 28, "kills": 13, "deaths": 3, "assists": 18, "net_worth": 34005, "last_hits": 554, "denies": 6, "gpm": 789},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 24, "kills": 5, "deaths": 8, "assists": 22, "net_worth": 17444, "last_hits": 121, "denies": 2, "gpm": 413},
+        {"name": "Stoic", "side": "dire", "hero": "Magnus", "hero_level": 27, "kills": 11, "deaths": 7, "assists": 22, "net_worth": 20592, "last_hits": 325, "denies": 9, "gpm": 557},
+        {"name": "UT", "side": "dire", "hero": "Juggernaut", "hero_level": 27, "kills": 19, "deaths": 8, "assists": 10, "net_worth": 35143, "last_hits": 493, "denies": 6, "gpm": 778},
+        {"name": "xxx", "side": "dire", "hero": "Doom", "hero_level": 24, "kills": 5, "deaths": 12, "assists": 13, "net_worth": 20228, "last_hits": 289, "denies": 2, "gpm": 516},
+        {"name": "-Oden", "side": "dire", "hero": "Witch Doctor", "hero_level": 23, "kills": 10, "deaths": 13, "assists": 17, "net_worth": 12802, "last_hits": 18, "denies": 5, "gpm": 351},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Ringmaster", "hero_level": 22, "kills": 3, "deaths": 12, "assists": 23, "net_worth": 14051, "last_hits": 67, "denies": 2, "gpm": 333}
+      ]
+    },
+    {
+      "source_ref": "discord-1533604561561059470",
+      "dota_match_id": null,
+      "played_on": "2026-08-02",
+      "played_at": "2026-08-02 18:37",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 63,
+      "dire_score": 36,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by soma3031, dated from the Discord upload time. Radiant chain triple-exact (63 kills = score 63 = Dire deaths 63). Dire kills 33 vs score 36 is a gap of three, so the Dire kill column was re-read at 6x and stands at 2/7/14/5/5 - three tower kills.",
+      "players": [
+        {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 28, "kills": 18, "deaths": 3, "assists": 17, "net_worth": 31896, "last_hits": 380, "denies": 13, "gpm": 721},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Magnus", "hero_level": 27, "kills": 19, "deaths": 9, "assists": 15, "net_worth": 29019, "last_hits": 363, "denies": 26, "gpm": 669},
+        {"name": "-Oden", "side": "radiant", "hero": "Lich", "hero_level": 25, "kills": 8, "deaths": 14, "assists": 38, "net_worth": 13884, "last_hits": 50, "denies": 11, "gpm": 372},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 24, "kills": 5, "deaths": 7, "assists": 38, "net_worth": 16449, "last_hits": 92, "denies": 4, "gpm": 388},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Faceless Void", "hero_level": 28, "kills": 13, "deaths": 3, "assists": 19, "net_worth": 29494, "last_hits": 399, "denies": 16, "gpm": 658},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Ringmaster", "hero_level": 21, "kills": 2, "deaths": 15, "assists": 18, "net_worth": 12632, "last_hits": 51, "denies": 1, "gpm": 346},
+        {"name": "Stoic", "side": "dire", "hero": "Windranger", "hero_level": 23, "kills": 7, "deaths": 10, "assists": 12, "net_worth": 18235, "last_hits": 303, "denies": 5, "gpm": 530},
+        {"name": "UT", "side": "dire", "hero": "Terrorblade", "hero_level": 28, "kills": 14, "deaths": 9, "assists": 9, "net_worth": 25979, "last_hits": 487, "denies": 2, "gpm": 709},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Disruptor", "hero_level": 17, "kills": 5, "deaths": 18, "assists": 17, "net_worth": 9782, "last_hits": 45, "denies": 2, "gpm": 298},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Axe", "hero_level": 21, "kills": 5, "deaths": 11, "assists": 14, "net_worth": 16976, "last_hits": 228, "denies": 8, "gpm": 422}
+      ]
     }
   ]
 }

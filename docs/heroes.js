@@ -70,6 +70,7 @@ window.HERO_SLUG = {
 "Sven": "sven",
 "Techies": "techies",
 "Templar Assassin": "templar_assassin",
+"Terrorblade": "terrorblade",
 "Tidehunter": "tidehunter",
 "Tiny": "tiny",
 "Troll Warlord": "troll_warlord",
