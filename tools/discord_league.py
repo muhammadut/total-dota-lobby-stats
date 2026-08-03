@@ -166,8 +166,10 @@ HELP = (
     "`!register Nick Zone` — bind your Discord to a player name + timezone\n"
     "  e.g. `!register Cpx PKT`  ·  `!register Musa CET`\n"
     "\n**Every week — post your availability (in YOUR local time):**\n"
+    "`!avail every day 9PM to 6AM` — same window all week, the easy one\n"
     "`!avail Aug 3 8PM to 10PM, Aug 4 9PM-11PM` — dates + times, comma-separated\n"
-    "  Also OK: `Sat 8pm-10pm` · `Aug 5 20:00-22:00` · `10PM to 2AM` (midnight OK)\n"
+    "  Also OK: `Sat 8pm-10pm` · `Mon Wed Fri 8pm-11pm` · `Aug 5 20:00-22:00`\n"
+    "  · `10PM to 2AM` (past midnight is fine) · `Aug 7 6pm-10pm or 12am-6am`\n"
     "`!avail clear` — remove your availability this week\n"
     "\n**Anyone:**\n"
     "`!who` — who has registered, and in which timezone\n"
@@ -754,6 +756,62 @@ def _build_windows(date: str, start: str, end: str) -> list[dict]:
     return windows
 
 
+DOW_NAMES = ["monday", "tuesday", "wednesday", "thursday",
+             "friday", "saturday", "sunday"]
+
+
+def _expand_shorthand(txt: str, today) -> str:
+    """
+    Rewrite the shapes people actually type into ones the parser accepts.
+
+    Read the channel and the same three mistakes account for nearly every
+    rejected message:
+
+      "every day 9pm to 6am"     -- two players independently typed the
+                                    SAME 200-character line instead,
+                                    repeating one window seven times,
+                                    because repetition was the only way
+                                    to say it. Both copy-pasted it from
+                                    a third player. That is not a user
+                                    error, it is a missing feature.
+      "aug7 6pm to 10pm"         -- no space after the month.
+      "Fri Sat 20-23"            -- several days sharing one window.
+
+    Expanding here rather than in the parser keeps one code path for the
+    real work: everything below still sees plain "<date> <start> to <end>"
+    entries, so the timezone and midnight-wrap logic is untouched.
+    """
+    from datetime import timedelta as _td
+
+    # "aug7" -> "aug 7". Only between a month name and a digit, so a bare
+    # "8pm" is never touched.
+    txt = re.sub(r"\b(" + "|".join(MONTHS) + r")(\d{1,2})\b",
+                 r"\1 \2", txt, flags=re.I)
+
+    # "every day 9pm-6am" / "daily 9pm-6am" / "all week 9pm-6am" / "everyday"
+    # -> the same window on each of the next 7 days, dated explicitly.
+    m = re.match(r"^\s*(?:every\s*day|everyday|daily|all\s*week|"
+                 r"every\s*night|each\s*day)\s+(.*)$", txt, re.I)
+    if m:
+        window = m.group(1).strip()
+        days = [(today + _td(days=i)).strftime("%b %d") for i in range(7)]
+        return ", ".join(f"{d} {window}" for d in days)
+
+    # "Mon Wed Fri 8pm-11pm" or "Fri, Sat 20-23" -> one entry per day.
+    # Requires 2+ day names up front so a normal "Sat 8pm-10pm" is untouched.
+    abbr = {d[:3]: d for d in DOW_NAMES}
+    m = re.match(r"^\s*((?:(?:" + "|".join(abbr) + r")[a-z]*[\s,]+){2,})(.*)$",
+                 txt, re.I)
+    if m and m.group(2).strip():
+        names = re.findall(r"[A-Za-z]+", m.group(1))
+        window = m.group(2).strip()
+        got = [abbr[n.lower()[:3]] for n in names if n.lower()[:3] in abbr]
+        if len(got) >= 2:
+            return ", ".join(f"{d} {window}" for d in got)
+
+    return txt
+
+
 def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | None]:
     """
     Parse `!avail [R#] <entry>[, <entry>]*` where each entry is:
@@ -773,9 +831,15 @@ def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | N
     if not txt:
         return round_id, [], "Format: `!avail 1st Aug 8PM to 10PM`"
 
-    # Split on commas / semicolons / ' and '. NOT on '-' -- that's the time sep.
-    chunks = re.split(r"\s*(?:,|;|\band\b)\s*", txt, flags=re.I)
+    txt = _expand_shorthand(txt, today)
+
+    # Split on commas / semicolons / ' and ' / ' or '. NOT on '-' -- that is
+    # the time separator. 'or' is here because people write a day's two
+    # windows as "6pm to 10pm or 12am to 6am", which read as one broken
+    # entry and failed the whole message.
+    chunks = re.split(r"\s*(?:,|;|\band\b|\bor\b)\s*", txt, flags=re.I)
     windows: list[dict] = []
+    last_date = last_day = None
 
     for c in chunks:
         c = c.strip()
@@ -788,9 +852,19 @@ def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | N
         if not date:
             day, rest = _parse_dow(c)
         if not (date or day):
-            return round_id, [], (
-                f"Couldn't parse date in `{c}`. Try `1st Aug 8PM to 10PM` "
-                f"or `Sat 8pm-10pm`.")
+            # A second window for the same day, written without repeating
+            # the date: "aug 7 6pm to 10pm or 12am to 6am". The date is
+            # simply carried over from the previous entry, which is what
+            # the writer meant and what a human reader assumes. Only ever
+            # inherits within one message, so a genuinely dateless message
+            # still fails loudly on its first entry.
+            if last_date or last_day:
+                date, day, rest = last_date, last_day, c
+            else:
+                return round_id, [], (
+                    f"Couldn't parse date in `{c}`. Try `1st Aug 8PM to 10PM`, "
+                    f"`Sat 8pm-10pm`, or `every day 9pm to 6am`.")
+        last_date, last_day = date, day
 
         # Start time
         start, rest, start_had_ampm = _parse_time(rest)

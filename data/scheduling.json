@@ -19,7 +19,84 @@
     "                    matches. Grow-only. If this gets too big we split by year."
   ],
   "week_of": "2026-08-03",
-  "availability": {},
+  "availability": {
+    "Mandark [<MC>]": {
+      "declared_at": "2026-08-03T05:33:25.480572Z",
+      "declared_in_tz": "Asia/Karachi",
+      "windows": [
+        {
+          "date": "2026-08-04",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-05",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-06",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-07",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-08",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-09",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        },
+        {
+          "date": "2026-08-10",
+          "start_local": "21:00",
+          "end_local": "24:00"
+        },
+        {
+          "date": "2026-08-11",
+          "start_local": "00:00",
+          "end_local": "06:00"
+        }
+      ]
+    }
+  },
   "upcoming": [
     {
       "round_id": "R0-test",

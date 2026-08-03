@@ -305,6 +305,55 @@ check("confirm bad input — error message",
 
 
 # ═════════════════════════════════════════════════════════════════════
+#  !avail shorthand — every one of these is a line a real player typed
+#  in #dota-league-2026 and had rejected, or typed the long way because
+#  the short way did not exist.
+# ═════════════════════════════════════════════════════════════════════
+group("!avail shorthand (regressions from the live channel)")
+
+from datetime import date as _date
+T = _date(2026, 8, 3)
+
+def parsed(text):
+    _, w, err = L._parse_avail(text, today=T)
+    return w, err
+
+# The 200-char line two players copy-pasted, and the six words that
+# should replace it, must produce IDENTICAL windows.
+long_form = ("aug 4 9pm to 6am, aug 5 9pm to 6am, aug 6 9pm to 6am, aug 7 9pm to 6am, "
+             "aug 8 9pm to 6am, aug 9 9pm to 6am, aug 10 9pm to 6am")
+w_long, e_long = parsed(long_form)
+w_short, e_short = parsed("every day 9pm to 6am")
+check("avail — the long repetitive form still parses", not e_long, e_long)
+check("avail — 'every day' parses", not e_short, e_short)
+check("avail — 'every day' yields a full week",
+      len({x.get('date') for x in w_short}) >= 7, sorted({x.get('date') for x in w_short}))
+check("avail — 'daily' is a synonym", not parsed("daily 9pm-6am")[1])
+check("avail — 'all week' is a synonym", not parsed("all week 9pm-6am")[1])
+
+# hurrali's line: failed on BOTH 'aug7' (no space) and 'or'.
+w, e = parsed("aug7 6pm to 10 pm or 12 am to 6 am , aug 8 12pm to 1 am")
+check("avail — 'aug7' without a space", not e, e)
+check("avail — 'or' as a second window, inheriting the date",
+      not e and len(w) >= 3, f"{len(w)} windows, err={e}")
+
+# salman's line: two days sharing one window.
+w, e = parsed("Fri Sat 20 - 23")
+check("avail — 'Fri Sat 20-23' (day list)", not e and len(w) == 2, f"{len(w)}, {e}")
+check("avail — 'Mon Wed Fri 8pm-11pm'", not parsed("Mon Wed Fri 8pm-11pm")[1])
+
+# A comma-separated second window with no date inherits the first.
+w, e = parsed("aug 5 8pm to 10pm, 11pm to 1am")
+check("avail — bare second window inherits the date", not e and len(w) >= 2, f"{len(w)}, {e}")
+
+# Must NOT regress: single forms, and real garbage must still be refused.
+check("avail — single 'Sat 8pm-10pm' unchanged", not parsed("Sat 8pm-10pm")[1])
+check("avail — single 'Aug 5 20:00-22:00' unchanged", not parsed("Aug 5 20:00-22:00")[1])
+check("avail — a dateless message is still refused", bool(parsed("9pm to 6am")[1]))
+check("avail — garbage is still refused", bool(parsed("garbage input")[1]))
+
+
+# ═════════════════════════════════════════════════════════════════════
 #  !who
 # ═════════════════════════════════════════════════════════════════════
 group("!who")
