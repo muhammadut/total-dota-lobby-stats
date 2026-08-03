@@ -23,10 +23,23 @@ python tools/discord_commands.py        # act on channel instructions
 python tools/discord_ask.py --resolve   # apply merge votes
 python tools/reconcile.py               # account for every downloaded image
 python tools/ingest.py --from f.json --dry-run | --deploy | --amend
-python tools/automerge.py [--ask-discord]
+python tools/automerge.py [--ask-discord | --merge A B | --unmerge X | --not-same A B]
 python tools/crop.py shot.png --rows --tab scoreboard
 python load.py && python export_web.py
+
+python tools/discord_league.py --watch  # league bot, live (see "The league")
+python tools/test_league_commands.py    # 111 cases; run after any league change
 ```
+
+**Reconcile AFTER the ingest, never before.** A screenshot is "failed"
+the moment it is not yet in the ledger, which is also true of one about
+to be ingested — running it first condemned a good screenshot and made
+the bot tell a real person to repost. `failed` can now heal, but the
+ordering is still the rule.
+
+**The bot token is in `tools/discord.local.json` (gitignored).** It has
+been rotated once already. Never echo it, never write a `.bak` beside it
+(that backup is *not* gitignored), and never ask for it in chat.
 
 The `add-match` skill drives the screenshot path. Say "add these".
 
@@ -71,10 +84,16 @@ SCOREBOARD tab has **no match header**. Sources, best first:
 3. **`Dota_2_<date>-<time>.png` filename** — the *capturing client's* clock.
 4. File mtime — for shared files this is arrival, 2–3 h after the game.
 
-**Confirmed timezones:** user is **UTC−4**; `stoicheart` is **UTC+5** (9 h gap).
-A constant offset across several files is a timezone, not a broken clock.
-Clients are identifiable by the gold counter: `67,845` user, `26,525` hurrali,
-`389,225` stoicheart.
+**Confirmed timezones:** user is **UTC−4**; `stoicheart` is **UTC+5** (9 h gap,
+verified twice). A constant offset across several files is a timezone, not a
+broken clock. `stoicheart`'s Discord shows "New Delhi" (UTC+5:30) but the
+machine clock is UTC+5 — trust the filename gap, not the city.
+
+**The gold counter does NOT identify a client.** It used to be listed here
+as a fingerprint (`67,845` user, `26,525` hurrali, `389,225` stoicheart) and
+that is wrong: gold is spendable and drifts. hurrali alone read 26,525 →
+61,170 → 63,830 inside a week. Use the poster's Discord identity and the
+filename clock instead.
 
 ## Discord
 
@@ -107,43 +126,127 @@ is gitignored, so a fresh runner has no database — without that first build,
 every merge command answers "I don't have a player called X" and `co_occur()`
 returns False, disabling the co-occurrence guard.
 
-## Status — as of 2026-07-25
+## Status — as of 2026-08-03
 
-14 matches, 40 player rows / 30 people, 10 merges, all from 2026-07-24/25.
-Every match is 5v5, none is dateless, and the live asset hash matches the
-built one.
+**38 matches, 380 appearances, 31 people, 17 merges, 3 recorded
+non-merges.** 2026-07-24 → 2026-08-01. Every match 5v5, none dateless,
+nobody holding two slots, live site byte-identical to the build.
 
-**The pipeline has now been rehearsed end-to-end, locally, on two real
-Discord screenshots.** Pull → triage → zoom-verify → ingest → automerge →
-reconcile → deploy, with the live site byte-identical to the build (modulo
-git's CRLF→LF). Two things that only a real run surfaced:
+The ingest pipeline is no longer a rehearsal — it has run daily for a
+week on real screenshots from six different posters. What that surfaced:
 
-- **A re-read agreed with the recorded match digit for digit.** `discord-
-  1530753840532688998` had already been ingested; transcribing it again from
-  scratch reproduced all 10 players, 30 K/D/A values, both scores and the
-  winner exactly. That is the only real evidence the reading step is stable.
-- **`Rogue Agent [ITIzI]` was a misread of `Rogue Agent [|T|z|]`** — pipes,
-  not capital I, settled at 12× where the bars overshoot the `T`'s cap-height
-  above and below. One human had been split across two rows for 2 games.
-  `automerge.py` caught it unprompted once both spellings existed.
+- **Both checksum chains exact is common and worth trusting.** When
+  `radiant kills = score = dire deaths` AND the mirror holds, all four
+  columns cross-validate. `HURR`'s 27/0/8 on Ursa was accepted on that
+  basis: the 27 is carried by the dire chain, the 0 by the radiant one.
+- **Measure glyphs, never eyeball them.** The pitch/apex lattice settles
+  `SpArt`+8 vs `SpaRt`+10, twelve dots vs thirteen, `[|T|z|]` vs
+  `[ITIzI]`, four underscores each side of `Tiger X`. Four separate
+  captures have now agreed to the exact pixel, and one eyeball guess of
+  mine was wrong (13 dots; it is 12).
+- **The gold-counter client fingerprint in "Dating a match" is WRONG.**
+  Gold is spendable and drifts — hurrali read 26,525, then 61,170, then
+  63,830 across a week. It cannot identify a client across days. Poster
+  identity and the filename clock are the reliable signals.
+- **`played_on` follows the Discord clock, never the filename.**
+  stoicheart's client is UTC+5 against the user's UTC−4, so his files
+  are named with tomorrow's date. Confirmed twice at exactly 9h.
 
-**The cloud workflow has still NEVER RUN.** No repo secrets are set. Needed:
-`DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID`, `DISCORD_APPROVERS`
+**The cloud workflow has still NEVER RUN.** No repo secrets are set.
+Needed: `DISCORD_BOT_TOKEN`, `DISCORD_CHANNEL_ID`, `DISCORD_APPROVERS`
 (`539898067957186560,364832153843793920,1149675111557890048`), and
 `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) or `ANTHROPIC_API_KEY`.
+Triage has still never seen a deliberately bad image.
 
-Triage has never seen a hostile image, and the command parser has only ever
-been driven by Claude. **Next step: post a deliberately bad image — wrong
-tab, cropped, not Dota at all — and confirm it is refused and answered in
-channel rather than silently dropped.**
+### Dashboard — Rating, Duos, clickable heroes
+
+Standings rank by **Rating**: the lower bound of a Wilson confidence
+interval on win rate, doubled so 100 means "proved better than a coin
+flip". It replaces the old "sort by win% then filter to 5+ games" —
+sample size is priced in rather than thresholded, so nobody is hidden.
+A **Games count** control (Less/More/Most = z of 1.96/2.576/3.0) sets
+how much volume is worth; default is More. Do not silently change the
+default — it reorders the whole board.
+
+**Duos** tab: for one player, every teammate ranked by win rate *with*
+them versus *without*. "Without" deliberately includes games they were
+on the enemy side — the honest baseline is your whole record, not a
+chosen slice. Two players selected gives head-to-head instead of a bare
+count of split games. **Heroes** are clickable → who played it, how often.
+
+The tab lives in `location.hash`, so `#duos=Downlander` is linkable.
+
+## The league (added 2026-08-02, separate from the stats)
+
+Fall 2026 season, Aug 1 → Dec 31, $500 prize, 4 fixed teams of 6. Lives
+in its own Discord channel `#dota-league-2026` (`1533521004280680538`)
+and its own files — it shares only the bot token and `api()`.
+
+```
+data/teams.json        rosters; canonical name + aka + backup stand-in
+data/scheduling.json   week_of, availability, upcoming, archive
+data/players_tz.json   canonical name -> IANA zone
+data/discord_players.json   discord uid -> canonical name
+tools/discord_league.py     the bot (plain Python, NO LLM at runtime)
+tools/find_slot.py          DST-safe slot ranking
+tools/tz_map.py             zone aliases
+tools/test_league_commands.py   111 cases, run it after any change
+```
+
+**The bot is a poller, not a daemon.** `python tools/discord_league.py`
+answers what was typed since the watermark and exits — so a command
+typed while nothing is running gets *silence*, which is how a
+registration sat unanswered for hours. `--watch` is the live mode: polls
+every 3s, backs off and retries on 429/5xx/network, stops loudly only on
+401/404. It runs on this PC and dies with the session; restart on ask.
+
+**Teams and Coord tabs are read-only.** All input is Discord. Scheduling
+state reaches the site only when `export_web.py` is re-run and committed
+— a `!confirm` alone does not update the website, and that gap already
+shipped a stale build once.
+
+### League gotchas already paid for
+
+- **`!confirm` replaces, never appends.** Re-confirming a pairing is
+  normal (people redo it once more availability lands). Appending put
+  the same fixture on the site twice, the stale row carrying an old
+  `missing` roster. Identity is **pairing + week**, not pairing + start
+  time — keying on time would leave the abandoned slot as a second
+  fixture. `upcoming` survives `!newweek`, so older weeks are separate.
+- **Parse what people type, not what the grammar wants.** Every rejected
+  message in the channel was a missing feature, not user error: three
+  people posted the same 200-char line because `every day 9pm to 6am`
+  did not exist; `aug7`, `or` between two windows, `Fri Sat 20-23`, and
+  `UK (GMT+1)` were all refused. The bot even rejected its own
+  instruction when autocorrect turned `--new` into `—new`.
+- **Ambiguous zone abbreviations are a silent-wrong-number risk.** `gst`
+  resolves to Asia/Dubai; a British player meaning GMT was registered 3h
+  off and only caught it because the reply *names the resolved zone*.
+  Keep that echo. When a zone is written with a parenthetical, prefer
+  the outside (`UK` → Europe/London, DST-aware) over the inside
+  (`GMT+1`, a fixed offset that is wrong all winter).
+- **Read the channel before theorising.** Every real bug this week was
+  found in the message log, not the code.
 
 ### `automerge.py` picks the established name as canonical
 
 When it merged the two `Rogue Agent` rows it kept `[ITIzI]` — the *misread*
 spelling — because that row had the earlier appearances. The count is right
 (one person, 2 games) but the dashboard shows a name that was never real.
-There is no command to flip a merge's direction; the only route is editing
-the `aliases` line and re-running `load.py`. Same root as known-unfixed 4.
+**Now fixable without hand-editing:** `--unmerge ALIAS` then `--merge
+CANONICAL ALIAS` the other way round. Both go through the same
+co-occurrence precondition as an auto-merge.
+
+### Claims about "first" / "newest" must be queried, not recalled
+
+Three notes shipped saying a thing was new when it was not — "first
+custom team name" (they go back to 07-24), "second appearance" (it was
+the fourth), "third one-point game" written as the second. All three
+were written from what this session had seen rather than from the
+ledger, and all three had to be amended. **Before writing "first",
+"only" or "Nth" into a note, query `matches.json`.** Amend with
+`ingest.py --amend` and a notes-only patch generated from the existing
+file, then verify no non-note field moved.
 
 ## Known-unfixed (adversarial review, 2026-07-25)
 
@@ -159,15 +262,25 @@ are fixed and verified against reproductions. These remain **open**:
 3. **Approvals fail open in CI.** `tools/discord.local.json` is gitignored, so
    if `DISCORD_APPROVERS` is unset the approver list is empty and
    `privileged = (not allow)` makes **everyone** an approver. Set the secret.
-4. **`not same A and B` doesn't un-merge.** It records the rejection and says
-   "I won't ask again", but if they were already merged the merge stays. There
-   is no un-merge command; only deleting the alias line and re-running `load.py`.
+4. ~~**`not same A and B` doesn't un-merge.**~~ **FIXED** —
+   `automerge.py --unmerge ALIAS` exists, and `--not-same` refuses if the
+   pair is currently merged rather than silently recording a lie.
 5. A stray `yes` from an approver applies the single open merge question even
    if it wasn't a reply to it.
 6. `dump_matches()` silently drops unknown top-level keys in `matches.json`.
 7. A dateless match (`played_on` null) is counted in **every** year by the
    dashboard filter. Currently 0 such matches, but it would corrupt a year-end
    board.
+8. **League: `!newweek` does not clear `upcoming`.** Bookings accumulate
+   across weeks. Harmless now (the dedupe keys on week), but the Coord
+   tab will eventually list past fixtures as "NEXT MATCH".
+9. **League: the Coord tab renders `upcoming` in insertion order**, so a
+   later-dated fixture can appear above the genuinely next one, and both
+   are labelled "NEXT MATCH".
+10. **League: `backup` may name someone off the roster** (Team 4's Xmen
+    is backed by `Gillu`, who has no roster row). Display-only, so it
+    renders as the sheet reads and breaks nothing — but that person
+    cannot register or post availability.
 
 ## Cautions
 
