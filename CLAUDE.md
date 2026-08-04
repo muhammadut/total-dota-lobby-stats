@@ -214,7 +214,28 @@ answers what was typed since the watermark and exits — so a command
 typed while nothing is running gets *silence*, which is how a
 registration sat unanswered for hours. `--watch` is the live mode: polls
 every 3s, backs off and retries on 429/5xx/network, stops loudly only on
-401/404. It runs on this PC and dies with the session; restart on ask.
+401/404.
+
+**Start it with `tools/start_watcher.ps1`, never with a bare `--watch`
+in an agent or terminal shell.** Run as a child of the calling shell it
+dies when that shell does — twice in a row it was killed mid-backoff
+after a Discord 503, leaving a log that simply stops. Nothing in the
+watch loop was wrong; the *launch* was. `Start-Process` detaches it, and
+it has been verified to survive its own launcher being killed.
+
+```powershell
+powershell -NoProfile -File tools\start_watcher.ps1            # start (kills any duplicate first)
+powershell -NoProfile -File tools\start_watcher.ps1 -Status    # alive? + last log lines
+powershell -NoProfile -File tools\start_watcher.ps1 -Stop
+powershell -NoProfile -File tools\start_watcher.ps1 -Install   # logon Scheduled Task, survives reboot
+```
+
+**Never run two watchers.** Both answer every command and both advance
+the same watermark, so the channel sees doubled replies. The start script
+kills any existing one first for exactly this reason.
+
+A dead watcher is silent — that is the whole problem. `-Status` is the
+first thing to check whenever somebody says the bot ignored them.
 
 **Teams and Coord tabs are read-only.** All input is Discord. Scheduling
 state reaches the site only when `export_web.py` is re-run and committed
