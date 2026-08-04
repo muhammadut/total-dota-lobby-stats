@@ -240,9 +240,15 @@ dp = L.load_discord_players()
 L.do_register("UT ET", "ut70", UID_UT, dp, privileged=True)
 dp = L.load_discord_players()
 
-r = L.do_avail("Aug 3 8PM to 10PM", "ut70", UID_UT, dp)
+# do_avail goes through the REAL clock, unlike the _parse_avail cases
+# above which pin `today`. It was written with a hardcoded "Aug 3" and
+# started failing the moment the date rolled over to Aug 4 -- the parser
+# correctly refuses a date in the past. Use tomorrow, so this keeps
+# testing the thing it means to test on every future day.
+_tmw = date.today() + timedelta(days=1)
+r = L.do_avail(f"{_tmw:%b} {_tmw.day} 8PM to 10PM", "ut70", UID_UT, dp)
 check("do_avail full path — preview shows date + tz + UTC",
-      "2026-08-03" in r and "New York" in r and "UTC" in r, r)
+      _tmw.isoformat() in r and "New York" in r and "UTC" in r, r)
 check("do_avail readiness tail — Team 1 pinged",
       "Team 1" in r and "1/6" in r, r)
 
