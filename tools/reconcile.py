@@ -8,15 +8,28 @@ a refused screenshot is simply gone — no record, no retry, no message,
 and a green checkmark. One lost match is one wrong win total at year end.
 
 Every downloaded image ends in exactly one state:
-  ingested  a match in data/matches.json carries its message id
-  failed    it does not, and the channel is told to repost it
+  ingested   a match in data/matches.json carries its message id
+  duplicate  a re-capture of a game already recorded from another image
+  failed     none of the above, and the channel is told to repost it
 
 Nothing is retried silently. A human is asked instead, because a
 screenshot that failed once will almost always fail again for the same
 reason, and re-reading it daily just burns money.
 
+`duplicate` exists because it was missing. Two people photograph the same
+post-game screen; the first is ingested, and the second is perfectly
+readable but must not be recorded twice, so it is not in the ledger --
+which looked identical to "unreadable". The bot told soooze his screenshot
+could not be read and asked him to repost it. It could be read. Telling a
+real person to redo work they did correctly is its own kind of wrong
+number, so a duplicate is now a state of its own: terminal, and silent.
+
+It cannot be detected automatically -- knowing two images are the same
+match means transcribing both -- so whoever ingests marks it:
+
     python tools/reconcile.py            # settle pending, notify failures
     python tools/reconcile.py --dry-run
+    python tools/reconcile.py --duplicate <message_id> --of <source_ref>
 """
 
 import argparse
@@ -36,9 +49,36 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--duplicate", metavar="MESSAGE_ID",
+                    help="mark a downloaded image as a re-capture of a match "
+                         "already recorded from a different image")
+    ap.add_argument("--of", metavar="SOURCE_REF",
+                    help="the source_ref it duplicates (required with --duplicate)")
     args = ap.parse_args()
 
     seen = load_seen()
+
+    if args.duplicate:
+        if not args.of:
+            return ap.error("--duplicate needs --of <source_ref>")
+        mid = args.duplicate
+        if mid not in seen:
+            print(f"  no downloaded image with message id {mid}", file=sys.stderr)
+            return 1
+        refs = {m.get("source_ref", "") for m in
+                json.loads(DATA.read_text(encoding="utf-8"))["matches"]}
+        if args.of not in refs:
+            # Refuse to point at a match that does not exist -- otherwise
+            # this becomes a way to silence a real failure by typo.
+            print(f"  {args.of!r} is not a source_ref in the ledger", file=sys.stderr)
+            return 1
+        seen[mid]["status"] = "duplicate"
+        seen[mid]["duplicate_of"] = args.of
+        if not args.dry_run:
+            save_seen(seen)
+        print(f"  {seen[mid].get('file', mid)} → duplicate of {args.of}"
+              + (" (dry run — nothing written)" if args.dry_run else ""))
+        return 0
     pending = {k: v for k, v in seen.items() if v.get("status") == "pending"}
     # "failed" used to be terminal. But a screenshot is marked failed the
     # moment it is not yet in the ledger, and that is also true of one being

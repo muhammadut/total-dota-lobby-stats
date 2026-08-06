@@ -948,7 +948,8 @@ def _expand_shorthand(txt: str, today) -> str:
     return txt
 
 
-def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | None]:
+def _parse_avail(args: str, today=None,
+                 dropped: list | None = None) -> tuple[str | None, list[dict], str | None]:
     """
     Parse `!avail [R#] <entry>[, <entry>]*` where each entry is:
         <date | day-of-week> <start> [to | -] <end>
@@ -1025,12 +1026,20 @@ def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | N
                 sh += 12
                 start = f"{sh:02d}:{start.split(':')[1]}"
 
-        # Reject dates in the past. Day-of-week windows have no date until
-        # rendering, so they skip this check.
+        # Dates in the past are DROPPED, not fatal.
+        #
+        # People post the week as one line -- "aug 4 9pm to 6am, aug 5 ...,
+        # aug 10 9pm to 6am" -- and re-post it a day or two later. The first
+        # date has gone by, and refusing the whole message threw away the
+        # six good days with it. That is exactly what happened to
+        # one2oneonly on 2026-08-05: a complete week lost to one stale date,
+        # and the only reason we know is that the rewrite queue kept it.
+        # Callers pass `dropped` so the reply can say which days went and
+        # nothing disappears quietly.
         if date and date < today.isoformat():
-            return round_id, [], (
-                f"Date `{date}` is in the past. Availability must be for "
-                f"today or later.")
+            if dropped is not None:
+                dropped.append(date)
+            continue
 
         if date:
             windows.extend(_build_windows(date, start, end))
@@ -1038,6 +1047,11 @@ def _parse_avail(args: str, today=None) -> tuple[str | None, list[dict], str | N
             windows.append({"day": day, "start_local": start, "end_local": end})
 
     if not windows:
+        if dropped is not None and dropped:
+            return round_id, [], (
+                f"Every date in that message has already passed "
+                f"(`{'`, `'.join(sorted(set(dropped)))}`). Post the days "
+                f"still to come and I'll take them.")
         return round_id, [], "No usable windows found."
     return round_id, windows, None
 
@@ -1052,7 +1066,8 @@ def do_avail(args: str, uname: str, uid: str, dp: dict,
     if args.strip().lower() in ("clear", "reset"):
         return _do_avail_clear(uname, uid, dp)
 
-    _, windows, err = _parse_avail(args)   # first return (round_id) is ignored now
+    dropped: list[str] = []
+    _, windows, err = _parse_avail(args, dropped=dropped)   # round_id ignored now
     if err or not windows:
         return _queue_for_rewrite(args, uname, uid, dp,
                                   err or "No usable windows found.", msg_id)
@@ -1121,7 +1136,15 @@ def do_avail(args: str, uname: str, uid: str, dp: dict,
     readiness = find_slot.team_readiness(sched["availability"], teams)
     tail = _readiness_tail(on_team, readiness, sched, teams, ptz, dp)
 
-    return f"Got it, **{player}**:\n```\n{body}\n```\n{tail}"
+    # Dropped days are stated, never swallowed. Somebody who re-posts last
+    # week's line needs to see which days did not count.
+    skipped = ""
+    if dropped:
+        days = "`, `".join(sorted(set(dropped)))
+        skipped = (f"\n_(Skipped `{days}` — already past. Everything else "
+                   f"above is saved.)_")
+
+    return f"Got it, **{player}**:\n```\n{body}\n```{skipped}\n{tail}"
 
 
 def _queue_for_rewrite(args: str, uname: str, uid: str, dp: dict,

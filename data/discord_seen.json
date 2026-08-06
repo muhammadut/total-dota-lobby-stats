@@ -177,24 +177,25 @@
     "author": "soma3031",
     "file": "1533918466203980046_image.png",
     "posted": "2026-08-03 15:24",
-    "status": "pending"
+    "status": "ingested"
   },
   "1533965605928046752": {
     "author": "soooze",
+    "duplicate_of": "screenshot-7",
     "file": "1533965605928046752_IMG_1515.jpg",
     "posted": "2026-08-03 18:31",
-    "status": "pending"
+    "status": "duplicate"
   },
   "1535031540877103144": {
     "author": "hash1m23",
     "file": "1535031540877103144_28C31FC0-FAED-45C4-AE2C-B2328F90C14A.png",
     "posted": "2026-08-06 17:07",
-    "status": "pending"
+    "status": "ingested"
   },
   "1535031559277772932": {
     "author": "hash1m23",
     "file": "1535031559277772932_F6511139-B312-4C80-9977-3ECCFC337CA1.png",
     "posted": "2026-08-06 17:07",
-    "status": "pending"
+    "status": "ingested"
   }
 }

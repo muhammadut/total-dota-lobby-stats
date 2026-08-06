@@ -262,7 +262,11 @@ reset_state()
 dp = L.load_discord_players()
 L.do_register("UT ET", "ut70", UID_UT, dp, privileged=True)
 dp = L.load_discord_players()
-L.do_avail("Aug 4 8PM to 11PM", "ut70", UID_UT, dp)
+# Relative to today, not a fixed "Aug 4" — the same time bomb that broke
+# the do_avail test above, left in a second place. Everything downstream
+# here needs the availability to actually save.
+_fs = date.today() + timedelta(days=1)
+L.do_avail(f"{_fs:%b} {_fs.day} 8PM to 11PM", "ut70", UID_UT, dp)
 
 r = L.do_find("")
 check("find (no args) — lists all 6 pairs",
@@ -683,6 +687,55 @@ r = L.do_tz("Stoic PKT", "someone", "999000000000000123",
             L.load_discord_players(), False)
 check("tz — a non-approver cannot set another player's zone",
       "Only approvers" in r, r)
+
+reset_state()
+
+
+# ═════════════════════════════════════════════════════════════════════
+#  A past date drops that day, it does not kill the message
+#
+#  People post the whole week on one line and re-post it a day later.
+#  The first date has gone by, and refusing the message threw away the
+#  six good days with it — one2oneonly lost a complete week that way on
+#  2026-08-05, and only the rewrite queue kept any record of it.
+# ═════════════════════════════════════════════════════════════════════
+group("!avail — dates that have already passed")
+
+_t = date(2026, 8, 5)
+_dropped = []
+_, _w, _e = L._parse_avail(
+    "aug 4 9pm to 6am, aug 5 9pm to 6am, aug 6 9pm to 6am", today=_t,
+    dropped=_dropped)
+check("past date — the message is still accepted", _e is None, _e)
+check("past date — the stale day is reported", _dropped == ["2026-08-04"], _dropped)
+check("past date — the good days survive",
+      _w and all(x["date"] >= "2026-08-05" for x in _w if "date" in x), _w)
+check("past date — nothing from the dropped day is kept",
+      _w and not any(x.get("date") == "2026-08-04" for x in _w), _w)
+
+# All-past is still an error, and names the dates rather than one of them.
+_d2 = []
+_, _w2, _e2 = L._parse_avail("aug 1 9pm to 11pm, aug 2 9pm to 11pm",
+                             today=_t, dropped=_d2)
+check("past date — an entirely stale message is refused",
+      _e2 is not None and "already passed" in _e2, _e2)
+check("past date — and lists every stale date",
+      _e2 and "2026-08-01" in _e2 and "2026-08-02" in _e2, _e2)
+
+# Without the `dropped` argument the old callers still behave.
+_, _w3, _e3 = L._parse_avail("aug 6 9pm to 6am", today=_t)
+check("past date — the plain 3-tuple call still works", _e3 is None and _w3, _e3)
+
+# End to end: the reply must SAY what it skipped.
+reset_state()
+L.do_register("UT est", "ut70", UID_UT, L.load_discord_players(), True)
+_y = date.today() - timedelta(days=1)
+_m = date.today() + timedelta(days=1)
+r = L.do_avail(f"{_y:%b} {_y.day} 9pm to 11pm, {_m:%b} {_m.day} 9pm to 11pm",
+               "ut70", UID_UT, L.load_discord_players())
+check("past date — reply saves the future day", "Got it" in r, r)
+check("past date — and names the skipped one",
+      "Skipped" in r and _y.isoformat() in r, r)
 
 reset_state()
 
