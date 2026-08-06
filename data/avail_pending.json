@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "!avail messages the regex parser could not read.",
+    "Drained by tools/avail_llm.py; see that file for the contract."
+  ],
+  "pending": [
+    {
+      "id": 1,
+      "at": "2026-08-05T16:54:44.409191Z",
+      "discord_uid": "730174144448299119",
+      "discord_name": "one2oneonly",
+      "player": null,
+      "raw": "aug 4 9pm to 6am, aug 5 9pm to 6am, aug 6 9pm to 6am, aug 7 9pm to 6am, aug 8 9pm to 6am, aug 9 9pm to 6am, aug 10 9pm to 6am",
+      "parser_error": "Date `2026-08-04` is in the past. Availability must be for today or later.",
+      "message_id": "1534605577169404116"
+    }
+  ],
+  "resolved": []
+}

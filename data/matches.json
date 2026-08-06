@@ -1212,6 +1212,87 @@
         {"name": "HELL-ANGEL-", "side": "dire", "hero": "Lich", "hero_level": 25, "kills": 7, "deaths": 11, "assists": 30, "net_worth": 17997, "last_hits": 80, "denies": 11, "gpm": 409, "xpm": 715, "hero_damage": 35367, "building_damage": 588, "healing": 125},
         {"name": "............ [UGI|]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 2, "deaths": 18, "assists": 35, "net_worth": 12918, "last_hits": 54, "denies": 0, "gpm": 376, "xpm": 656, "hero_damage": 24619, "building_damage": 218, "healing": 0}
       ]
+    },
+    {
+      "source_ref": "discord-1533918466203980046",
+      "dota_match_id": null,
+      "played_on": "2026-08-03",
+      "played_at": "2026-08-03 15:24",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 41,
+      "dire_score": 46,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by soma3031, dated from the Discord upload time. Radiant won on the explicit WINNER badge despite scoring fewer kills (41 to 46) — the score column counts kills, not the ancient. Radiant kills 39 vs score 41 is a gap of two, so that column was re-read at 6x and stands at 11/12/6/7/3 — two tower kills. Dire chain triple-exact.",
+      "players": [
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 28, "kills": 11, "deaths": 10, "assists": 16, "net_worth": 31155, "last_hits": 468, "denies": 14, "gpm": 699},
+        {"name": "SpaRtAAAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Lina", "hero_level": 29, "kills": 12, "deaths": 5, "assists": 9, "net_worth": 27618, "last_hits": 382, "denies": 7, "gpm": 664},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Demon", "hero_level": 23, "kills": 6, "deaths": 10, "assists": 19, "net_worth": 15672, "last_hits": 108, "denies": 6, "gpm": 385},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Dawnbreaker", "hero_level": 25, "kills": 7, "deaths": 7, "assists": 16, "net_worth": 21634, "last_hits": 328, "denies": 9, "gpm": 508},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Lion", "hero_level": 23, "kills": 3, "deaths": 14, "assists": 19, "net_worth": 15154, "last_hits": 84, "denies": 1, "gpm": 363},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Ringmaster", "hero_level": 25, "kills": 6, "deaths": 9, "assists": 23, "net_worth": 14861, "last_hits": 79, "denies": 1, "gpm": 390},
+        {"name": "Stoic", "side": "dire", "hero": "Leshrac", "hero_level": 28, "kills": 10, "deaths": 6, "assists": 21, "net_worth": 29174, "last_hits": 462, "denies": 9, "gpm": 716},
+        {"name": "vAnzOr", "side": "dire", "hero": "Nyx Assassin", "hero_level": 24, "kills": 12, "deaths": 6, "assists": 14, "net_worth": 16369, "last_hits": 70, "denies": 3, "gpm": 403},
+        {"name": "Lord_TheePa [UGI|]", "side": "dire", "hero": "Faceless Void", "hero_level": 27, "kills": 9, "deaths": 9, "assists": 21, "net_worth": 29301, "last_hits": 406, "denies": 12, "gpm": 658},
+        {"name": "____Tiger X____ [GB]", "side": "dire", "hero": "Timbersaw", "hero_level": 25, "kills": 9, "deaths": 11, "assists": 15, "net_worth": 22415, "last_hits": 264, "denies": 7, "gpm": 510}
+      ]
+    },
+    {
+      "source_ref": "discord-1535031540877103144",
+      "dota_match_id": null,
+      "played_on": "2026-08-06",
+      "played_at": "2026-08-06 17:07",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 41,
+      "dire_score": 27,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by hash1m23, dated from the Discord upload time. Both chains legal — radiant kills 40 vs score 41 (one tower kill), dire chain triple-exact. Same Radiant five as discord-1535031559277772932, posted five seconds apart by the same client.",
+      "players": [
+        {"name": "vAnzO", "side": "radiant", "hero": "Ancient Apparition", "hero_level": 17, "kills": 6, "deaths": 8, "assists": 26, "net_worth": 10878, "last_hits": 35, "denies": 2, "gpm": 349},
+        {"name": "Downlander", "side": "radiant", "hero": "Templar Assassin", "hero_level": 25, "kills": 17, "deaths": 4, "assists": 10, "net_worth": 26554, "last_hits": 381, "denies": 13, "gpm": 801},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Lich", "hero_level": 19, "kills": 4, "deaths": 10, "assists": 23, "net_worth": 9717, "last_hits": 38, "denies": 8, "gpm": 337},
+        {"name": "Sameed", "side": "radiant", "hero": "Slardar", "hero_level": 24, "kills": 8, "deaths": 3, "assists": 23, "net_worth": 21284, "last_hits": 286, "denies": 11, "gpm": 640},
+        {"name": "UT", "side": "radiant", "hero": "Tidehunter", "hero_level": 20, "kills": 5, "deaths": 2, "assists": 26, "net_worth": 16113, "last_hits": 180, "denies": 5, "gpm": 484},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Enchantress", "hero_level": 14, "kills": 3, "deaths": 9, "assists": 11, "net_worth": 8034, "last_hits": 60, "denies": 0, "gpm": 244},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Kez", "hero_level": 21, "kills": 5, "deaths": 5, "assists": 11, "net_worth": 17056, "last_hits": 282, "denies": 9, "gpm": 526},
+        {"name": "Learn some basic_!_ [FFPL]", "side": "dire", "hero": "Undying", "hero_level": 14, "kills": 3, "deaths": 9, "assists": 20, "net_worth": 6360, "last_hits": 20, "denies": 0, "gpm": 237},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Earth Spirit", "hero_level": 17, "kills": 9, "deaths": 11, "assists": 9, "net_worth": 12859, "last_hits": 164, "denies": 7, "gpm": 423},
+        {"name": "beetlebum [FUBU]", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 18, "kills": 7, "deaths": 7, "assists": 11, "net_worth": 14161, "last_hits": 185, "denies": 10, "gpm": 427}
+      ]
+    },
+    {
+      "source_ref": "discord-1535031559277772932",
+      "dota_match_id": null,
+      "played_on": "2026-08-06",
+      "played_at": "2026-08-06 17:07",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Illustrious Triumphant",
+      "dire_team_name": null,
+      "radiant_score": 54,
+      "dire_score": 45,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab only; posted by hash1m23, dated from the Discord upload time. Radiant carried a custom team name, 'Illustrious Triumphant'; Dire was unnamed. Radiant kills 53 <= score 54 <= dire deaths 55 — one tower kill and one death to neutrals/Roshan/self. Dire chain triple-exact.",
+      "players": [
+        {"name": "vAnzO", "side": "radiant", "hero": "Winter Wyvern", "hero_level": 24, "kills": 2, "deaths": 12, "assists": 31, "net_worth": 13355, "last_hits": 28, "denies": 3, "gpm": 335},
+        {"name": "Sameed", "side": "radiant", "hero": "Puck", "hero_level": 29, "kills": 19, "deaths": 3, "assists": 19, "net_worth": 33156, "last_hits": 471, "denies": 3, "gpm": 774},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Hoodwink", "hero_level": 23, "kills": 6, "deaths": 16, "assists": 30, "net_worth": 13178, "last_hits": 66, "denies": 1, "gpm": 349},
+        {"name": "UT", "side": "radiant", "hero": "Kunkka", "hero_level": 23, "kills": 7, "deaths": 10, "assists": 18, "net_worth": 21574, "last_hits": 259, "denies": 4, "gpm": 506},
+        {"name": "Downlander", "side": "radiant", "hero": "Sven", "hero_level": 30, "kills": 19, "deaths": 4, "assists": 16, "net_worth": 37832, "last_hits": 598, "denies": 7, "gpm": 863},
+        {"name": "samundar khan", "side": "dire", "hero": "Axe", "hero_level": 24, "kills": 15, "deaths": 14, "assists": 12, "net_worth": 18537, "last_hits": 211, "denies": 5, "gpm": 478},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Vengeful Spirit", "hero_level": 27, "kills": 9, "deaths": 10, "assists": 19, "net_worth": 25851, "last_hits": 450, "denies": 16, "gpm": 662},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Io", "hero_level": 24, "kills": 2, "deaths": 8, "assists": 30, "net_worth": 13710, "last_hits": 127, "denies": 2, "gpm": 357},
+        {"name": "............ [UGI|]", "side": "dire", "hero": "Dark Willow", "hero_level": 20, "kills": 8, "deaths": 15, "assists": 15, "net_worth": 9770, "last_hits": 19, "denies": 3, "gpm": 296},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Mirana", "hero_level": 26, "kills": 11, "deaths": 8, "assists": 17, "net_worth": 20836, "last_hits": 345, "denies": 3, "gpm": 541}
+      ]
     }
   ]
 }
