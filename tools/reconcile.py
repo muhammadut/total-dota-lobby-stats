@@ -40,7 +40,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
-from discord_pull import SEEN, load_seen, save_seen        # noqa: E402
+# discord_pull now serves two channels, so its seen-ledger is per-source.
+# reconcile accounts for the LOBBY inbox only -- league screenshots live in
+# inbox_league/ with their own ledger, and counting them here would report
+# every one of them as a failed lobby ingest forever.
+from discord_pull import SOURCES, load_seen, save_seen      # noqa: E402
+
+SEEN = SOURCES["lobby"]["seen"]
 
 DATA = ROOT / "data" / "matches.json"
 
@@ -56,7 +62,7 @@ def main() -> int:
                     help="the source_ref it duplicates (required with --duplicate)")
     args = ap.parse_args()
 
-    seen = load_seen()
+    seen = load_seen(SEEN)
 
     if args.duplicate:
         if not args.of:
@@ -75,7 +81,7 @@ def main() -> int:
         seen[mid]["status"] = "duplicate"
         seen[mid]["duplicate_of"] = args.of
         if not args.dry_run:
-            save_seen(seen)
+            save_seen(SEEN, seen)
         print(f"  {seen[mid].get('file', mid)} → duplicate of {args.of}"
               + (" (dry run — nothing written)" if args.dry_run else ""))
         return 0
@@ -130,7 +136,7 @@ def main() -> int:
             cwd=ROOT)
 
     if not args.dry_run:
-        save_seen(seen)
+        save_seen(SEEN, seen)
 
     print(f"\n  {len(ingested)} ingested, {len(failed)} failed"
           + (f", {len(healed)} corrected" if healed else "")

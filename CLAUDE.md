@@ -22,14 +22,19 @@ python tools/discord_pull.py            # Discord -> inbox/
 python tools/discord_commands.py        # act on channel instructions
 python tools/discord_ask.py --resolve   # apply merge votes
 python tools/reconcile.py               # account for every downloaded image
-python tools/ingest.py --from f.json --dry-run | --deploy | --amend
+python tools/ingest.py --from f.json --dry-run | --deploy | --amend | --remove REF
 python tools/automerge.py [--ask-discord | --merge A B | --unmerge X | --not-same A B]
 python tools/crop.py shot.png --rows --tab scoreboard
 python load.py && python export_web.py
 
+python tools/discord_pull.py --source league   # league screenshots -> inbox_league/
+python tools/league_ingest.py --from f.json    # -> data/league_matches.json (NOT the lobby one)
+python tools/league_result.py --ref REF [--series ID] [--apply]  # attach to a series
+python tools/league_result.py --list           # every recorded series
 python tools/discord_league.py --watch  # league bot, live (see "The league")
 python tools/avail_llm.py [--apply]     # read the !avail the regex couldn't
-python tools/test_league_commands.py    # 132 cases; run after any league change
+python tools/test_league_commands.py    # 152 cases; run after any league change
+python tools/test_league_result.py      # 24 cases; run after any series-association change
 ```
 
 **Reconcile AFTER the ingest, never before.** A screenshot is "failed"
@@ -201,12 +206,17 @@ data/players_tz.json   canonical name -> IANA zone
 data/discord_players.json   discord uid -> canonical name
 data/avail_pending.json     !avail messages the regex could not read
 data/fixtures.json          the season schedule (GENERATED — never hand-edit)
+data/league_matches.json    the LEAGUE match ledger -- never enters dota_stats.db
+data/series_results.json    which match belongs to which best-of-three
 tools/make_fixtures.py      generates it, and self-checks fairness
+tools/league_ingest.py      writes the league ledger (imports load.validate)
+tools/league_result.py      attaches an ingested match to its series
 tools/discord_league.py     the bot (plain Python, NO LLM at runtime)
 tools/avail_llm.py          drains that queue, with a model
 tools/find_slot.py          DST-safe slot ranking
 tools/tz_map.py             zone aliases
-tools/test_league_commands.py   132 cases, run it after any change
+tools/test_league_commands.py   152 cases, run it after any change
+tools/test_league_result.py     24 cases, the series-association rules
 ```
 
 **The bot is a poller, not a daemon.** `python tools/discord_league.py`
@@ -302,6 +312,80 @@ maths — same reasoning as `build_coord`.
 `players_tz.json`: the people in the most awkward zones (Malaysia at
 2 AM–5 AM) are exactly the ones who haven't registered, so deriving it
 would quietly drop the worst-affected row.
+
+### The Tournament tab — a SECOND LEDGER, not a filter (2026-08-07)
+
+**League games and lobby games must never mix, and the mechanism is
+separate storage, not a flag.** `data/league_matches.json` holds the
+league's matches and **never enters `dota_stats.db`**. `load.py` builds
+that database from `data/matches.json` alone, so no lobby statistic can
+include a league game — the rows are not there to be selected. There is
+no query to forget to filter.
+
+This was got wrong once, on the day it was built: the first league
+screenshot went into `matches.json`, and ten players had a league game
+folded into their inhouse record. The user's correction was explicit —
+*"need it seperate"*. A flag would have worked until the first query
+forgot it, which is precisely the failure this project cannot have.
+
+```bash
+python tools/discord_pull.py --source league    # -> inbox_league/
+# ...parse it exactly as any screenshot...
+python tools/league_ingest.py --from g1.json    # -> data/league_matches.json
+python tools/league_result.py --ref discord-123 --apply   # attach to a series
+python export_web.py                            # nothing shows until this runs
+```
+
+`league_ingest.py` **imports** `load.validate` rather than reimplementing
+it, so the kills/score/deaths chain has one definition. On top of it, the
+league gate: each side must be exactly one team's roster, the two sides
+must differ, and the match must not already be in the lobby ledger. A pub
+game cannot be filed as a league game by accident.
+
+**`tools/ingest.py --remove REF` exists** because of this. Until it was
+added, un-recording a match meant hand-editing `matches.json`, which the
+project forbids — so a match filed in the wrong ledger had no supported
+way back out.
+
+The **Tournament** tab has three views: team standings, a league-only
+player leaderboard, and the best-of-three series. Team records come from
+the league ledger directly now, not from fixture attachment — safe
+because nothing can enter that ledger without resolving to two rosters.
+Games not yet in a series still show, marked **Unattached**: a screenshot
+posted before the schedule is settled must never silently vanish.
+
+**Results live in `data/series_results.json`, never in `fixtures.json`.**
+`make_fixtures.py::build()` recreates every series from scratch with
+`"games": []` — writing results into the schedule means the next
+regeneration silently erases the season. The two files meet only in
+`export_web.py::build_fixtures`, on the way to the browser.
+
+**`--source league` has its own watermark, seen-ledger and inbox.** Same
+rule that already separates the image reader from the command reader:
+share a marker between two readers and one swallows the other's
+messages. The `lobby` default path is byte-for-byte unchanged. Separate
+inboxes also matter for `reconcile.py`, which accounts for every file in
+`inbox/` against `matches.json` — a league image sitting there would read
+as a failed ingest forever.
+
+**Association is checked, never guessed.** A game joins a series only if
+all five players on a side are on the same team's roster, the two sides
+are two *different* teams, those teams actually have a fixture against
+each other, and the clock lands in that fixture's night. Ambiguity is
+refused and reported — the alternative already happened once: team
+records were *inferred* from rosters, and a casual pub game whose sides
+lined up put Team 3 on 1-0 before a league game had been played.
+
+Series-level guards refuse a game once a Bo3 is decided (2 wins) or full
+(3 games), and refuse a `source_ref` already attached elsewhere.
+`--unlink` detaches and renumbers. A result pointing at a series id the
+schedule no longer contains is **printed as a warning at export** rather
+than silently vanishing.
+
+**As of 2026-08-07 the league channel has never had a screenshot posted
+in it** — 100 messages, all commands and chat. The tab renders its empty
+state, and every team correctly reads 0. That is the schedule waiting,
+not a bug.
 
 The Schedule tab has two layouts, **Timeline** (default, one column per
 week scrolling sideways, current week scrolled into view) and **List**.

@@ -5,27 +5,44 @@
     "Roster fields (per player):",
     "  name    -- CANONICAL display_name (matches Steam scoreboard). Used for",
     "             team inference on ingested screenshots and for individual stats.",
-    "  role    -- 'core' | 'support' | 'stand_in'. 5 non-stand_in per team,",
-    "             1 stand_in per team. Display-only apart from stand_in.",
+    "  role    -- 'core' | 'support' | 'stand_in'. 5 non-stand_in per team.",
     "  aka     -- friendly nicknames used by !register so players don't have to",
     "             know the canonical Steam name ('Cpx' -> 'Mandark [<MC>]').",
+    "             The Teams tab DISPLAYS aka[0] with the canonical underneath,",
+    "             so the sheet's nickname is what people actually read.",
     "  backup  -- optional. Canonical name of the stand-in who can substitute",
-    "             FOR THIS SLOT if the primary can't play. Slots without `backup`",
+    "             FOR THIS SLOT, or a LIST of them. Slots without `backup`",
     "             can't be filled by anyone -- the primary must play.",
     "",
-    "Substitution semantics (from the 2026-08-03 roster refresh):",
-    "  A stand-in listed as `backup` for a slot can fill that slot ONLY. The",
-    "  same stand-in may back up multiple slots (Musa covers 3 in Team 4) but",
-    "  can only fill one per match. Slots without `backup` are un-substitutable.",
+    "2026-08-07 roster refresh, from the captains' sheet. Four changes:",
     "",
-    "2026-08-03: Team 3's stand-in changed from Soooze [<MC>] to",
-    "  Beast Mode [Mn5tR], per the captains' roster sheet -- in all three",
-    "  places, the stand_in slot and the Bashira and Trollmitsu backups.",
-    "  Soooze is no longer on any roster. He is NOT in open_pool either:",
-    "  that list is written by !register and must not be edited by hand,",
-    "  so if he wants back in he registers himself. Beast Mode had tried",
-    "  to !register and been refused for exactly this reason -- he was the",
-    "  team's stand-in on paper but not in this file.",
+    "  1. UT and samundar khan SWAPPED TEAMS. UT is now Team 2 core;",
+    "     samundar khan ('XXX') is now Team 1 core, backed by TigerX.",
+    "  2. MODE:IG.BASHIRA moved from Team 3 support to Team 4 support.",
+    "     Confirmed independently by the first league screenshot, where he",
+    "     played for Team 4 ('Frantic Fan Boys').",
+    "  3. Beast Mode is now a Team 3 SUPPORT STARTER, not the stand-in.",
+    "     Tiger-Y backs that slot.",
+    "  4. Khuni Billa dropped from Team 4 support to a stand-in backing",
+    "     beetlebum's slot. Asta takes the support seat.",
+    "",
+    "Two long-unknown players were identified on 2026-08-07 and are now",
+    "canonical Steam names rather than sheet nicknames -- both already had",
+    "a long record in the ledger under those names:",
+    "",
+    "  Shami -> 'HypermodeL [M.C]'   (17 games, also called 'sesto')",
+    "  Asta  -> \"I'M Still Noob\"     (20 games)",
+    "",
+    "Without this, both would have kept minting a second identity every",
+    "time they appeared, and neither could ever be attached to a series.",
+    "",
+    "STILL UNIDENTIFIED: Team 2's 'Oden jr' has never appeared on any",
+    "scoreboard, so his Steam name is unknown. A game he plays in cannot",
+    "be attached to a series until someone says which name is his.",
+    "",
+    "Theekra, Tiger-Y, Gillu and Soooze were on the sheet but in no roster,",
+    "so they could neither register nor be fielded. They are now stand-ins",
+    "on the teams that list them. None has played a recorded game yet.",
     "",
     "open_pool: players who registered via `!register` in Discord but aren't",
     "on any team's fixed roster. Captains can pull from the pool for stand-ins.",
@@ -60,10 +77,13 @@
           ]
         },
         {
-          "name": "UT",
+          "name": "samundar khan",
           "role": "core",
           "aka": [
-            "UT"
+            "XXX",
+            "xxx",
+            "rtz",
+            "samundar"
           ],
           "backup": "TigerX [GB]"
         },
@@ -87,7 +107,8 @@
           "name": "TigerX [GB]",
           "role": "stand_in",
           "aka": [
-            "TigerX"
+            "TigerX",
+            "Tiger-X"
           ]
         }
       ]
@@ -112,12 +133,10 @@
           ]
         },
         {
-          "name": "samundar khan",
+          "name": "UT",
           "role": "core",
           "aka": [
-            "xxx",
-            "rtz",
-            "samundar"
+            "UT"
           ]
         },
         {
@@ -128,7 +147,7 @@
             "vanzo",
             "SavaGe"
           ],
-          "backup": "¤GerM¤ [LIB0G]"
+          "backup": "Theekra"
         },
         {
           "name": "Oden jr",
@@ -137,7 +156,10 @@
             "Oden",
             "Oden jr"
           ],
-          "backup": "¤GerM¤ [LIB0G]"
+          "backup": [
+            "¤GerM¤ [LIB0G]",
+            "Theekra"
+          ]
         },
         {
           "name": "¤GerM¤ [LIB0G]",
@@ -147,6 +169,14 @@
             "GerM",
             "dotagerm"
           ]
+        },
+        {
+          "name": "Theekra",
+          "role": "stand_in",
+          "aka": [
+            "Theekra",
+            "TheekRaLord"
+          ]
         }
       ]
     },
@@ -155,10 +185,12 @@
       "name": "Team 3",
       "roster": [
         {
-          "name": "Shami",
+          "name": "HypermodeL [M.C]",
           "role": "core",
           "aka": [
-            "Shami"
+            "Shami",
+            "sesto",
+            "HypermodeL"
           ]
         },
         {
@@ -173,17 +205,9 @@
           "role": "core",
           "aka": [
             "Sparta",
-            "Spartaaaa"
+            "Spartaaaa",
+            "SpArtAAAAA"
           ]
-        },
-        {
-          "name": "MODE:IG.BASHIRA™",
-          "role": "support",
-          "aka": [
-            "Bashira",
-            "BASHIRA"
-          ],
-          "backup": "Beast Mode [Mn5tR]"
         },
         {
           "name": "Trollmitsu [<MC>]",
@@ -191,16 +215,32 @@
           "aka": [
             "Trollmitsu"
           ],
-          "backup": "Beast Mode [Mn5tR]"
+          "backup": "Soooze [<MC>]"
         },
         {
           "name": "Beast Mode [Mn5tR]",
-          "role": "stand_in",
+          "role": "support",
           "aka": [
             "BeastMode",
             "Beast Mode",
             "beastmode",
             "Beastmode"
+          ],
+          "backup": "Tiger-Y"
+        },
+        {
+          "name": "Soooze [<MC>]",
+          "role": "stand_in",
+          "aka": [
+            "Soooze"
+          ]
+        },
+        {
+          "name": "Tiger-Y",
+          "role": "stand_in",
+          "aka": [
+            "Tiger-Y",
+            "TigerY"
           ]
         }
       ]
@@ -213,9 +253,13 @@
           "name": "beetlebum [FUBU]",
           "role": "core",
           "aka": [
-            "Beetlebum"
+            "Beetlebum",
+            "BeetleBum"
           ],
-          "backup": "Musa"
+          "backup": [
+            "Khuni Billa [UGI|]",
+            "Musa"
+          ]
         },
         {
           "name": "X MEN Junior :) [Mkrs.]",
@@ -231,23 +275,29 @@
           "aka": [
             "Rogue Agent",
             "Rogue"
-          ],
-          "backup": "Musa"
+          ]
         },
         {
-          "name": "Khuni Billa [UGI|]",
+          "name": "MODE:IG.BASHIRA™",
           "role": "support",
           "aka": [
-            "Khuni Billa",
-            "Khuni"
-          ],
-          "backup": "Musa"
+            "Bashira",
+            "BASHIRA"
+          ]
         },
         {
-          "name": "Asta",
+          "name": "I'M Still Noob",
           "role": "support",
           "aka": [
             "Asta"
+          ]
+        },
+        {
+          "name": "Khuni Billa [UGI|]",
+          "role": "stand_in",
+          "aka": [
+            "Khuni Billa",
+            "Khuni"
           ]
         },
         {
@@ -258,6 +308,13 @@
             "HELL-ANGEL",
             "HELL-ANGEL-",
             "sroshnak01"
+          ]
+        },
+        {
+          "name": "Gillu",
+          "role": "stand_in",
+          "aka": [
+            "Gillu"
           ]
         }
       ]

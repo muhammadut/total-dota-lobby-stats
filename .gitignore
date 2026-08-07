@@ -9,5 +9,7 @@ Thumbs.db
 tools/discord.local.json
 .env
 
-# Screenshots pulled from Discord, pending ingest
+# Screenshots pulled from Discord, pending ingest.
+# Two channels, two inboxes -- see SOURCES in tools/discord_pull.py.
 inbox/
+inbox_league/

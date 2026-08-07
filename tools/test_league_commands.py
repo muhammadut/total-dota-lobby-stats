@@ -249,8 +249,15 @@ _tmw = date.today() + timedelta(days=1)
 r = L.do_avail(f"{_tmw:%b} {_tmw.day} 8PM to 10PM", "ut70", UID_UT, dp)
 check("do_avail full path — preview shows date + tz + UTC",
       _tmw.isoformat() in r and "New York" in r and "UTC" in r, r)
-check("do_avail readiness tail — Team 1 pinged",
-      "Team 1" in r and "1/6" in r, r)
+# Which team UT is on, and how big it is, are read from teams.json rather
+# than hardcoded. The captains move people between teams -- UT went from
+# Team 1 to Team 2 on 2026-08-07 -- and a test that pins the answer fails
+# on the roster change rather than on the behaviour it is checking.
+_tj = json.loads(L.TEAMS_FILE.read_text(encoding="utf-8"))
+_ut_team = next(t for t in _tj["teams"]
+                if any(r["name"] == "UT" for r in t["roster"]))
+check(f"do_avail readiness tail — {_ut_team['name']} pinged",
+      _ut_team["name"] in r and f"1/{len(_ut_team['roster'])}" in r, r)
 
 
 # ═════════════════════════════════════════════════════════════════════
@@ -508,7 +515,15 @@ for dash, label in [("--", "plain"), ("—", "em-dash (autocorrect)"),
     check(f"register --new works with {label} {dash!r}", "Registered" in r, r)
 
 reset_state()
-r = L.do_register("Soooze gmt", "soooze", "222000000000000077",
+# A nick that is genuinely on no roster, computed rather than guessed.
+# This used to be "Soooze", who became a real Team 3 stand-in on
+# 2026-08-07 -- at which point the test was asserting that a rostered
+# player is unknown, and failed for the right reason.
+_known = {c.lower() for t in json.loads(L.TEAMS_FILE.read_text(encoding="utf-8"))["teams"]
+          for r_ in t["roster"] for c in [r_["name"]] + r_.get("aka", [])}
+_unknown = next(n for n in ("Zzqqxv", "Nobody42", "NotARealNick", "Qqxzzv")
+                if n.lower() not in _known)
+r = L.do_register(f"{_unknown} gmt", "soooze", "222000000000000077",
                   L.load_discord_players(), False)
 check("register without --new still prompts for an unknown nick",
       "Registered" not in r, r)

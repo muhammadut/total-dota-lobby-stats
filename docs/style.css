@@ -1219,3 +1219,187 @@ td.none{ padding:2.2rem 1rem; }
 @media (max-width:560px){
   .tl-col{ flex-basis:14.5rem; }
 }
+
+/* ── Series (best-of-three results) ──────────────────────────────────
+   A series is a container for two or three games, so it nests: the
+   series row opens into game rows, and a game row opens into the same
+   scoreboard the Matches tab draws. Two levels is the limit -- a third
+   would stop reading as a hierarchy and start reading as a maze. */
+
+.sec-head:has(.sec-head__aside){ display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; flex-wrap:wrap; }
+.sec-head__aside{ padding-bottom:.15rem; }
+.pill{
+  display:inline-block; padding:.34rem .8rem; border-radius:var(--r-pill);
+  background:var(--surface); border:1px solid var(--line);
+  font-size:.76rem; font-weight:600; color:var(--ink-2); box-shadow:var(--sh-1);
+  white-space:nowrap;
+}
+
+.sr{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-md); box-shadow:var(--sh-1);
+  margin-bottom:.6rem; overflow:hidden;
+  transition:box-shadow .25s ease, border-color .25s ease;
+}
+.sr:hover{ box-shadow:var(--sh-2); }
+.sr.is-open{ border-color:rgba(22,23,26,.12); box-shadow:var(--sh-2); }
+
+.sr__head{
+  display:grid;
+  grid-template-columns:minmax(6.5rem,auto) auto minmax(0,1fr) auto minmax(0,1fr) auto auto;
+  align-items:center; gap:clamp(.5rem,1.8vw,1.1rem);
+  width:100%; text-align:left; background:none; border:0; cursor:pointer;
+  font:inherit; color:inherit;
+  padding:clamp(.7rem,1.8vw,.95rem) clamp(.8rem,2.2vw,1.25rem);
+  transition:background .2s ease;
+}
+.sr__head:hover{ background:var(--paper); }
+
+.sr__when{ display:flex; flex-direction:column; gap:.1rem; }
+.sr__wk{ font-family:var(--mono); font-size:.68rem; color:var(--ink-4); font-weight:500; }
+.sr__date{ font-size:.8rem; color:var(--ink-2); font-weight:600; }
+
+.sr__slot{
+  font-size:.64rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--ink-3); border:1px solid var(--line);
+  padding:.2rem .45rem; border-radius:var(--r-pill); white-space:nowrap;
+}
+.sr__slot.is-late{ color:#8a5a2b; border-color:rgba(138,90,43,.28); background:rgba(138,90,43,.06); }
+
+.sr-side{ display:flex; align-items:center; gap:.5rem; min-width:0; }
+.sr-side:last-of-type{ flex-direction:row-reverse; }
+.sr-team{
+  font-weight:600; font-size:.9rem; color:var(--ink-2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sr-side.is-won .sr-team{ color:var(--ink); }
+
+.sr__score{
+  font-family:var(--mono); font-size:1.02rem; font-weight:500; color:var(--ink);
+  font-variant-numeric:tabular-nums; white-space:nowrap; letter-spacing:-.02em;
+}
+
+.sr__status{
+  font-size:.66rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  padding:.24rem .55rem; border-radius:var(--r-pill); white-space:nowrap;
+}
+.sr__status.is-todo{ color:var(--ink-4); border:1px solid var(--line); }
+.sr__status.is-live{ color:var(--radiant); background:var(--radiant-bg); }
+.sr__status.is-final{ color:var(--ink-2); background:var(--paper-2); }
+
+.sr__body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+.sr.is-open .sr__body{ grid-template-rows:1fr; }
+.sr__inner{ overflow:hidden; }
+.sr.is-open .chev{ transform:rotate(180deg); }
+.sr__none{
+  margin:0; padding:1rem 1.25rem 1.15rem; color:var(--ink-3); font-size:.85rem;
+  border-top:1px solid var(--line-2);
+}
+
+/* ── one game inside a series ── */
+.sg{ border-top:1px solid var(--line-2); background:var(--paper); }
+.sg__head{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr) auto auto;
+  align-items:center; gap:clamp(.45rem,1.6vw,1rem);
+  width:100%; text-align:left; background:none; border:0; cursor:pointer;
+  font:inherit; color:inherit; padding:.62rem clamp(.8rem,2.2vw,1.25rem);
+  transition:background .2s ease;
+}
+.sg__head:hover{ background:var(--paper-2); }
+.sg__n{
+  font-family:var(--mono); font-size:.68rem; color:var(--ink-4); font-weight:500;
+  white-space:nowrap;
+}
+.sg__side{
+  display:flex; flex-direction:column; gap:.05rem; min-width:0;
+  font-size:.83rem; font-weight:600; color:var(--ink-3);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sg__side--dire{ text-align:right; }
+.sg__side.is-won{ color:var(--ink); }
+.sg__side--radiant.is-won{ color:var(--radiant); }
+.sg__side--dire.is-won{ color:var(--dire); }
+.sg__tag{
+  font-size:.6rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-4);
+}
+.sg__score{
+  font-family:var(--mono); font-size:.86rem; color:var(--ink-3);
+  font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.sg__score .win{ color:var(--ink); font-weight:500; }
+.sg__score .sep{ color:var(--ink-4); margin:0 .18rem; }
+.sg__won{
+  display:flex; align-items:center; gap:.4rem;
+  font-size:.78rem; font-weight:600; color:var(--ink-2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.sg__won .team-chip{ width:1.35rem; height:1.35rem; font-size:.7rem; }
+.sg__meta{
+  display:flex; align-items:center; gap:.5rem;
+  font-family:var(--mono); font-size:.7rem; color:var(--ink-4); white-space:nowrap;
+}
+.sg__body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .32s ease; }
+.sg.is-open .sg__body{ grid-template-rows:1fr; }
+.sg.is-open .chev{ transform:rotate(180deg); }
+.sg__inner{ overflow:hidden; background:var(--surface); }
+
+/* A result with no match behind it. Loud on purpose. */
+.sg--orphan{ background:var(--dire-bg); }
+.sg--orphan .sg__head{ cursor:default; }
+.sg__missing{ font-size:.8rem; color:var(--dire); font-weight:600; }
+.sg__missing code{ font-family:var(--mono); font-size:.78rem; }
+
+/* ── empty state ── */
+.sr-empty{ padding:clamp(1.5rem,4vw,2.4rem); max-width:60ch; }
+.sr-empty h3{ margin:0 0 .5rem; font-size:1.05rem; font-weight:700; color:var(--ink); }
+.sr-empty p{ margin:0 0 .9rem; color:var(--ink-3); font-size:.88rem; line-height:1.6; }
+.sr-empty ol{ margin:0 0 .9rem; padding-left:1.1rem; color:var(--ink-2); font-size:.86rem; line-height:1.75; }
+.sr-empty__note{ margin:0; color:var(--ink-4); font-size:.82rem; }
+
+@media (max-width:760px){
+  .sr__head{ grid-template-columns:1fr auto; grid-auto-rows:auto; row-gap:.45rem; }
+  .sr__when{ grid-column:1; }
+  .sr__slot{ grid-column:2; justify-self:end; }
+  .sr-side{ grid-column:1/-1; }
+  .sr-side:last-of-type{ flex-direction:row; }
+  .sr__score{ grid-column:1/-1; }
+  .sr__status{ grid-column:1; justify-self:start; }
+  .sg__head{ grid-template-columns:auto 1fr auto; row-gap:.35rem; }
+  .sg__side--dire{ text-align:left; }
+  .sg__won{ grid-column:1/-1; }
+}
+
+/* ── Tournament page blocks ──────────────────────────────────────────
+   Standings / players / games share one card shell so the three views
+   read as one tracker rather than three unrelated widgets. */
+.tt-block{ margin-bottom:1rem; overflow:hidden; }
+.tt-block__head{
+  display:flex; flex-direction:column; gap:.2rem;
+  padding:1rem clamp(.9rem,2.4vw,1.35rem) .8rem;
+  font-size:.95rem; font-weight:700; color:var(--ink);
+  border-bottom:1px solid var(--line-2);
+}
+.tt-block__sub{ font-size:.78rem; font-weight:400; color:var(--ink-3); }
+.tt-block--games .sg:first-of-type{ border-top:0; }
+.tt-block--games .sg{ background:var(--surface); }
+.tt-block--games .sg:nth-child(even){ background:var(--paper); }
+
+.tt-team{ display:inline-flex; align-items:center; gap:.5rem; }
+.tt-team .team-chip{ width:1.5rem; height:1.5rem; font-size:.75rem; }
+.kda-cell{ font-family:var(--mono); font-size:.8rem; color:var(--ink-2); white-space:nowrap; }
+
+/* Whether a game is part of a best-of-three yet. An unattached game is
+   recorded and counted — it just has no series to sit in, which happens
+   whenever a screenshot arrives before the schedule is settled. */
+.tg__series{
+  font-family:var(--mono); font-size:.66rem; font-weight:500;
+  color:var(--ink-3); background:var(--paper-2);
+  padding:.2rem .45rem; border-radius:var(--r-pill); white-space:nowrap;
+}
+.tg__series.is-loose{
+  color:#8a5a2b; background:rgba(138,90,43,.08);
+  border:1px solid rgba(138,90,43,.2);
+}
+.tg .sg__won{ font-weight:600; color:var(--ink-2); gap:.35rem; }

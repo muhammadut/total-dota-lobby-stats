@@ -24,6 +24,13 @@ TEAMS = ROOT / "data" / "teams.json"
 SCHEDULING = ROOT / "data" / "scheduling.json"
 PLAYERS_TZ = ROOT / "data" / "players_tz.json"
 FIXTURES = ROOT / "data" / "fixtures.json"
+# Results are kept OUT of fixtures.json on purpose: make_fixtures.py
+# regenerates that file from scratch and would erase the season.
+SERIES_RESULTS = ROOT / "data" / "series_results.json"
+# The league match ledger. Deliberately NOT part of dota_stats.db -- see
+# tools/league_ingest.py. Lobby statistics are computed from the database
+# and therefore cannot include a league game.
+LEAGUE_MATCHES = ROOT / "data" / "league_matches.json"
 
 # Path for importing tools.find_slot
 sys.path.insert(0, str(ROOT / "tools"))
@@ -100,6 +107,7 @@ def main() -> int:
     # browser would need heavy tzdata polyfills otherwise.
     coord = build_coord(league)
     fixtures = build_fixtures()
+    tournament = build_tournament(aliases)
 
     payload = {
         "meta": {
@@ -111,6 +119,7 @@ def main() -> int:
         "league": league,
         "coord": coord,
         "fixtures": fixtures,
+        "tournament": tournament,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -128,6 +137,77 @@ def main() -> int:
     sync_hero_slugs(cur)
     stamp_assets()
     return 0
+
+
+def build_tournament(aliases: list) -> dict | None:
+    """
+    Emit LOBBY.tournament: the league's OWN match ledger, reshaped to the
+    same {radiant:[], dire:[]} form the lobby matches use so the browser
+    can draw them with the identical scoreboard component.
+
+    This reads data/league_matches.json directly. Those rows are never in
+    dota_stats.db, which is the whole guarantee: every lobby statistic is
+    computed from the database, so none of them can include a league game.
+
+    Each match is stamped with the two team ids at export time, using the
+    same roster resolution the association tool uses. Doing it here rather
+    than in the browser means the page never has to know about `aka`
+    nicknames or the merge table.
+    """
+    if not LEAGUE_MATCHES.exists():
+        return None
+    sys.path.insert(0, str(ROOT / "tools"))
+    import league_result as LR
+
+    payload = json.loads(LEAGUE_MATCHES.read_text(encoding="utf-8"))
+    teams = json.loads(TEAMS.read_text(encoding="utf-8"))
+    idx = LR.team_index(teams, payload.get("aliases", []) + aliases)
+
+    # Column names match the lobby export exactly -- board() in app.js is
+    # shared, and a second naming scheme would mean a second component.
+    FIELDS = [("hero", "hero"), ("hero_level", "lvl"), ("kills", "k"),
+              ("deaths", "d"), ("assists", "a"), ("net_worth", "net"),
+              ("last_hits", "lh"), ("denies", "dn"), ("gpm", "gpm"),
+              ("xpm", "xpm"), ("hero_damage", "hdmg"),
+              ("building_damage", "bdmg"), ("healing", "heal")]
+
+    out, unresolved = [], []
+    for i, m in enumerate(payload.get("matches", [])):
+        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx)
+        dire, dire_unknown, _ = LR.side_team(m, "dire", idx)
+        if rad is None or dire is None:
+            unresolved.append((m["source_ref"], sorted(rad_unknown + dire_unknown)))
+
+        def roster(side, tid):
+            rows = []
+            for p in m["players"]:
+                if p["side"] != side:
+                    continue
+                r = {"name": p["name"], "won": 1 if m["winning_side"] == side else 0}
+                for src, dst in FIELDS:
+                    r[dst] = p.get(src)
+                rows.append(r)
+            return sorted(rows, key=lambda r: -(r["net"] or 0))
+
+        e = {k: v for k, v in m.items() if k != "players"}
+        e["seq"] = i + 1
+        e["year"] = (m.get("played_on") or "")[:4]
+        e["radiant"] = roster("radiant", rad)
+        e["dire"] = roster("dire", dire)
+        e["radiant_team_id"] = rad
+        e["dire_team_id"] = dire
+        e["winner_team_id"] = rad if m["winning_side"] == "radiant" else dire
+        out.append(e)
+
+    for ref, who in unresolved:
+        print(f"  ! league match {ref} has player(s) on no roster: "
+              + ", ".join(who))
+        print("    Its teams cannot be identified, so it will not count "
+              "towards team records.")
+    if out:
+        print(f"  tournament: {len(out)} league match(es) exported "
+              f"(separate ledger, not in the database)")
+    return {"matches": out}
 
 
 def build_coord(league: dict | None) -> dict | None:
@@ -234,6 +314,8 @@ def build_fixtures() -> dict | None:
     from zoneinfo import ZoneInfo
 
     data = json.loads(FIXTURES.read_text(encoding="utf-8"))
+    results = (json.loads(SERIES_RESULTS.read_text(encoding="utf-8")).get("results", {})
+               if SERIES_RESULTS.exists() else {})
 
     zones = list(LEAGUE_ZONES)
     if PLAYERS_TZ.exists():
@@ -246,6 +328,7 @@ def build_fixtures() -> dict | None:
     def fmt(dt):
         return dt.strftime("%a %I:%M %p").replace(" 0", " ")
 
+    played = 0
     for wk in data.get("weeks", []):
         for night in wk.get("nights", []):
             for s in night.get("series", []):
@@ -257,6 +340,37 @@ def build_fixtures() -> dict | None:
                                f"{fmt(end.astimezone(ZoneInfo(z)))}"}
                     for label, z in zones
                 ]
+
+                # Merge in recorded results. The schedule and the results
+                # are separate files precisely so make_fixtures.py can be
+                # re-run without erasing a season -- they only ever meet
+                # here, on the way to the browser.
+                games = sorted((results.get(s["id"], {}) or {}).get("games", []),
+                               key=lambda g: g.get("game_no", 0))
+                s["games"] = games
+                if games:
+                    played += 1
+                    a, b = s["teams"]
+                    s["score"] = [sum(1 for g in games if g["winner"] == a),
+                                  sum(1 for g in games if g["winner"] == b)]
+                    need = s.get("best_of", 3) // 2 + 1
+                    s["status"] = ("final" if max(s["score"]) >= need
+                                   else "playing")
+                else:
+                    s["score"] = [0, 0]
+
+    # A result pointing at a series id the schedule no longer contains is
+    # invisible on the site and would be a silently-dropped game. Say so.
+    known = {s["id"] for wk in data.get("weeks", [])
+             for n in wk.get("nights", []) for s in n.get("series", [])}
+    orphans = sorted(set(results) - known)
+    if orphans:
+        print(f"  ! {len(orphans)} recorded series not in the schedule: "
+              + ", ".join(orphans))
+        print("    They will NOT appear on the site. Re-check make_fixtures.py "
+              "or tools/league_result.py --list")
+    if played:
+        print(f"  fixtures: {played} series with results merged")
     return {k: v for k, v in data.items() if not k.startswith("_")}
 
 

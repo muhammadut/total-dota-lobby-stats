@@ -136,7 +136,43 @@ def main() -> int:
     ap.add_argument("--amend", action="store_true",
                     help="merge fields into EXISTING matches, matched on source_ref, "
                          "instead of adding new ones")
+    ap.add_argument("--remove", metavar="REF",
+                    help="delete a match by source_ref, then rebuild. For a match "
+                         "filed in the wrong ledger -- NOT for hiding a bad result.")
     args = ap.parse_args()
+
+    # ── removal ─────────────────────────────────────────────────────
+    # Added 2026-08-07. Until now the only way to un-record a match was to
+    # hand-edit matches.json, which the project forbids -- so a match filed
+    # into the wrong ledger had no supported way back out. Deleting is a
+    # real operation and it should go through the same rebuild as adding.
+    if args.remove:
+        payload = json.loads(DATA.read_text(encoding="utf-8"))
+        existing = payload["matches"]
+        hit = [m for m in existing if m.get("source_ref") == args.remove]
+        if not hit:
+            print(f"\n  REFUSED — no match with source_ref {args.remove!r}")
+            return 1
+        m = hit[0]
+        print(f"\n  removing {args.remove}: {m.get('radiant_score')}-{m.get('dire_score')}, "
+              f"{m.get('winning_side')} win, {len(m['players'])} players")
+        print(f"    played_on {m.get('played_on')}   "
+              f"{m.get('radiant_team_name') or 'The Radiant'} vs "
+              f"{m.get('dire_team_name') or 'The Dire'}")
+        for p in m["players"]:
+            print(f"      - {p['name']}")
+        if args.dry_run:
+            print("\n  dry run — nothing written.")
+            return 0
+        payload["matches"] = [x for x in existing if x.get("source_ref") != args.remove]
+        DATA.write_text(dump_matches(payload), encoding="utf-8")
+        json.loads(DATA.read_text(encoding="utf-8"))
+        print(f"\n  {len(payload['matches'])} match(es) remain in "
+              f"{DATA.relative_to(ROOT)}")
+        py = sys.executable
+        if not run([py, "load.py"]):       return 2
+        if not run([py, "export_web.py"]): return 3
+        return 0
 
     raw = Path(args.src).read_text(encoding="utf-8") if args.src else sys.stdin.read()
     incoming = json.loads(raw)

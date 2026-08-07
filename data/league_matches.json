@@ -1,0 +1,49 @@
+{
+  "_comment": [
+    "LEAGUE match ledger for the 2026-fall season — SEPARATE from",
+    "data/matches.json on purpose.",
+    "",
+    "This file NEVER enters dota_stats.db. load.py builds that database",
+    "from data/matches.json alone, so no lobby statistic can include a",
+    "league game: the rows simply are not there to be selected. Written",
+    "by tools/league_ingest.py, read by export_web.py.",
+    "",
+    "Same match shape as the lobby ledger, and validated by the same",
+    "imported load.validate — the kills/score/deaths chain has exactly",
+    "one definition in this codebase.",
+    "",
+    "Which best-of-three each match belongs to lives in",
+    "data/series_results.json, not here. A match can be recorded before",
+    "the schedule is settled and attached afterwards."
+  ],
+
+  "matches": [
+    {
+      "source_ref": "discord-1535355797783973928",
+      "dota_match_id": null,
+      "played_on": "2026-08-07",
+      "played_at": "2026-08-07 14:35",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Team Targaryen",
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 22,
+      "dire_score": 48,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, Team 3 (Team Targaryen) vs Team 4 (Frantic Fan Boys). SCOREBOARD tab only; posted in #dota-league-2026 by ut70, dated from the Discord upload time (server-side, absolute). Radiant kills 21 <= score 22 <= dire deaths 22 - one tower kill, no deaths to neutrals/Roshan/self. Dire chain triple-exact at 48, cross-validating all four columns. Duration NULL: the client header reads 'Playtime 01:03', which is session time, not match length. Team 4 fielded Musa (HELL-ANGEL-) in beetlebum's slot, a substitution his roster row permits.",
+      "players": [
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Lion", "hero_level": 12, "kills": 1, "deaths": 12, "assists": 10, "net_worth": 5849, "last_hits": 16, "denies": 1, "gpm": 229, "xpm": 272, "hero_damage": 8282, "building_damage": 190, "healing": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Anti-Mage", "hero_level": 20, "kills": 7, "deaths": 6, "assists": 3, "net_worth": 17303, "last_hits": 288, "denies": 6, "gpm": 586, "xpm": 736, "hero_damage": 12156, "building_damage": 2732, "healing": 0},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Magnus", "hero_level": 17, "kills": 4, "deaths": 10, "assists": 6, "net_worth": 9818, "last_hits": 127, "denies": 10, "gpm": 356, "xpm": 513, "hero_damage": 12301, "building_damage": 117, "healing": 0},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Disruptor", "hero_level": 12, "kills": 1, "deaths": 13, "assists": 16, "net_worth": 4676, "last_hits": 12, "denies": 2, "gpm": 235, "xpm": 273, "hero_damage": 10718, "building_damage": 0, "healing": 0},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Legion Commander", "hero_level": 16, "kills": 8, "deaths": 7, "assists": 3, "net_worth": 11891, "last_hits": 169, "denies": 15, "gpm": 420, "xpm": 494, "hero_damage": 17769, "building_damage": 0, "healing": 72},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Rubick", "hero_level": 20, "kills": 13, "deaths": 5, "assists": 21, "net_worth": 12504, "last_hits": 46, "denies": 1, "gpm": 447, "xpm": 698, "hero_damage": 25476, "building_damage": 429, "healing": 0},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Grimstroke", "hero_level": 16, "kills": 3, "deaths": 6, "assists": 22, "net_worth": 8743, "last_hits": 22, "denies": 0, "gpm": 310, "xpm": 467, "hero_damage": 7884, "building_damage": 85, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Juggernaut", "hero_level": 22, "kills": 12, "deaths": 2, "assists": 10, "net_worth": 23169, "last_hits": 329, "denies": 12, "gpm": 756, "xpm": 876, "hero_damage": 19033, "building_damage": 19126, "healing": 10101},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 19, "kills": 8, "deaths": 3, "assists": 19, "net_worth": 16562, "last_hits": 165, "denies": 16, "gpm": 549, "xpm": 673, "hero_damage": 15369, "building_damage": 3500, "healing": 125},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Earthshaker", "hero_level": 19, "kills": 12, "deaths": 6, "assists": 10, "net_worth": 15834, "last_hits": 171, "denies": 16, "gpm": 542, "xpm": 689, "hero_damage": 22970, "building_damage": 2188, "healing": 0}
+      ]
+    }
+  ]
+}

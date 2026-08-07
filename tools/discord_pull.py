@@ -11,6 +11,16 @@ socket, no dependencies.
     python tools/discord_pull.py --since <msg_id> # ignore the watermark
     python tools/discord_pull.py --list           # show, don't download
 
+    python tools/discord_pull.py --source league  # #dota-league-2026 -> inbox_league/
+
+TWO SOURCES, TWO WATERMARKS. `--source lobby` (the default) reads
+#lobby-stats into inbox/; `--source league` reads #dota-league-2026 into
+inbox_league/. Each keeps its own watermark and its own seen-ledger --
+sharing either would let one reader swallow the other's messages, the
+same failure that already forced the image and command watermarks apart.
+The default path is unchanged, so the daily workflow behaves exactly as
+before.
+
 Setup, once:
   1. https://discord.com/developers/applications -> New Application -> Bot
   2. Under Bot, enable the MESSAGE CONTENT INTENT, and copy the token.
@@ -42,23 +52,48 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CONF = ROOT / "tools" / "discord.local.json"
-INBOX = ROOT / "inbox"
-# The watermark is COMMITTED, unlike inbox/ itself. A cloud runner gets a
-# fresh checkout every run, so a watermark inside the ignored inbox would
-# reset each time and re-download the whole channel.
-MARK = ROOT / "data" / "discord_watermark.txt"
-# Every image message we have already dealt with, and how it went. This is
-# what makes the watermark safe to advance past chat: skipping is decided
-# per-image here, not by where the marker happens to sit.
-SEEN = ROOT / "data" / "discord_seen.json"
+
+# ── Sources ────────────────────────────────────────────────────────────
+# Two channels post screenshots, and each needs its OWN watermark and its
+# own seen-ledger. This is the same rule that already separates the image
+# reader from the command reader: share a marker between two readers and
+# one silently swallows the other's messages. Here the failure would be
+# worse than silence -- a league screenshot filed as a casual inhouse game
+# still lands in the ledger, just never attached to a series.
+#
+# inbox dirs are separate for the same reason: `reconcile.py` accounts for
+# every file in inbox/ against matches.json, and a league image sitting
+# there unassociated would read as a failed ingest forever.
+SOURCES = {
+    "lobby": {
+        "conf_key":  None,                      # top-level channel_id
+        "inbox":     ROOT / "inbox",
+        # The watermark is COMMITTED, unlike inbox/ itself. A cloud runner
+        # gets a fresh checkout every run, so a watermark inside the
+        # ignored inbox would reset each time and re-download everything.
+        "mark":      ROOT / "data" / "discord_watermark.txt",
+        # Every image message we have already dealt with, and how it went.
+        # This is what makes the watermark safe to advance past chat:
+        # skipping is decided per-image here, not by where the marker sits.
+        "seen":      ROOT / "data" / "discord_seen.json",
+        "label":     "#lobby-stats",
+    },
+    "league": {
+        "conf_key":  "league",                  # channels.league
+        "inbox":     ROOT / "inbox_league",
+        "mark":      ROOT / "data" / "discord_league_img_watermark.txt",
+        "seen":      ROOT / "data" / "league_seen.json",
+        "label":     "#dota-league-2026",
+    },
+}
 
 
-def load_seen():
-    return json.loads(SEEN.read_text(encoding="utf-8")) if SEEN.exists() else {}
+def load_seen(path: Path):
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
-def save_seen(d):
-    SEEN.write_text(json.dumps(d, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+def save_seen(path: Path, d):
+    path.write_text(json.dumps(d, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
                     encoding="utf-8")
 API = "https://discord.com/api/v10"
 IMAGE_TYPES = ("image/png", "image/jpeg", "image/webp")
@@ -77,19 +112,31 @@ def local_time(ts: str) -> str:
         return (ts or "")[:16].replace("T", " ") + "Z"
 
 
-def config():
+def config(source: str = "lobby"):
+    """
+    Return (token, channel_id) for the named source.
+
+    The token is shared; only the channel differs. Env vars win over the
+    file so a cloud runner can supply secrets without a config on disk.
+    """
+    src = SOURCES[source]
     tok = os.environ.get("DISCORD_BOT_TOKEN")
-    chan = os.environ.get("DISCORD_CHANNEL_ID")
+    chan = (os.environ.get("DISCORD_LEAGUE_CHANNEL_ID")
+            if src["conf_key"] else os.environ.get("DISCORD_CHANNEL_ID"))
     if CONF.exists():
         c = json.loads(CONF.read_text(encoding="utf-8"))
         tok = tok or c.get("token")
-        chan = chan or c.get("channel_id")
+        chan = chan or ((c.get("channels") or {}).get(src["conf_key"])
+                        if src["conf_key"] else c.get("channel_id"))
     if not tok or not chan:
+        where = (f'    {{"token": "...", "channels": {{"league": "..."}}}}'
+                 if src["conf_key"] else '    {"token": "...", "channel_id": "..."}')
         sys.exit(
-            "No credentials. Create tools/discord.local.json:\n"
-            '    {"token": "...", "channel_id": "..."}\n'
-            "or set DISCORD_BOT_TOKEN and DISCORD_CHANNEL_ID.\n"
-            "See the docstring at the top of this file for how to get them.")
+            f"No credentials for source {source!r}. Create tools/discord.local.json:\n"
+            f"{where}\n"
+            "or set DISCORD_BOT_TOKEN and "
+            + ("DISCORD_LEAGUE_CHANNEL_ID.\n" if src["conf_key"] else "DISCORD_CHANNEL_ID.\n")
+            + "See the docstring at the top of this file for how to get them.")
     return tok, str(chan)
 
 
@@ -186,12 +233,19 @@ def main() -> int:
     ap.add_argument("--since", help="message id to read after, overriding the watermark")
     ap.add_argument("--list", action="store_true", help="show what's new, download nothing")
     ap.add_argument("--all", action="store_true", help="ignore the watermark entirely")
+    ap.add_argument("--source", choices=sorted(SOURCES), default="lobby",
+                    help="which channel to pull from (default: lobby). "
+                         "Each source has its OWN watermark, seen-ledger and inbox.")
     args = ap.parse_args()
 
-    token, channel = config()
+    src = SOURCES[args.source]
+    INBOX, MARK, SEEN = src["inbox"], src["mark"], src["seen"]
+
+    token, channel = config(args.source)
     if args.check:
         return check(token, channel)
 
+    print(f"  source: {args.source} ({src['label']})  ->  {INBOX.name}/")
     INBOX.mkdir(exist_ok=True)
 
     after = args.since
@@ -224,7 +278,7 @@ def main() -> int:
     # messages is safe because SEEN, not the marker, decides what to skip.
     scanned_newest = msgs[-1]["id"] if msgs else None
 
-    seen = load_seen()
+    seen = load_seen(SEEN)
     fresh = [(m, a) for m, a in found if m["id"] not in seen]
     skipped = len(found) - len(fresh)
     if skipped:
@@ -268,7 +322,7 @@ def main() -> int:
     if args.list:
         return 0
 
-    save_seen(seen)
+    save_seen(SEEN, seen)
 
     # A download that failed is NOT in `seen`, so the marker must not move
     # past it or the image is unreachable: the marker skips it and `seen`
@@ -286,7 +340,12 @@ def main() -> int:
     if limit_to:
         MARK.write_text(limit_to, encoding="utf-8")
         print(f"\n  watermark now {limit_to}")
-    print("\n  Next: ask Claude to \"add the screenshots in inbox/\".")
+    if args.source == "league":
+        print(f"\n  Next: ask Claude to \"add the league screenshots in {INBOX.name}/\".\n"
+              f"  They go through the same parse and the same arithmetic checks, then\n"
+              f"  `tools/league_result.py` attaches each one to its scheduled series.")
+    else:
+        print("\n  Next: ask Claude to \"add the screenshots in inbox/\".")
     return 0
 
 

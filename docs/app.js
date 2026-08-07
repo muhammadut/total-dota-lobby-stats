@@ -177,7 +177,11 @@
     // Schedule times default to Pakistan: it is the league's reference
     // clock, the one the slots were chosen in, and where most players are.
     fxZone: "Pakistan",
-    fxView: "timeline"
+    fxView: "timeline",
+    // The tournament page opens on Standings — the question people
+    // actually arrive with is "who is winning the league", not "what
+    // happened in game 2 of a series three weeks ago".
+    srView: "standings"
   };
   var cur = { matches: [], players: [], heroes: [] };
 
@@ -975,24 +979,12 @@
      Guessing is exactly the failure this project cannot have, so team
      records now come only from results tied to a fixture. Until results
      are recorded, every team correctly reads 0. */
-  function leagueGames() {
-    var out = {};
-    if (!FX) return out;
-    FX.weeks.forEach(function (w) {
-      w.nights.forEach(function (n) {
-        n.series.forEach(function (s) {
-          (s.games || []).forEach(function (g) {
-            if (g && g.source_ref) {
-              out[g.source_ref] = { teams: s.teams, winner: g.winner };
-            }
-          });
-        });
-      });
-    });
-    return out;
-  }
+  /* The league's own match ledger (data/league_matches.json), exported
+     separately from the lobby database. See build_tournament in
+     export_web.py. `cur.matches` NEVER contains any of these. */
+  var TOUR = (D.tournament && D.tournament.matches) ? D.tournament.matches : [];
 
-  function aggregateTeams(ms) {
+  function aggregateTeams() {
     if (!LEAGUE) return null;
     var T = {};
     LEAGUE.teams.forEach(function (t) {
@@ -1001,16 +993,20 @@
                   opponents: {} };
     });
 
-    var booked = leagueGames();
+    /* Team records now come from the LEAGUE LEDGER, not from matches
+       linked to a fixture. That is a change, and it is safe for a reason
+       that did not hold before: a match cannot enter that ledger unless
+       every player on each side is on the same team's roster and the two
+       sides are different teams (tools/league_ingest.py enforces it on
+       the way in). So being in the ledger IS the explicit signal.
 
-    ms.forEach(function (m) {
-      var link = m.source_ref ? booked[m.source_ref] : null;
-      if (!link || !link.teams || link.teams.length !== 2) return;
-
-      var a = link.teams[0], b = link.teams[1];
-      var win = link.winner;
-      if (!T[a] || !T[b] || (win !== a && win !== b)) return;
-
+       The old rule existed because team records were once INFERRED from
+       any lobby match whose sides happened to line up, which put Team 3
+       on 1-0 before a league game had been played. Nothing is inferred
+       here either — a pub game cannot reach this array at all. */
+    TOUR.forEach(function (m) {
+      var a = m.radiant_team_id, b = m.dire_team_id, win = m.winner_team_id;
+      if (!T[a] || !T[b] || (win !== a && win !== b) || a === b) return;
       var lose = win === a ? b : a;
       T[a].games++; T[b].games++;
       T[win].wins++; T[lose].losses++;
@@ -1170,10 +1166,15 @@
           var li = el("li", "team-card__player" + (role === "stand_in" ? " is-standin" : ""));
           var display = (r.aka && r.aka.length) ? r.aka[0] : r.name;
           var mainLine = esc(display);
-          if (r.backup) {
+          // `backup` is a single canonical name OR a list of them — Team 4's
+          // beetlebum slot can be filled by either Khuni Billa or Musa, and
+          // rendering only the first would hide a legal substitute.
+          var backups = r.backup == null ? []
+                      : (r.backup.push ? r.backup : [r.backup]);
+          backups.forEach(function (bname) {
             mainLine += ' <span class="team-card__backup-sep">/</span> ' +
-                        '<span class="team-card__backup">' + esc(friendlyOf(r.backup)) + '</span>';
-          }
+                        '<span class="team-card__backup">' + esc(friendlyOf(bname)) + '</span>';
+          });
           // Show canonical as subtitle when the display differs from the name.
           var subtitle = (display !== r.name)
             ? '<span class="team-card__canonical">' + esc(r.name) + '</span>' : '';
@@ -1223,7 +1224,7 @@
       drawLeagueHud(null);
       return;
     }
-    var agg = aggregateTeams(cur.matches);
+    var agg = aggregateTeams();
     drawLeagueHud(agg);
     drawTeamStandings(agg);
     drawRosterGrid();
@@ -1418,6 +1419,368 @@
     else drawTimeline(host, cur);
   }
 
+  /* ── Series (best-of-three results) ───────────────────────────────
+     The Schedule tab answers "when do we play". This one answers "what
+     happened" — each best-of-three opened up into its individual games,
+     with the same scoreboard the Matches tab draws, because a series
+     score of 2–1 is meaningless without being able to see the three
+     games behind it.
+
+     A series appears here only once a result has been recorded against
+     it by tools/league_result.py. Nothing on this tab is inferred from
+     rosters: the Teams tab comment explains why that guessing put a team
+     on 1-0 before a league game had been played. */
+
+  // source_ref -> LEAGUE match. Indexed from the league ledger only: a
+  // series game can never resolve to a lobby match, because the two
+  // ledgers share no rows at all.
+  var BY_REF = {};
+  TOUR.forEach(function (m) {
+    if (m.source_ref) BY_REF[m.source_ref] = m;
+  });
+
+  /* Player records WITHIN the league. Computed from TOUR alone, so a
+     player's inhouse form has no effect on their tournament line and
+     vice versa — that separation is the entire point of the second
+     ledger. Wilson rating is the same function the lobby board uses. */
+  function aggregateLeaguePlayers() {
+    var P = {};
+    TOUR.forEach(function (m) {
+      [["radiant", m.radiant_team_id], ["dire", m.dire_team_id]]
+        .forEach(function (pair) {
+          (m[pair[0]] || []).forEach(function (r) {
+            var p = P[r.name] || (P[r.name] = {
+              name: r.name, team: pair[1], games: 0, wins: 0, losses: 0,
+              k: 0, d: 0, a: 0, gpm: 0, heroes: {}
+            });
+            p.games++;
+            if (r.won) p.wins++; else p.losses++;
+            p.k += r.k || 0; p.d += r.d || 0; p.a += r.a || 0;
+            p.gpm += r.gpm || 0;
+            if (r.hero) p.heroes[r.hero] = (p.heroes[r.hero] || 0) + 1;
+          });
+        });
+    });
+    var list = [];
+    for (var n in P) {
+      var p = P[n];
+      p.winPct = p.games ? (p.wins / p.games) * 100 : 0;
+      p.kda = p.d ? (p.k + p.a) / p.d : (p.k + p.a);
+      p.avgGpm = p.games ? p.gpm / p.games : 0;
+      p.rating = wilson(p.wins, p.games, state.evidence) * SCALE;
+      list.push(p);
+    }
+    return list.sort(function (a, b) {
+      return b.rating - a.rating || b.games - a.games || a.name.localeCompare(b.name);
+    });
+  }
+
+  function allSeries() {
+    var out = [];
+    if (!FX) return out;
+    FX.weeks.forEach(function (w) {
+      w.nights.forEach(function (n) {
+        n.series.forEach(function (s) { out.push({ w: w, n: n, s: s }); });
+      });
+    });
+    return out;
+  }
+
+  /* One recorded game, drawn with the same board() the Matches tab uses.
+     Reusing it is deliberate — a league game and an inhouse game are the
+     same kind of thing and should not read as two different objects. */
+  function renderSeriesGame(g, s, idx) {
+    var m = BY_REF[g.source_ref];
+    var winName = fxTeam(g.winner);
+
+    if (!m) {
+      // Recorded, but the match is missing from the ledger. Say so loudly
+      // rather than render a blank card — a game that counts towards a
+      // team's record but cannot be inspected is exactly the quiet wrong
+      // number this project exists to prevent.
+      return '<div class="sg sg--orphan">' +
+        '<div class="sg__head">' +
+          '<span class="sg__n">Game ' + g.game_no + '</span>' +
+          '<span class="sg__missing">Result recorded, but no match found for ' +
+            '<code>' + esc(g.source_ref) + '</code></span>' +
+        '</div></div>';
+    }
+
+    var rWon = m.winning_side === "radiant";
+    return '<div class="sg" data-ref="' + esc(g.source_ref) + '">' +
+      '<button class="sg__head" aria-expanded="false">' +
+        '<span class="sg__n">Game ' + g.game_no + '</span>' +
+        '<span class="sg__side sg__side--radiant' + (rWon ? " is-won" : "") + '">' +
+          esc(m.radiant_team_name || "The Radiant") +
+          '<span class="sg__tag">Radiant</span></span>' +
+        '<span class="sg__score">' +
+          '<span class="' + (rWon ? "win" : "") + '">' + m.radiant_score + '</span>' +
+          '<span class="sep">–</span>' +
+          '<span class="' + (rWon ? "" : "win") + '">' + m.dire_score + '</span></span>' +
+        '<span class="sg__side sg__side--dire' + (rWon ? "" : " is-won") + '">' +
+          esc(m.dire_team_name || "The Dire") +
+          '<span class="sg__tag">Dire</span></span>' +
+        '<span class="sg__won">' +
+          '<span class="team-chip team-chip--' + g.winner + '">' + g.winner + '</span>' +
+          esc(winName) + '</span>' +
+        '<span class="sg__meta">' + esc(dur(m.duration_seconds)) +
+          '<span class="chev" aria-hidden="true"></span></span>' +
+      '</button>' +
+      '<div class="sg__body"><div class="sg__inner"></div></div>' +
+    '</div>';
+  }
+
+  function seriesStatus(s) {
+    var n = (s.games || []).length;
+    if (!n) return { cls: "is-todo", label: "Not played" };
+    if (s.status === "final") return { cls: "is-final", label: "Final" };
+    return { cls: "is-live", label: "Game " + n + " of " + (s.best_of || 3) };
+  }
+
+  function renderSeriesCard(e) {
+    var s = e.s, a = s.teams[0], b = s.teams[1];
+    var sc = s.score || [0, 0];
+    var games = s.games || [];
+    var st = seriesStatus(s);
+    var open = games.length > 0;
+
+    function side(i) {
+      var tid = s.teams[i];
+      var won = games.length && s.status === "final" && sc[i] > sc[1 - i];
+      return '<span class="sr-side' + (won ? " is-won" : "") + '">' +
+        '<span class="team-chip team-chip--' + tid + '">' + tid + '</span>' +
+        '<span class="sr-team">' + esc(fxTeam(tid)) + '</span></span>';
+    }
+
+    return '<div class="sr' + (open ? " is-open" : "") + '" data-sid="' + esc(s.id) + '">' +
+      '<button class="sr__head" aria-expanded="' + (open ? "true" : "false") + '">' +
+        '<span class="sr__when">' +
+          '<span class="sr__wk">Week ' + e.w.week + '</span>' +
+          '<span class="sr__date">' + esc(e.n.day) + " " + esc(dayLabel(e.n.date)) + '</span>' +
+        '</span>' +
+        '<span class="sr__slot' + (s.slot === 2 ? " is-late" : "") + '">' +
+          (s.slot === 2 ? "Late" : "Early") + '</span>' +
+        side(0) +
+        '<span class="sr__score">' + (games.length ? sc[0] + " – " + sc[1] : "–") + '</span>' +
+        side(1) +
+        '<span class="sr__status ' + st.cls + '">' + esc(st.label) + '</span>' +
+        '<span class="chev" aria-hidden="true"></span>' +
+      '</button>' +
+      '<div class="sr__body"><div class="sr__inner">' +
+        (games.length
+          ? games.map(function (g, i) { return renderSeriesGame(g, s, i); }).join("")
+          : '<p class="sr__none">No games recorded yet. Results arrive by posting ' +
+            'the post-game screenshot in <b>#dota-league-2026</b>.</p>') +
+      '</div></div>' +
+    '</div>';
+  }
+
+  /* Boards are built on first expand rather than up front: a full season
+     of three-game series is a lot of DOM to create for rows nobody opens. */
+  function wireSeriesGame(row) {
+    var head = row.querySelector(".sg__head");
+    if (!head) return;
+    head.addEventListener("click", function () {
+      var open = row.classList.toggle("is-open");
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+      var inner = row.querySelector(".sg__inner");
+      if (!open || inner.childNodes.length) return;
+      var m = BY_REF[row.getAttribute("data-ref")];
+      if (!m) return;
+      var rWon = m.winning_side === "radiant";
+      var w1 = el("div", "board-wrap");
+      w1.appendChild(board("radiant", m.radiant, m.radiant_team_name || "The Radiant", rWon));
+      var w2 = el("div", "board-wrap");
+      w2.appendChild(board("dire", m.dire, m.dire_team_name || "The Dire", !rWon));
+      inner.appendChild(w1); inner.appendChild(w2);
+      if (m.notes) inner.appendChild(el("p", "match__note", esc(m.notes)));
+    });
+  }
+
+  /* ── Tournament: team standings ── */
+  function renderTeamTable() {
+    var agg = aggregateTeams();
+    if (!agg) return "";
+    var teams = agg.teams.slice().sort(function (a, b) {
+      return b.rating - a.rating || b.games - a.games || a.id - b.id;
+    });
+    var any = teams.some(function (t) { return t.games > 0; });
+    var rows = teams.map(function (t, i) {
+      return '<tr' + (i === 0 && t.games ? ' class="is-lead"' : '') + '>' +
+        '<td class="rank">' + (t.games ? i + 1 : "–") + '</td>' +
+        '<td class="c-player"><span class="tt-team">' +
+          '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
+          esc(t.name) + '</span></td>' +
+        '<td>' + t.games + '</td>' +
+        '<td>' + t.wins + '</td>' +
+        '<td>' + t.losses + '</td>' +
+        '<td class="pct">' + (t.games ? pct(t.winPct) : "—") + '</td>' +
+        '<td><span class="rating-pill">' +
+          (t.games ? t.rating.toFixed(1) : "—") + '</span></td>' +
+      '</tr>';
+    }).join("");
+    return '<div class="card table-card tt-block">' +
+      '<div class="tt-block__head">Team standings' +
+        '<span class="tt-block__sub">' + (any
+          ? 'From the league ledger only — inhouse games are not counted here.'
+          : 'No league games recorded yet.') + '</span></div>' +
+      '<div class="table-scroll"><table class="grid">' +
+        '<thead><tr><th class="c-rank">#</th><th class="c-player">Team</th>' +
+        '<th class="c-num">GP</th><th class="c-num">W</th><th class="c-num">L</th>' +
+        '<th class="c-num">%</th><th class="c-num c-rating">Rating</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table></div></div>';
+  }
+
+  /* ── Tournament: player leaderboard (league only) ── */
+  function renderLeaguePlayers() {
+    var list = aggregateLeaguePlayers();
+    if (!list.length) return "";
+    var rows = list.map(function (p, i) {
+      var top = Object.keys(p.heroes).sort(function (a, b) {
+        return p.heroes[b] - p.heroes[a];
+      })[0];
+      return '<tr>' +
+        '<td class="rank">' + (i + 1) + '</td>' +
+        '<td class="c-player"><span class="tt-team">' +
+          '<span class="team-chip team-chip--' + p.team + '">' + p.team + '</span>' +
+          faceTag(top, "b-face") + esc(p.name) + '</span></td>' +
+        '<td>' + p.games + '</td>' +
+        '<td>' + p.wins + '</td>' +
+        '<td>' + p.losses + '</td>' +
+        '<td class="kda-cell">' + p.k + " / " + p.d + " / " + p.a + '</td>' +
+        '<td>' + p.kda.toFixed(2) + '</td>' +
+        '<td>' + Math.round(p.avgGpm) + '</td>' +
+        '<td><span class="rating-pill">' + p.rating.toFixed(1) + '</span></td>' +
+      '</tr>';
+    }).join("");
+    return '<div class="card table-card tt-block">' +
+      '<div class="tt-block__head">Players in the league' +
+        '<span class="tt-block__sub">Tournament games only. These numbers are ' +
+        'independent of the Standings tab.</span></div>' +
+      '<div class="table-scroll"><table class="grid">' +
+        '<thead><tr><th class="c-rank">#</th><th class="c-player">Player</th>' +
+        '<th class="c-num">GP</th><th class="c-num">W</th><th class="c-num">L</th>' +
+        '<th class="c-kda">K / D / A</th><th class="c-num">KDA</th>' +
+        '<th class="c-num">GPM</th><th class="c-num c-rating">Rating</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table></div></div>';
+  }
+
+  /* ── Tournament: every league game, attached to a series or not ──
+     Showing unattached games matters: a screenshot posted before the
+     schedule is settled would otherwise vanish, which is exactly the
+     "where did my screenshot go" failure. */
+  function renderLeagueGames() {
+    if (!TOUR.length) return "";
+    var linked = {};
+    allSeries().forEach(function (e) {
+      (e.s.games || []).forEach(function (g) { linked[g.source_ref] = e.s.id; });
+    });
+    var cards = TOUR.slice().reverse().map(function (m) {
+      var rWon = m.winning_side === "radiant";
+      var tag = linked[m.source_ref]
+        ? '<span class="tg__series">' + esc(linked[m.source_ref]) + '</span>'
+        : '<span class="tg__series is-loose" title="Recorded, but not yet part of a ' +
+          'best-of-three">Unattached</span>';
+      return '<div class="sg tg" data-ref="' + esc(m.source_ref) + '">' +
+        '<button class="sg__head" aria-expanded="false">' +
+          '<span class="sg__n">' + esc(m.played_on || "undated") + '</span>' +
+          '<span class="sg__side sg__side--radiant' + (rWon ? " is-won" : "") + '">' +
+            esc(m.radiant_team_name || "The Radiant") +
+            '<span class="sg__tag">Team ' + m.radiant_team_id + '</span></span>' +
+          '<span class="sg__score">' +
+            '<span class="' + (rWon ? "win" : "") + '">' + m.radiant_score + '</span>' +
+            '<span class="sep">–</span>' +
+            '<span class="' + (rWon ? "" : "win") + '">' + m.dire_score + '</span></span>' +
+          '<span class="sg__side sg__side--dire' + (rWon ? "" : " is-won") + '">' +
+            esc(m.dire_team_name || "The Dire") +
+            '<span class="sg__tag">Team ' + m.dire_team_id + '</span></span>' +
+          '<span class="sg__won">' +
+            '<span class="team-chip team-chip--' + m.winner_team_id + '">' +
+              m.winner_team_id + '</span>won</span>' +
+          '<span class="sg__meta">' + tag +
+            '<span class="chev" aria-hidden="true"></span></span>' +
+        '</button>' +
+        '<div class="sg__body"><div class="sg__inner"></div></div>' +
+      '</div>';
+    }).join("");
+    return '<div class="card tt-block tt-block--games">' +
+      '<div class="tt-block__head">League games' +
+        '<span class="tt-block__sub">Every match in the league ledger. Open one ' +
+        'for the full scoreboard.</span></div>' + cards + '</div>';
+  }
+
+  function drawSeries() {
+    var host = $("#seriesBody");
+    if (!host) return;
+
+    var all = FX && FX.weeks && FX.weeks.length ? allSeries() : [];
+    var played = all.filter(function (e) { return (e.s.games || []).length > 0; });
+    var today = new Date().toISOString().slice(0, 10);
+    var next = all.filter(function (e) {
+      return !(e.s.games || []).length && e.n.date >= today;
+    });
+
+    var counts = $("#seriesCount");
+    if (counts) {
+      counts.textContent = TOUR.length
+        ? TOUR.length + (TOUR.length === 1 ? " game · " : " games · ") +
+          played.length + " series"
+        : "Nothing recorded yet";
+    }
+
+    if (state.srView === "standings") {
+      host.innerHTML = renderTeamTable() + renderLeaguePlayers() +
+        (TOUR.length ? "" : emptyTournament(next.length));
+      return;
+    }
+
+    if (state.srView === "games") {
+      host.innerHTML = TOUR.length ? renderLeagueGames() : emptyTournament(next.length);
+      Array.prototype.forEach.call(host.querySelectorAll(".sg"), wireSeriesGame);
+      return;
+    }
+
+    // Series view.
+    if (!all.length) {
+      host.innerHTML = '<div class="coord-section coord-section--empty">' +
+        'No schedule has been generated yet.</div>';
+      return;
+    }
+    var list = played.slice().reverse().concat(next.slice(0, 8));
+    if (!list.length) { host.innerHTML = emptyTournament(next.length); return; }
+
+    host.innerHTML = list.map(renderSeriesCard).join("");
+    Array.prototype.forEach.call(host.querySelectorAll(".sr"), function (card) {
+      var head = card.querySelector(".sr__head");
+      head.addEventListener("click", function () {
+        var open = card.classList.toggle("is-open");
+        head.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    });
+    Array.prototype.forEach.call(host.querySelectorAll(".sg"), wireSeriesGame);
+  }
+
+  function emptyTournament(upcoming) {
+    return '<div class="sr-empty card">' +
+      '<h3>Nothing recorded yet</h3>' +
+      '<p>The league keeps its own ledger, separate from the inhouse lobby. ' +
+        'A game shows up here — and only here — once its screenshot has been ' +
+        'read and checked.</p>' +
+      '<ol>' +
+        '<li>Post the post-game screenshot in <b>#dota-league-2026</b>.</li>' +
+        '<li>It is checked against the kills/score/deaths chain, and refused ' +
+          'unless each side is exactly one team\'s roster.</li>' +
+        '<li>It lands in the league ledger, and is attached to a scheduled ' +
+          'best-of-three.</li>' +
+      '</ol>' +
+      '<p class="sr-empty__note">' + upcoming + ' scheduled series waiting. ' +
+        'Nothing here affects the Standings tab, and nothing there affects ' +
+        'this page.</p>' +
+    '</div>';
+  }
+
   var COORD = D.coord || null;
 
   var TZ_LABELS = [
@@ -1600,6 +1963,7 @@
     drawCoord();
     drawZonePicker();
     drawSchedule();
+    drawSeries();
     var none = cur.matches.length === 0;
     $("#empty").hidden = !none;
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {
@@ -1627,6 +1991,7 @@
   segment("duoSort",   "sort", "duoSort",   drawDuos);
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
   segment("fxView", "fxview", "fxView", drawSchedule);
+  segment("srView", "srview", "srView", drawSeries);
   segment("evidence",  "z", "evidence", function () {
     rescore();
     drawStandings();
