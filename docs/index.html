@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.cloudflare.steamstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=04566777">
+<link rel="stylesheet" href="style.css?v=fe1fc98c">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111316'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%23e8554a' stroke-width='2'/%3E%3Cpath d='M16 11l4.6 5-4.6 5-4.6-5z' fill='%2317915a'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -187,6 +187,20 @@
       </div>
     </div>
 
+    <div class="toolbar" id="tourFilters">
+      <label class="field">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.8 10.8L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input type="search" id="qTour" placeholder="Search league players or heroes…" aria-label="Search league players">
+      </label>
+      <div class="segmented glass" id="tourMin" role="group" aria-label="Minimum league games">
+        <span class="seg-label">Played</span>
+        <button class="seg is-on" data-min="1">All</button>
+        <button class="seg" data-min="3">3+</button>
+        <button class="seg" data-min="6">6+</button>
+        <button class="seg" data-min="10">10+</button>
+      </div>
+    </div>
+
     <div id="seriesBody"></div>
 
     <p class="note"><b>A separate ledger, not a filter.</b> League matches live in <code>data/league_matches.json</code> and never enter the lobby database — so no lobby statistic can include one, because the rows are not there to be selected. A match is only allowed in if every player on each side is on that team's roster and the two sides are two different teams, which is why an inhouse game whose sides happened to line up cannot become a league win.</p>
@@ -302,8 +316,8 @@
   <div class="drawer__body" id="drawerBody"></div>
 </aside>
 
-<script src="heroes.js?v=04566777"></script>
-<script src="data.js?v=04566777"></script>
-<script src="app.js?v=04566777"></script>
+<script src="heroes.js?v=fe1fc98c"></script>
+<script src="data.js?v=fe1fc98c"></script>
+<script src="app.js?v=fe1fc98c"></script>
 </body>
 </html>

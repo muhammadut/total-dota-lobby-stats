@@ -1403,3 +1403,14 @@ td.none{ padding:2.2rem 1rem; }
   border:1px solid rgba(138,90,43,.2);
 }
 .tg .sg__won{ font-weight:600; color:var(--ink-2); gap:.35rem; }
+
+/* League points — the league table's headline number, so it reads
+   heavier than the surrounding counts. */
+.pts{
+  display:inline-block; min-width:2.1rem; padding:.18rem .5rem;
+  border-radius:var(--r-sm); background:var(--ink); color:#fff;
+  font-family:var(--mono); font-size:.86rem; font-weight:500;
+  font-variant-numeric:tabular-nums; text-align:center;
+}
+.pts.is-zero{ background:var(--paper-2); color:var(--ink-4); }
+#tourFilters[hidden]{ display:none; }

@@ -181,7 +181,12 @@
     // The tournament page opens on Standings — the question people
     // actually arrive with is "who is winning the league", not "what
     // happened in game 2 of a series three weeks ago".
-    srView: "standings"
+    srView: "standings",
+    // Teams rank by POINTS by default; that is the league table. Players
+    // rank by Rating, matching the lobby board they mirror.
+    trSort: "points", trDir: -1,
+    trPSort: "rating", trPDir: -1,
+    qTour: "", tourMin: 1
   };
   var cur = { matches: [], players: [], heroes: [] };
 
@@ -984,13 +989,37 @@
      export_web.py. `cur.matches` NEVER contains any of these. */
   var TOUR = (D.tournament && D.tournament.matches) ? D.tournament.matches : [];
 
+  /* League points. 3 for taking a best-of-three, 1 for every individual
+     game won.
+
+     Worth knowing: the FINAL ordering is identical whether the 3 is on
+     top of the game points or instead of them, because the winner of a
+     best-of-three has always won exactly two games — so every series
+     winner scores the same either way. The two only differ while a
+     series is still in progress, and counting each game as it lands is
+     the reading that keeps a half-played series honest. */
+  var POINTS = { series: 3, game: 1 };
+
   function aggregateTeams() {
     if (!LEAGUE) return null;
     var T = {};
     LEAGUE.teams.forEach(function (t) {
       T[t.id] = { id: t.id, name: t.name, roster: t.roster,
                   games: 0, wins: 0, losses: 0,
+                  seriesWins: 0, seriesLosses: 0, seriesPlayed: 0, points: 0,
                   opponents: {} };
+    });
+
+    // Series are only decided on the fixture list, so they are counted
+    // from there rather than from the match ledger.
+    allSeries().forEach(function (e) {
+      var s = e.s;
+      if (s.status !== "final" || !s.teams || s.teams.length !== 2) return;
+      var a = s.teams[0], b = s.teams[1], sc = s.score || [0, 0];
+      if (!T[a] || !T[b] || sc[0] === sc[1]) return;
+      var win = sc[0] > sc[1] ? a : b, lose = win === a ? b : a;
+      T[win].seriesWins++; T[lose].seriesLosses++;
+      T[a].seriesPlayed++; T[b].seriesPlayed++;
     });
 
     /* Team records now come from the LEAGUE LEDGER, not from matches
@@ -1017,6 +1046,7 @@
     // Compute pace, rating, status.
     var teams = LEAGUE.teams.map(function (t) { return T[t.id]; });
     teams.forEach(function (t) {
+      t.points = POINTS.series * t.seriesWins + POINTS.game * t.wins;
       t.winPct = t.games ? (t.wins / t.games) * 100 : 0;
       t.rating = wilson(t.wins, t.games, state.evidence) * SCALE;
       // Pace: games per opponent slot. Always /3, not /distinct-faced
@@ -1466,8 +1496,16 @@
       var p = P[n];
       p.winPct = p.games ? (p.wins / p.games) * 100 : 0;
       p.kda = p.d ? (p.k + p.a) / p.d : (p.k + p.a);
-      p.avgGpm = p.games ? p.gpm / p.games : 0;
+      // Rounded here, not at render: num() formats but does not round, so
+      // an unrounded average prints as "560.667" beside the lobby board's
+      // clean integers.
+      p.avgGpm = p.games ? Math.round(p.gpm / p.games) : 0;
       p.rating = wilson(p.wins, p.games, state.evidence) * SCALE;
+      // Most-played hero, for the portrait and so search matches on it —
+      // same as the lobby board.
+      p.topHero = Object.keys(p.heroes).sort(function (x, y) {
+        return p.heroes[y] - p.heroes[x];
+      })[0] || null;
       list.push(p);
     }
     return list.sort(function (a, b) {
@@ -1597,74 +1635,162 @@
     });
   }
 
-  /* ── Tournament: team standings ── */
+  /* Shared sort used by both tournament tables. Same tie-breaking as the
+     lobby board: evidence first, then performance, so sorting by any
+     column can never float a 1-4 record above a 3-2 one. */
+  function tourSort(list, key, dir) {
+    return list.slice().sort(function (a, b) {
+      var x = a[key], y = b[key];
+      if (key === "name") return dir * String(x).localeCompare(String(y));
+      if (x === null || x === undefined) x = dir === -1 ?  Infinity : -Infinity;
+      if (y === null || y === undefined) y = dir === -1 ?  Infinity : -Infinity;
+      if (x !== y) return dir * (x - y);
+      if (a.games !== b.games)   return b.games - a.games;
+      if (a.winPct !== b.winPct) return b.winPct - a.winPct;
+      return String(a.name).localeCompare(String(b.name));
+    });
+  }
+
+  function sortHead(cols, key, dir, attr) {
+    return '<tr>' + cols.map(function (c) {
+      if (!c.k) return '<th class="' + (c.cls || "") + '">' + c.t + '</th>';
+      var on = c.k === key;
+      return '<th class="' + (c.cls || "") + '" ' + attr + '="' + c.k + '"' +
+        (on ? ' aria-sort="' + (dir === 1 ? "ascending" : "descending") + '"' : '') +
+        (c.title ? ' title="' + esc(c.title) + '"' : '') + '>' + c.t + '</th>';
+    }).join("") + '</tr>';
+  }
+
+  /* ── Tournament: team standings, ranked by POINTS ── */
+  var TEAM_COLS = [
+    { t: "#", cls: "c-rank" },
+    { t: "Team", cls: "c-player", k: "name" },
+    { t: "Pts", cls: "c-num c-rating", k: "points",
+      title: "3 for winning a best-of-three, 1 for every game won" },
+    { t: "Series", cls: "c-num", k: "seriesPlayed" },
+    { t: "SW", cls: "c-num", k: "seriesWins", title: "Best-of-threes won" },
+    { t: "SL", cls: "c-num", k: "seriesLosses", title: "Best-of-threes lost" },
+    { t: "GP", cls: "c-num", k: "games", title: "Individual games played" },
+    { t: "W", cls: "c-num", k: "wins" },
+    { t: "L", cls: "c-num", k: "losses" },
+    { t: "Win rate", cls: "c-bar", k: "winPct" },
+    { t: "%", cls: "c-num", k: "winPct" },
+    { t: "Rating", cls: "c-num", k: "rating",
+      title: "Game win rate adjusted for how many games back it up" }
+  ];
+
   function renderTeamTable() {
     var agg = aggregateTeams();
     if (!agg) return "";
-    var teams = agg.teams.slice().sort(function (a, b) {
-      return b.rating - a.rating || b.games - a.games || a.id - b.id;
-    });
-    var any = teams.some(function (t) { return t.games > 0; });
+    var any = agg.teams.some(function (t) { return t.games > 0; });
+    var teams = tourSort(agg.teams, state.trSort, state.trDir);
     var rows = teams.map(function (t, i) {
-      return '<tr' + (i === 0 && t.games ? ' class="is-lead"' : '') + '>' +
-        '<td class="rank">' + (t.games ? i + 1 : "–") + '</td>' +
+      var lead = i === 0 && t.games && state.trSort === "points";
+      return '<tr' + (lead ? ' class="is-lead"' : '') + ' style="--i:' + i + '">' +
+        '<td><span class="rank">' + (t.games ? i + 1 : "–") + '</span></td>' +
         '<td class="c-player"><span class="tt-team">' +
           '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
           esc(t.name) + '</span></td>' +
+        '<td class="c-rating"><span class="pts' + (t.points ? "" : " is-zero") + '">' +
+          t.points + '</span></td>' +
+        '<td class="dim">' + (t.seriesPlayed || "—") + '</td>' +
+        '<td class="w-num">' + t.seriesWins + '</td>' +
+        '<td class="l-num">' + t.seriesLosses + '</td>' +
         '<td>' + t.games + '</td>' +
-        '<td>' + t.wins + '</td>' +
-        '<td>' + t.losses + '</td>' +
+        '<td class="w-num">' + t.wins + '</td>' +
+        '<td class="l-num">' + t.losses + '</td>' +
+        '<td><div class="meter"><span style="width:' + t.winPct.toFixed(1) + '%"></span></div></td>' +
         '<td class="pct">' + (t.games ? pct(t.winPct) : "—") + '</td>' +
-        '<td><span class="rating-pill">' +
+        '<td class="c-rating"><span class="rating' + ratingTier(t.rating) + '">' +
           (t.games ? t.rating.toFixed(1) : "—") + '</span></td>' +
       '</tr>';
     }).join("");
     return '<div class="card table-card tt-block">' +
       '<div class="tt-block__head">Team standings' +
         '<span class="tt-block__sub">' + (any
-          ? 'From the league ledger only — inhouse games are not counted here.'
+          ? '<b>3 points</b> for taking a best-of-three, <b>1 point</b> for every ' +
+            'game won. League ledger only — inhouse games are not counted.'
           : 'No league games recorded yet.') + '</span></div>' +
-      '<div class="table-scroll"><table class="grid">' +
-        '<thead><tr><th class="c-rank">#</th><th class="c-player">Team</th>' +
-        '<th class="c-num">GP</th><th class="c-num">W</th><th class="c-num">L</th>' +
-        '<th class="c-num">%</th><th class="c-num c-rating">Rating</th></tr></thead>' +
-        '<tbody>' + rows + '</tbody>' +
+      '<div class="table-scroll"><table class="grid" id="ttTeams">' +
+        '<thead>' + sortHead(TEAM_COLS, state.trSort, state.trDir, "data-tsort") +
+        '</thead><tbody>' + rows + '</tbody>' +
       '</table></div></div>';
   }
 
   /* ── Tournament: player leaderboard (league only) ── */
+  var PLAYER_COLS = [
+    { t: "#", cls: "c-rank" },
+    { t: "Player", cls: "c-player", k: "name" },
+    { t: "GP", cls: "c-num", k: "games" },
+    { t: "W", cls: "c-num", k: "wins" },
+    { t: "L", cls: "c-num", k: "losses" },
+    { t: "Win rate", cls: "c-bar", k: "winPct" },
+    { t: "%", cls: "c-num", k: "winPct" },
+    { t: "K / D / A", cls: "c-kda" },
+    { t: "KDA", cls: "c-num", k: "kda" },
+    { t: "GPM", cls: "c-num c-opt", k: "avgGpm" },
+    { t: "Rating", cls: "c-num c-rating", k: "rating",
+      title: "Win rate adjusted for how many games back it up" }
+  ];
+
   function renderLeaguePlayers() {
-    var list = aggregateLeaguePlayers();
-    if (!list.length) return "";
+    var all = aggregateLeaguePlayers();
+    var list = tourSort(all.filter(function (p) {
+      if (p.games < state.tourMin) return false;
+      return match(state.qTour, [p.name, p.topHero]);
+    }), state.trPSort, state.trPDir);
+
     var rows = list.map(function (p, i) {
-      var top = Object.keys(p.heroes).sort(function (a, b) {
-        return p.heroes[b] - p.heroes[a];
-      })[0];
-      return '<tr>' +
-        '<td class="rank">' + (i + 1) + '</td>' +
-        '<td class="c-player"><span class="tt-team">' +
+      return '<tr style="--i:' + i + '">' +
+        '<td><span class="rank">' + (i + 1) + '</span></td>' +
+        '<td class="c-player"><span class="who">' +
           '<span class="team-chip team-chip--' + p.team + '">' + p.team + '</span>' +
-          faceTag(top, "b-face") + esc(p.name) + '</span></td>' +
+          faceTag(p.topHero, "who__face") +
+          '<span><span class="who__name">' + esc(p.name) + '</span>' +
+          (p.topHero ? '<span class="who__hero">' + esc(p.topHero) + '</span>' : "") +
+          '</span></span></td>' +
         '<td>' + p.games + '</td>' +
-        '<td>' + p.wins + '</td>' +
-        '<td>' + p.losses + '</td>' +
-        '<td class="kda-cell">' + p.k + " / " + p.d + " / " + p.a + '</td>' +
-        '<td>' + p.kda.toFixed(2) + '</td>' +
-        '<td>' + Math.round(p.avgGpm) + '</td>' +
-        '<td><span class="rating-pill">' + p.rating.toFixed(1) + '</span></td>' +
+        '<td class="w-num">' + p.wins + '</td>' +
+        '<td class="l-num">' + p.losses + '</td>' +
+        '<td><div class="meter"><span style="width:' + p.winPct.toFixed(1) + '%"></span></div></td>' +
+        '<td class="pct">' + pct(p.winPct) + '</td>' +
+        '<td class="c-kda">' + p.k + " / " + p.d + " / " + p.a + '</td>' +
+        '<td>' + rat(p.kda) + '</td>' +
+        '<td class="c-opt dim">' + num(p.avgGpm) + '</td>' +
+        '<td class="c-rating"><span class="rating' + ratingTier(p.rating) + '">' +
+          p.rating.toFixed(1) + '</span></td>' +
       '</tr>';
-    }).join("");
+    }).join("") || '<tr><td colspan="11" class="none">No players match that filter.</td></tr>';
+
     return '<div class="card table-card tt-block">' +
       '<div class="tt-block__head">Players in the league' +
-        '<span class="tt-block__sub">Tournament games only. These numbers are ' +
-        'independent of the Standings tab.</span></div>' +
-      '<div class="table-scroll"><table class="grid">' +
-        '<thead><tr><th class="c-rank">#</th><th class="c-player">Player</th>' +
-        '<th class="c-num">GP</th><th class="c-num">W</th><th class="c-num">L</th>' +
-        '<th class="c-kda">K / D / A</th><th class="c-num">KDA</th>' +
-        '<th class="c-num">GPM</th><th class="c-num c-rating">Rating</th></tr></thead>' +
-        '<tbody>' + rows + '</tbody>' +
+        '<span class="tt-block__sub">Tournament games only — these numbers are ' +
+        'completely independent of the <b>Standings</b> tab.</span></div>' +
+      '<div class="table-scroll"><table class="grid" id="ttPlayers">' +
+        '<thead>' + sortHead(PLAYER_COLS, state.trPSort, state.trPDir, "data-psort") +
+        '</thead><tbody>' + rows + '</tbody>' +
       '</table></div></div>';
+  }
+
+  /* Header clicks re-sort. Wired after every draw because the tables are
+     rebuilt as innerHTML rather than patched. */
+  function wireTourSort(host) {
+    Array.prototype.forEach.call(host.querySelectorAll("[data-tsort]"), function (th) {
+      th.addEventListener("click", function () {
+        var k = th.getAttribute("data-tsort");
+        if (k === state.trSort) state.trDir = -state.trDir;
+        else { state.trSort = k; state.trDir = (k === "name") ? 1 : -1; }
+        drawSeries();
+      });
+    });
+    Array.prototype.forEach.call(host.querySelectorAll("[data-psort]"), function (th) {
+      th.addEventListener("click", function () {
+        var k = th.getAttribute("data-psort");
+        if (k === state.trPSort) state.trPDir = -state.trPDir;
+        else { state.trPSort = k; state.trPDir = (k === "name") ? 1 : -1; }
+        drawSeries();
+      });
+    });
   }
 
   /* ── Tournament: every league game, attached to a series or not ──
@@ -1730,9 +1856,13 @@
         : "Nothing recorded yet";
     }
 
+    var bar = $("#tourFilters");
+    if (bar) bar.hidden = state.srView !== "standings";
+
     if (state.srView === "standings") {
       host.innerHTML = renderTeamTable() + renderLeaguePlayers() +
         (TOUR.length ? "" : emptyTournament(next.length));
+      wireTourSort(host);
       return;
     }
 
@@ -1992,10 +2122,13 @@
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
   segment("fxView", "fxview", "fxView", drawSchedule);
   segment("srView", "srview", "srView", drawSeries);
+  segment("tourMin", "min", "tourMin", drawSeries, Number);
+  searchBox("qTour", "qTour", drawSeries);
   segment("evidence",  "z", "evidence", function () {
     rescore();
     drawStandings();
     drawDuos();          // the Duos header prints the rating too
+    drawSeries();        // ...and so does the tournament board
   }, Number);
 
   var clr = $("#duoClear");
