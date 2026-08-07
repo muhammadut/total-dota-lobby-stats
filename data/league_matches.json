@@ -102,6 +102,33 @@
         {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Vengeful Spirit", "hero_level": 14, "kills": 1, "deaths": 8, "assists": 7, "net_worth": 5365, "last_hits": 10, "denies": 1, "gpm": 205},
         {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Sniper", "hero_level": 18, "kills": 7, "deaths": 8, "assists": 9, "net_worth": 16279, "last_hits": 284, "denies": 5, "gpm": 500}
       ]
+    },
+    {
+      "source_ref": "discord-1535417044286308465",
+      "dota_match_id": null,
+      "played_on": "2026-08-07",
+      "played_at": "2026-08-07 18:39",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 42,
+      "dire_score": 36,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 1 of the Team 1 vs Team 2 best-of-three. Posted in #dota-league-2026 by ut70, dated from the Discord upload time. THE DIRE WON WITH FEWER KILLS - 36 to 42 - on the explicit WINNER badge; the score column counts kills, not the ancient. Radiant kills 40 <= score 42 <= dire deaths 42: two tower-credited kills, no deaths crediting nobody. The gap of 2 is above the usual 1, so the radiant kill column was re-read at zoom and stands. Dire kills 36 = score 36 <= radiant deaths 37, one death to neutrals/Roshan/self. Downlander's Phantom Lancer went 17/4/8 with 1,013 last hits and 56,128 net worth, both the highest recorded in the league so far.",
+      "players": [
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 23, "kills": 1, "deaths": 12, "assists": 23, "net_worth": 15089, "last_hits": 87, "denies": 4, "gpm": 324, "xpm": 474, "hero_damage": 13977, "building_damage": 19666, "healing": 0},
+        {"name": "samundar khan", "side": "radiant", "hero": "Grimstroke", "hero_level": 22, "kills": 6, "deaths": 7, "assists": 25, "net_worth": 16328, "last_hits": 95, "denies": 2, "gpm": 336, "xpm": 416, "hero_damage": 15767, "building_damage": 285, "healing": 250},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "radiant", "hero": "Tidehunter", "hero_level": 27, "kills": 7, "deaths": 5, "assists": 30, "net_worth": 26288, "last_hits": 383, "denies": 8, "gpm": 521, "xpm": 700, "hero_damage": 39934, "building_damage": 3430, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Lina", "hero_level": 29, "kills": 17, "deaths": 8, "assists": 10, "net_worth": 31948, "last_hits": 522, "denies": 9, "gpm": 634, "xpm": 892, "hero_damage": 53211, "building_damage": 5710, "healing": 0},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Ursa", "hero_level": 29, "kills": 9, "deaths": 5, "assists": 7, "net_worth": 35585, "last_hits": 635, "denies": 11, "gpm": 692, "xpm": 970, "hero_damage": 30142, "building_damage": 5219, "healing": 0},
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "dire", "hero": "Puck", "hero_level": 29, "kills": 2, "deaths": 6, "assists": 24, "net_worth": 35763, "last_hits": 713, "denies": 12, "gpm": 682, "xpm": 974, "hero_damage": 32681, "building_damage": 2156, "healing": 0},
+        {"name": "-Oden", "side": "dire", "hero": "Lich", "hero_level": 23, "kills": 3, "deaths": 14, "assists": 16, "net_worth": 11625, "last_hits": 47, "denies": 11, "gpm": 281, "xpm": 451, "hero_damage": 18055, "building_damage": 254, "healing": 0},
+        {"name": "Downlander", "side": "dire", "hero": "Phantom Lancer", "hero_level": 30, "kills": 17, "deaths": 4, "assists": 8, "net_worth": 56128, "last_hits": 1013, "denies": 6, "gpm": 945, "xpm": 1070, "hero_damage": 62347, "building_damage": 16352, "healing": 0},
+        {"name": "UT", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 29, "kills": 6, "deaths": 9, "assists": 22, "net_worth": 29341, "last_hits": 466, "denies": 12, "gpm": 572, "xpm": 897, "hero_damage": 20996, "building_damage": 2742, "healing": 0},
+        {"name": "vAnzO", "side": "dire", "hero": "Techies", "hero_level": 25, "kills": 8, "deaths": 9, "assists": 14, "net_worth": 19679, "last_hits": 156, "denies": 1, "gpm": 420, "xpm": 554, "hero_damage": 45022, "building_damage": 1364, "healing": 10}
+      ]
     }
   ]
 }
