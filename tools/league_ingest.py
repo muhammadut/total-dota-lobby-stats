@@ -180,10 +180,47 @@ def main() -> int:
     ap.add_argument("--from", dest="src", help="JSON file; omit to read stdin")
     ap.add_argument("--dry-run", action="store_true", help="validate only")
     ap.add_argument("--list", action="store_true", help="show the league ledger")
+    ap.add_argument("--alias", metavar="ALIAS=CANONICAL",
+                    help="record a rename inside the league, e.g. "
+                         "--alias 'Boostmode [Mn5tR]=Beast Mode [Mn5tR]'. Applied "
+                         "at export, never to the stored rows, so the ledger keeps "
+                         "the name that was actually on the screenshot.")
     args = ap.parse_args()
 
     if args.list:
         return show_list()
+
+    if args.alias:
+        if "=" not in args.alias:
+            print("\n  REFUSED — expected ALIAS=CANONICAL")
+            return 1
+        alias, canonical = (s.strip() for s in args.alias.split("=", 1))
+        payload = load_ledger()
+        rosters = {r["name"] for t in json.loads(TEAMS.read_text(encoding="utf-8"))["teams"]
+                   for r in t["roster"]}
+        if canonical not in rosters:
+            print(f"\n  REFUSED — {canonical!r} is on no league roster. The "
+                  f"canonical side of a league alias must be a roster name.")
+            return 1
+        # An alias must never merge two people who appeared in the SAME
+        # game -- that is two players, whatever the names look like. This
+        # is the one precondition the lobby merge path also refuses to
+        # skip, and for the same reason.
+        for m in payload["matches"]:
+            names = {p["name"] for p in m["players"]}
+            if alias in names and canonical in names:
+                print(f"\n  REFUSED — {alias!r} and {canonical!r} both played in "
+                      f"{m['source_ref']}. Two names in one game are two people.")
+                return 1
+        al = payload.setdefault("aliases", [])
+        if any(a["alias"] == alias for a in al):
+            print(f"\n  {alias!r} is already recorded as an alias.")
+            return 0
+        al.append({"alias": alias, "canonical": canonical})
+        save_ledger(payload)
+        print(f"\n  recorded: {alias!r} -> {canonical!r}")
+        print(f"  {len(al)} league alias(es). Re-run export_web.py to apply.")
+        return 0
 
     raw = Path(args.src).read_text(encoding="utf-8") if args.src else sys.stdin.read()
     incoming = json.loads(raw)

@@ -29,6 +29,7 @@ python load.py && python export_web.py
 
 python tools/discord_pull.py --source league   # league screenshots -> inbox_league/
 python tools/league_ingest.py --from f.json    # -> data/league_matches.json (NOT the lobby one)
+python tools/league_ingest.py --alias 'NewName=Roster Name'   # a rename inside the league
 python tools/league_result.py --ref REF [--series ID] [--apply]  # attach to a series
 python tools/league_result.py --list           # every recorded series
 python tools/discord_league.py --watch  # league bot, live (see "The league")

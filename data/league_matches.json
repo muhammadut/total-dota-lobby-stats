@@ -17,6 +17,10 @@
     "the schedule is settled and attached afterwards."
   ],
 
+  "aliases": [
+    {"alias": "Boostmode [Mn5tR]", "canonical": "Beast Mode [Mn5tR]"}
+  ],
+
   "matches": [
     {
       "source_ref": "discord-1535355797783973928",
@@ -43,6 +47,60 @@
         {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Juggernaut", "hero_level": 22, "kills": 12, "deaths": 2, "assists": 10, "net_worth": 23169, "last_hits": 329, "denies": 12, "gpm": 756, "xpm": 876, "hero_damage": 19033, "building_damage": 19126, "healing": 10101},
         {"name": "HELL-ANGEL-", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 19, "kills": 8, "deaths": 3, "assists": 19, "net_worth": 16562, "last_hits": 165, "denies": 16, "gpm": 549, "xpm": 673, "hero_damage": 15369, "building_damage": 3500, "healing": 125},
         {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Earthshaker", "hero_level": 19, "kills": 12, "deaths": 6, "assists": 10, "net_worth": 15834, "last_hits": 171, "denies": 16, "gpm": 542, "xpm": 689, "hero_damage": 22970, "building_damage": 2188, "healing": 0}
+      ]
+    },
+    {
+      "source_ref": "discord-1535395988712329257",
+      "dota_match_id": null,
+      "played_on": "2026-08-07",
+      "played_at": "2026-08-07 17:15",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Frantic Fan Boys",
+      "dire_team_name": "Team Targaryen",
+      "radiant_score": 28,
+      "dire_score": 49,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 2 of the Team 3 vs Team 4 best-of-three. Sides swapped from game 1: Team 4 drafted Radiant here. Posted in #dota-league-2026 by trollmitsu, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 28 = score 28 = dire deaths 28, and dire kills 49 = score 49 = radiant deaths 49, so all four columns cross-validate. Beast Mode [Mn5tR] appears here as 'Boostmode [Mn5tR]' - same clan tag, same roster slot, never in the same game as the old name; recorded as a rename in the aliases table.",
+      "players": [
+        {"name": "MODE:IG.BASHIRA™", "side": "radiant", "hero": "Grimstroke", "hero_level": 19, "kills": 3, "deaths": 12, "assists": 17, "net_worth": 8992, "last_hits": 23, "denies": 0, "gpm": 282},
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Lion", "hero_level": 16, "kills": 2, "deaths": 9, "assists": 12, "net_worth": 8542, "last_hits": 52, "denies": 2, "gpm": 286},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Night Stalker", "hero_level": 18, "kills": 4, "deaths": 11, "assists": 13, "net_worth": 10578, "last_hits": 126, "denies": 5, "gpm": 316},
+        {"name": "Rogue Agent [|T|z|]", "side": "radiant", "hero": "Phantom Lancer", "hero_level": 25, "kills": 12, "deaths": 7, "assists": 2, "net_worth": 25216, "last_hits": 449, "denies": 4, "gpm": 653},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "radiant", "hero": "Lina", "hero_level": 21, "kills": 7, "deaths": 10, "assists": 11, "net_worth": 16736, "last_hits": 310, "denies": 10, "gpm": 494},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Spectre", "hero_level": 27, "kills": 15, "deaths": 3, "assists": 17, "net_worth": 29334, "last_hits": 416, "denies": 12, "gpm": 723},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Jakiro", "hero_level": 21, "kills": 4, "deaths": 7, "assists": 24, "net_worth": 12586, "last_hits": 39, "denies": 0, "gpm": 344},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Dragon Knight", "hero_level": 24, "kills": 5, "deaths": 4, "assists": 20, "net_worth": 22365, "last_hits": 264, "denies": 3, "gpm": 572},
+        {"name": "Boostmode [Mn5tR]", "side": "dire", "hero": "Silencer", "hero_level": 19, "kills": 4, "deaths": 10, "assists": 26, "net_worth": 12510, "last_hits": 47, "denies": 1, "gpm": 355},
+        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Axe", "hero_level": 27, "kills": 21, "deaths": 4, "assists": 16, "net_worth": 25906, "last_hits": 291, "denies": 7, "gpm": 684}
+      ]
+    },
+    {
+      "source_ref": "discord-1535396068743839835",
+      "dota_match_id": null,
+      "played_on": "2026-08-07",
+      "played_at": "2026-08-07 17:15",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Team Targaryen",
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 39,
+      "dire_score": 25,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 3 of the Team 3 vs Team 4 best-of-three - the decider. Team 3 takes the series 2-1. Posted in #dota-league-2026 by trollmitsu, dated from the Discord upload time. Radiant kills 39 = score 39 <= dire deaths 40, one death to neutrals/Roshan/self. Dire kills 23 <= score 25 <= radiant deaths 26: two tower-credited kills and one death crediting nobody. The gap of 2 is above the usual 1, so both kill columns were re-read at zoom and stand. Seeker finished 16/0/14 on Lifestealer, carried by the exact radiant chain.",
+      "players": [
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 23, "kills": 9, "deaths": 7, "assists": 25, "net_worth": 20627, "last_hits": 253, "denies": 14, "gpm": 578},
+        {"name": "Boostmode [Mn5tR]", "side": "radiant", "hero": "Silencer", "hero_level": 16, "kills": 2, "deaths": 7, "assists": 29, "net_worth": 9257, "last_hits": 34, "denies": 3, "gpm": 337},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Death Prophet", "hero_level": 24, "kills": 7, "deaths": 3, "assists": 20, "net_worth": 21322, "last_hits": 280, "denies": 4, "gpm": 597},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Jakiro", "hero_level": 17, "kills": 5, "deaths": 9, "assists": 22, "net_worth": 10431, "last_hits": 29, "denies": 1, "gpm": 332},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Lifestealer", "hero_level": 26, "kills": 16, "deaths": 0, "assists": 14, "net_worth": 27668, "last_hits": 374, "denies": 19, "gpm": 733},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Bane", "hero_level": 15, "kills": 3, "deaths": 9, "assists": 13, "net_worth": 6492, "last_hits": 22, "denies": 8, "gpm": 244},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Kez", "hero_level": 24, "kills": 10, "deaths": 5, "assists": 6, "net_worth": 19706, "last_hits": 327, "denies": 3, "gpm": 553},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Underlord", "hero_level": 19, "kills": 2, "deaths": 10, "assists": 14, "net_worth": 12118, "last_hits": 198, "denies": 7, "gpm": 390},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Vengeful Spirit", "hero_level": 14, "kills": 1, "deaths": 8, "assists": 7, "net_worth": 5365, "last_hits": 10, "denies": 1, "gpm": 205},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Sniper", "hero_level": 18, "kills": 7, "deaths": 8, "assists": 9, "net_worth": 16279, "last_hits": 284, "denies": 5, "gpm": 500}
       ]
     }
   ]

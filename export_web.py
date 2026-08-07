@@ -161,7 +161,15 @@ def build_tournament(aliases: list) -> dict | None:
 
     payload = json.loads(LEAGUE_MATCHES.read_text(encoding="utf-8"))
     teams = json.loads(TEAMS.read_text(encoding="utf-8"))
-    idx = LR.team_index(teams, payload.get("aliases", []) + aliases)
+    league_aliases = payload.get("aliases", [])
+    idx = LR.team_index(teams, league_aliases + aliases)
+
+    # Renames inside the league are applied HERE, on the way out, exactly
+    # as load.py applies the lobby merge table on the way into the
+    # database. Without it a player who renames mid-series (Beast Mode ->
+    # Boostmode, same clan tag, same roster slot) silently becomes two
+    # people on the leaderboard, each with a fraction of the record.
+    canon = {a["alias"]: a["canonical"] for a in league_aliases}
 
     # Column names match the lobby export exactly -- board() in app.js is
     # shared, and a second naming scheme would mean a second component.
@@ -183,7 +191,8 @@ def build_tournament(aliases: list) -> dict | None:
             for p in m["players"]:
                 if p["side"] != side:
                     continue
-                r = {"name": p["name"], "won": 1 if m["winning_side"] == side else 0}
+                r = {"name": canon.get(p["name"], p["name"]),
+                     "won": 1 if m["winning_side"] == side else 0}
                 for src, dst in FIELDS:
                     r[dst] = p.get(src)
                 rows.append(r)
