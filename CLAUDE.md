@@ -282,27 +282,52 @@ Fixed weekly fixtures, decided up front, replacing "find a slot when both
 teams are ready". Four teams split into two matches exactly three ways —
 `(1v2,3v4)`, `(1v3,2v4)`, `(1v4,2v3)` — and each split is one night: two
 best-of-three series, one per slot, so every team plays once and can watch
-the other. Cycling the three splits over 12 nights gives 4 full cycles.
+the other. Three nights is therefore **one full cycle**, after which every
+pair has met exactly once.
 
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
-42 nights over 21 weekends, 8 Aug -> 27 Dec.  NO playoffs, NO final —
+9 nights, Fri + Sat, 7 Aug -> 4 Sep (5 weeks).  NO playoffs, NO final —
 the season runs straight through, per the user's explicit instruction.
-each team: 42 best-of-threes, 21 of them late; every pair meets 14x
+each team: 9 best-of-threes; every pair meets 3x
 ```
+
+**Season length is expressed as `--meetings`, never as a night count.**
+Nights are `3 × meetings` by construction, so a half-finished cycle —
+which would leave some pairs having met once more than others — cannot
+be expressed. `--first` and `--days` set the calendar. Re-running the
+tool with no flags reproduces exactly what is on the site.
+
+**The schedule was Sat + Sun until 2026-08-08 and it was wrong** — the
+season actually started on Friday 7 Aug, and the first two series were
+recorded under `W1-SAT-*` ids for a night that never happened. Rebuilding
+is safe *because* results live in `data/series_results.json`: unlink,
+regenerate, relink with `--series`. Nothing was retyped by hand.
 
 **`make_fixtures.py` refuses to write a schedule that isn't fair** — it
 checks that every pair meets equally often, that every team plays the
-same number of series, and that the 3 AM slot is shared to within one
-night. Those are exactly the errors nobody notices until the season is
-over. The night count is **trimmed to a multiple of three** for the same
-reason: three nights is one full cycle of the splits, and stopping
-part-way through one would leave some pairs having met once more than
-others.
+same number of series, and that the 3 AM slot is shared as evenly as the
+arithmetic allows. Those are exactly the errors nobody notices until the
+season is over.
 
-**Slot 2 is the next calendar day.** A Saturday-night late match is Sunday
-3 AM; a Sunday-night one is Monday 3 AM, a work morning. The site prints
-the weekday with every time for this reason.
+**The 3 AM slot cannot always divide evenly, and the guard knows why.**
+With `k` cycles, `T1 + T2 = 2a + 2k`, so all four late-slot counts share
+a parity; they sum to `6k`, so an exact quarter-share of `1.5k` is only an
+integer when `k` is **even**. An odd `k` would need two teams on `1.5k−0.5`
+and two on `1.5k+0.5` — mixed parity, impossible. So the check demands a
+gap of 0 for even `--meetings` and refuses anything above 2 for odd, and
+prints which team drew the short straw. At 3 meetings that is **Team 1,
+who plays 3 late nights to everyone else's 5**. Use an even `--meetings`
+if that matters. The greedy chooser was verified against brute force at
+3, 6, 9, 12 and 42 nights.
+
+**Slot 2 is the next calendar day.** A Friday-night late match is really
+Saturday 3 AM. The site prints the weekday with every time for this reason.
+
+**Schedule prose is generated from the payload, not typed into the HTML**
+(`app.js::fxCopy`). The old copy said "Saturday and Sunday" and "each team
+takes the late slot exactly half its nights"; both went false the moment
+the schedule was regenerated, and prose has no checksum to catch it.
 
 **Times are 12-hour everywhere, on the user's explicit instruction.** The
 Schedule tab renders each series into every league timezone at *export*

@@ -12,41 +12,41 @@
     "property of the individual game and lives in matches.json."
   ],
   "results": {
-    "W1-SAT-S2": {
+    "W1-FRI-S2": {
       "games": [
         {
           "source_ref": "discord-1535355797783973928",
           "winner": 4,
           "game_no": 1,
-          "linked_at": "2026-08-07T22:33:52+00:00"
+          "linked_at": "2026-08-08T16:31:48+00:00"
         },
         {
           "source_ref": "discord-1535395988712329257",
           "winner": 3,
           "game_no": 2,
-          "linked_at": "2026-08-07T22:33:52+00:00"
+          "linked_at": "2026-08-08T16:31:48+00:00"
         },
         {
           "source_ref": "discord-1535396068743839835",
           "winner": 3,
           "game_no": 3,
-          "linked_at": "2026-08-07T22:33:52+00:00"
+          "linked_at": "2026-08-08T16:31:48+00:00"
         }
       ]
     },
-    "W1-SAT-S1": {
+    "W1-FRI-S1": {
       "games": [
         {
           "source_ref": "discord-1535417044286308465",
           "winner": 2,
           "game_no": 1,
-          "linked_at": "2026-08-07T22:41:39+00:00"
+          "linked_at": "2026-08-08T16:31:48+00:00"
         },
         {
           "source_ref": "discord-1535451881122299995",
           "winner": 1,
           "game_no": 2,
-          "linked_at": "2026-08-08T01:18:00+00:00"
+          "linked_at": "2026-08-08T16:31:48+00:00"
         }
       ]
     }

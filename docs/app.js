@@ -1282,6 +1282,68 @@
 
   var FX = D.fixtures || null;
 
+  var DAY_ORDER = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  var DAY_FULL = {
+    Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday",
+    Fri: "Friday", Sat: "Saturday", Sun: "Sunday"
+  };
+
+  function dayFull(d) { return DAY_FULL[d] || d; }
+  function nextDay(d) {
+    var i = DAY_ORDER.indexOf(d);
+    return i < 0 ? "the next day" : dayFull(DAY_ORDER[(i + 1) % 7]);
+  }
+  function listWords(a) {
+    if (!a.length) return "";
+    if (a.length === 1) return a[0];
+    return a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+  }
+
+  /* The Schedule blurb is written FROM the payload, never typed into the
+     HTML. It used to say "Saturday and Sunday" and "each team takes the
+     late slot exactly half its nights" — both went false the instant
+     make_fixtures.py was re-run onto Friday nights with an odd number of
+     cycles, and prose has no checksum to catch it. Same rule as the
+     ledger: say what the data says, not what was true when it was typed. */
+  function fxCopy() {
+    if (!FX || !FX.season) return;
+    var s = FX.season, t = FX.totals || {};
+    var days = (s.night_days || []).map(dayFull);
+    var lede = $("#fxLede");
+    if (lede && days.length) {
+      lede.innerHTML =
+        "The season runs straight through — no playoffs, no final. Two " +
+        "<b>best-of-three</b> matches a night, " + listWords(days) + ": one pair " +
+        "of teams plays the early slot, the other the late one, so whoever " +
+        "isn't playing can watch. <b>" + s.nights + " nights</b> over " +
+        FX.weeks.length + " weeks — every team plays <b>" +
+        (t.series_per_team || 0) + " best-of-threes</b> and meets every other " +
+        "team <b>" + (t.meetings_per_pair || 0) + " times</b>. Pick your country " +
+        "to see every time in your own clock.";
+    }
+    var note = $("#fxNote");
+    if (note) {
+      var late = t.late_slots_per_team || {};
+      var ids = Object.keys(late);
+      var vals = ids.map(function (k) { return late[k]; });
+      var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      var fair = lo === hi
+        ? "each team takes the late slot <b>exactly half</b> its nights (" +
+          lo + " each)"
+        : "the late slot cannot split exactly across an odd number of cycles — " +
+          listWords(ids.filter(function (k) { return late[k] === lo; })
+                       .map(function (k) { return "Team " + k; })) +
+          " takes it <b>" + lo + "</b> times, everyone else <b>" + hi + "</b>";
+      var d0 = (s.night_days || [])[0];
+      note.innerHTML =
+        "The late slot starts at <b>3:00 AM in Pakistan</b>, which is the next " +
+        "morning" + (d0 ? " — a " + dayFull(d0) + "-night late match is really " +
+        nextDay(d0) + " at 3 AM" : "") + ". Every pair of teams meets the " +
+        "<b>same number of times</b>, and " + fair + ". Times are worked out with " +
+        "full daylight-saving awareness for each country.";
+    }
+  }
+
   function fxZones() {
     var first = FX && FX.weeks[0] && FX.weeks[0].nights[0].series[0];
     return (first && first.local) ? first.local.map(function (l) { return l.label; }) : [];
@@ -1439,6 +1501,7 @@
   function drawSchedule() {
     var host = $("#scheduleBody");
     if (!host) return;
+    fxCopy();
     if (!FX || !FX.weeks || !FX.weeks.length) {
       host.innerHTML = '<div class="coord-section coord-section--empty">' +
         'No schedule has been generated yet.</div>';
