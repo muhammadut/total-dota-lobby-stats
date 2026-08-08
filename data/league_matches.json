@@ -129,6 +129,33 @@
         {"name": "UT", "side": "dire", "hero": "Centaur Warrunner", "hero_level": 29, "kills": 6, "deaths": 9, "assists": 22, "net_worth": 29341, "last_hits": 466, "denies": 12, "gpm": 572, "xpm": 897, "hero_damage": 20996, "building_damage": 2742, "healing": 0},
         {"name": "vAnzO", "side": "dire", "hero": "Techies", "hero_level": 25, "kills": 8, "deaths": 9, "assists": 14, "net_worth": 19679, "last_hits": 156, "denies": 1, "gpm": 420, "xpm": 554, "hero_damage": 45022, "building_damage": 1364, "healing": 10}
       ]
+    },
+    {
+      "source_ref": "discord-1535451881122299995",
+      "dota_match_id": null,
+      "played_on": "2026-08-07",
+      "played_at": "2026-08-07 20:57",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Kaya He Karna Hai?",
+      "dire_team_name": "Rubix",
+      "radiant_score": 20,
+      "dire_score": 45,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 2 of the Team 1 vs Team 2 best-of-three. Posted in #dota-league-2026 by ut70, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 20 = score 20 = dire deaths 20, and dire kills 45 = score 45 = radiant deaths 45, so all four columns cross-validate. Team 1 fielded Scarface [FUBU] in SOMA's slot. Scarface is the player the captains' sheet calls Tiger-Y - confirmed by the user on 2026-08-07 - and he sits on Team 1, not Team 3 where the sheet had placed Tiger-Y. He is now a Team 1 stand-in backing that slot.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Puck", "hero_level": 26, "kills": 3, "deaths": 6, "assists": 6, "net_worth": 21433, "last_hits": 549, "denies": 5, "gpm": 615, "xpm": 847, "hero_damage": 23116, "building_damage": 435, "healing": 0},
+        {"name": "-Oden", "side": "radiant", "hero": "Lich", "hero_level": 17, "kills": 2, "deaths": 12, "assists": 12, "net_worth": 9098, "last_hits": 36, "denies": 10, "gpm": 248, "xpm": 357, "hero_damage": 12932, "building_damage": 121, "healing": 390},
+        {"name": "Downlander", "side": "radiant", "hero": "Anti-Mage", "hero_level": 26, "kills": 5, "deaths": 5, "assists": 2, "net_worth": 27628, "last_hits": 560, "denies": 16, "gpm": 628, "xpm": 837, "hero_damage": 11660, "building_damage": 2055, "healing": 0},
+        {"name": "UT", "side": "radiant", "hero": "Axe", "hero_level": 20, "kills": 6, "deaths": 10, "assists": 5, "net_worth": 18087, "last_hits": 290, "denies": 11, "gpm": 439, "xpm": 491, "hero_damage": 27697, "building_damage": 137, "healing": 0},
+        {"name": "vAnzO", "side": "radiant", "hero": "Phoenix", "hero_level": 19, "kills": 4, "deaths": 12, "assists": 5, "net_worth": 12528, "last_hits": 106, "denies": 2, "gpm": 306, "xpm": 424, "hero_damage": 19979, "building_damage": 49, "healing": 392},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 13, "deaths": 1, "assists": 17, "net_worth": 29643, "last_hits": 401, "denies": 9, "gpm": 664, "xpm": 913, "hero_damage": 26776, "building_damage": 1356, "healing": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Phantom Assassin", "hero_level": 27, "kills": 14, "deaths": 4, "assists": 18, "net_worth": 34553, "last_hits": 477, "denies": 4, "gpm": 760, "xpm": 1023, "hero_damage": 28669, "building_damage": 11139, "healing": 0},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Underlord", "hero_level": 26, "kills": 5, "deaths": 6, "assists": 27, "net_worth": 25253, "last_hits": 329, "denies": 11, "gpm": 566, "xpm": 898, "hero_damage": 18427, "building_damage": 3952, "healing": 0},
+        {"name": "samundar khan", "side": "dire", "hero": "Disruptor", "hero_level": 21, "kills": 3, "deaths": 6, "assists": 27, "net_worth": 11379, "last_hits": 32, "denies": 2, "gpm": 305, "xpm": 514, "hero_damage": 13000, "building_damage": 281, "healing": 195},
+        {"name": "Scarface [FUBU]", "side": "dire", "hero": "Silencer", "hero_level": 22, "kills": 10, "deaths": 3, "assists": 29, "net_worth": 16819, "last_hits": 51, "denies": 4, "gpm": 388, "xpm": 587, "hero_damage": 19970, "building_damage": 602, "healing": 0}
+      ]
     }
   ]
 }

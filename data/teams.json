@@ -93,7 +93,10 @@
           "aka": [
             "Soma"
           ],
-          "backup": "TigerX [GB]"
+          "backup": [
+            "TigerX [GB]",
+            "Scarface [FUBU]"
+          ]
         },
         {
           "name": "Obno[X]iouS- 不快な [M.C]",
@@ -109,6 +112,15 @@
           "aka": [
             "TigerX",
             "Tiger-X"
+          ]
+        },
+        {
+          "name": "Scarface [FUBU]",
+          "role": "stand_in",
+          "aka": [
+            "Tiger-Y",
+            "TigerY",
+            "Scarface"
           ]
         }
       ]
@@ -228,22 +240,13 @@
             "Beastmode",
             "Boostmode [Mn5tR]",
             "Boostmode"
-          ],
-          "backup": "Tiger-Y"
+          ]
         },
         {
           "name": "Soooze [<MC>]",
           "role": "stand_in",
           "aka": [
             "Soooze"
-          ]
-        },
-        {
-          "name": "Tiger-Y",
-          "role": "stand_in",
-          "aka": [
-            "Tiger-Y",
-            "TigerY"
           ]
         }
       ]
