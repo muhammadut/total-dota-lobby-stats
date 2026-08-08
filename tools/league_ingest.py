@@ -28,7 +28,8 @@ WHAT MAKES A MATCH ELIGIBLE
 Being in this ledger means "this was a league game", so entry is gated on
 it actually looking like one:
 
-  * all five players on a side belong to the SAME team
+  * every starter on a side belongs to the SAME team, three of them at
+    minimum, and the remaining slots hold only registered stand-ins
   * the two sides are two DIFFERENT teams
   * it is not already in the lobby ledger (that would double-count a
     player's history across two systems)
@@ -98,6 +99,7 @@ def check(new: list, existing: list) -> list:
     teams = json.loads(TEAMS.read_text(encoding="utf-8"))
     lobby = json.loads(LOBBY.read_text(encoding="utf-8"))
     idx = LR.team_index(teams, lobby.get("aliases", []))
+    spare = LR.stand_ins(teams, lobby.get("aliases", []))
 
     seen_ref = {m["source_ref"] for m in existing}
     seen_fp = {loader.fingerprint(m): m["source_ref"] for m in existing}
@@ -120,8 +122,8 @@ def check(new: list, existing: list) -> list:
                 print(f"  [check] {_p(p)}")
 
         # ── the league-specific gate ──
-        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx)
-        dire, dire_unknown, _ = LR.side_team(m, "dire", idx)
+        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx, spare)
+        dire, dire_unknown, _ = LR.side_team(m, "dire", idx, spare)
         for label, tid, unknown in (("radiant", rad, rad_unknown),
                                     ("dire", dire, dire_unknown)):
             if unknown:
@@ -163,10 +165,11 @@ def show_list() -> int:
     teams = json.loads(TEAMS.read_text(encoding="utf-8"))
     lobby = json.loads(LOBBY.read_text(encoding="utf-8"))
     idx = LR.team_index(teams, lobby.get("aliases", []))
+    spare = LR.stand_ins(teams, lobby.get("aliases", []))
     print(f"\n  {len(ms)} league match(es):\n")
     for m in ms:
-        rad, _, _ = LR.side_team(m, "radiant", idx)
-        dire, _, _ = LR.side_team(m, "dire", idx)
+        rad, _, _ = LR.side_team(m, "radiant", idx, spare)
+        dire, _, _ = LR.side_team(m, "dire", idx, spare)
         win = rad if m["winning_side"] == "radiant" else dire
         print(f"  {_p(m['source_ref']):<36} {m.get('played_on') or '????-??-??'}  "
               f"Team {rad} {m.get('radiant_score')}-{m.get('dire_score')} Team {dire}"

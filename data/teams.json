@@ -40,6 +40,14 @@
     "scoreboard, so his Steam name is unknown. A game he plays in cannot",
     "be attached to a series until someone says which name is his.",
     "",
+    "2026-08-08: Scarface [FUBU] is a SHARED stand-in. He filled a Team 1",
+    "slot on 7 Aug and a Team 3 slot on 8 Aug, both real league games. He",
+    "stays on Team 1's roster (a name may map to exactly ONE team, or",
+    "league_result.team_index resolves it two different ways depending on",
+    "iteration order), and Team 3 lists him as a backup for Trollmitsu's",
+    "slot. Attribution is handled in league_result.side_team, which reads",
+    "a side from its STARTERS and lets registered stand-ins fill the rest.",
+    "",
     "Theekra, Tiger-Y, Gillu and Soooze were on the sheet but in no roster,",
     "so they could neither register nor be fielded. They are now stand-ins",
     "on the teams that list them. None has played a recorded game yet.",
@@ -228,7 +236,10 @@
           "aka": [
             "Trollmitsu"
           ],
-          "backup": "Soooze [<MC>]"
+          "backup": [
+            "Soooze [<MC>]",
+            "Scarface [FUBU]"
+          ]
         },
         {
           "name": "Beast Mode [Mn5tR]",

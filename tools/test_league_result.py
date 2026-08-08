@@ -234,6 +234,29 @@ def main():
     _, errs = LR.resolve("g1", None)
     check("stand-in accepted", not errs, errs)
 
+    # A stand-in listed on ANOTHER team's sheet must still count for the
+    # side they actually played on. Scarface [FUBU] sits on Team 1 and
+    # filled a Team 3 slot the next night; the original all-five rule
+    # called that "a mix of teams" and refused a real league result.
+    other = next((r["name"] for x in TEAMS["teams"] if x["id"] != t_a
+                  for r in x["roster"] if r["role"] == "stand_in"), None)
+    write_matches([make_match("g1", roster(t_a)[:4] + [other], roster(t_b),
+                              "radiant", at(SID1))])
+    info, errs = LR.resolve("g1", None)
+    check("stand-in from another team's sheet accepted", not errs, errs)
+    check(f"...and the side is still Team {t_a}",
+          info.get("radiant_team") == t_a, info.get("radiant_team"))
+
+    # ...but the relaxation has a floor. Two starters plus three floaters
+    # is not that team fielding a side, and must not resolve.
+    subs = [r["name"] for x in TEAMS["teams"] for r in x["roster"]
+            if r["role"] == "stand_in"][:3]
+    write_matches([make_match("g1", roster(t_a)[:2] + subs, roster(t_b),
+                              "radiant", at(SID1))])
+    _, errs = LR.resolve("g1", None)
+    check("fewer than 3 starters refused",
+          any("mix of teams" in e or "one team per side" in e for e in errs), errs)
+
     print(f"\n  {PASS} passed, {FAIL} failed\n")
     shutil.rmtree(TMP, ignore_errors=True)
     return 1 if FAIL else 0

@@ -35,7 +35,7 @@ python tools/league_result.py --list           # every recorded series
 python tools/discord_league.py --watch  # league bot, live (see "The league")
 python tools/avail_llm.py [--apply]     # read the !avail the regex couldn't
 python tools/test_league_commands.py    # 152 cases; run after any league change
-python tools/test_league_result.py      # 24 cases; run after any series-association change
+python tools/test_league_result.py      # 27 cases; run after any series-association change
 ```
 
 **Reconcile AFTER the ingest, never before.** A screenshot is "failed"
@@ -217,7 +217,7 @@ tools/avail_llm.py          drains that queue, with a model
 tools/find_slot.py          DST-safe slot ranking
 tools/tz_map.py             zone aliases
 tools/test_league_commands.py   152 cases, run it after any change
-tools/test_league_result.py     24 cases, the series-association rules
+tools/test_league_result.py     27 cases, the series-association rules
 ```
 
 **The bot is a poller, not a daemon.** `python tools/discord_league.py`
@@ -408,13 +408,33 @@ Series-level guards refuse a game once a Bo3 is decided (2 wins) or full
 schedule no longer contains is **printed as a warning at export** rather
 than silently vanishing.
 
-**As of 2026-08-08 the league ledger holds 7 games across 3 series** —
-W1-FRI-S1 (Team 1 1–1 Team 2, still open), W1-FRI-S2 (Team 3 beat Team 4
-2–1) and W1-SAT-S2 (Team 2 beat Team 4 2–0). Standings: Team 2 on 6
-points, Team 3 on 5, Teams 1 and 4 on 1 each. The lobby ledger is
-untouched at 46 matches throughout — check both numbers after any league
-work, because "the league game went into the lobby ledger" is the exact
-mistake that was made on day one.
+**As of 2026-08-08 the league ledger holds 8 games across 4 series** —
+W1-FRI-S1 (Team 1 1–1 Team 2, open), W1-FRI-S2 (Team 3 beat Team 4 2–1),
+W1-SAT-S1 (Team 1 1–0 Team 3, open) and W1-SAT-S2 (Team 2 beat Team 4
+2–0). Standings: Team 2 on 6 points, Team 3 on 5, Team 1 on 2, Team 4 on
+1. The lobby ledger is untouched at 46 matches throughout — check both
+numbers after any league work, because "the league game went into the
+lobby ledger" is the exact mistake that was made on day one.
+
+**A side is read from its STARTERS, and stand-ins are shared.** The rule
+was once "all five players on a side belong to the same team", and it
+refused a real result the first time it met reality: Scarface [FUBU]
+filled a Team 1 slot on 7 Aug and a Team 3 slot on 8 Aug, so no
+name-to-team map can be right for both. `league_result.side_team` now
+resolves a side when every *starter* present is on one team, at least
+three of them are there (`MIN_STARTERS`), and every remaining slot holds
+a registered stand-in — whichever team's sheet that stand-in sits on.
+
+A relaxed guard has to be measured, not assumed: run every one of the 46
+inhouse games through both rules and count how many resolve to two league
+teams. Old rule 0, new rule **0** — the anti-pub guard is untouched,
+because a casual mix is a mix of *starters*, which still refuses. All
+seven previously-recorded league games keep the exact same attribution.
+
+**A player name may map to exactly ONE team in `teams.json`.**
+`team_index` is a flat dict, so a second entry silently wins or loses by
+iteration order. Scarface therefore stays on Team 1's roster and Team 3
+merely lists him under `backup`, which is display-only.
 
 **Teams do not always play the slot they were scheduled for.** Team 2 vs
 Team 4 was fixtured into Saturday's 3 AM slot and actually played in the

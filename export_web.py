@@ -163,6 +163,7 @@ def build_tournament(aliases: list) -> dict | None:
     teams = json.loads(TEAMS.read_text(encoding="utf-8"))
     league_aliases = payload.get("aliases", [])
     idx = LR.team_index(teams, league_aliases + aliases)
+    spare = LR.stand_ins(teams, league_aliases + aliases)
 
     # Renames inside the league are applied HERE, on the way out, exactly
     # as load.py applies the lobby merge table on the way into the
@@ -181,8 +182,8 @@ def build_tournament(aliases: list) -> dict | None:
 
     out, unresolved = [], []
     for i, m in enumerate(payload.get("matches", [])):
-        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx)
-        dire, dire_unknown, _ = LR.side_team(m, "dire", idx)
+        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx, spare)
+        dire, dire_unknown, _ = LR.side_team(m, "dire", idx, spare)
         if rad is None or dire is None:
             unresolved.append((m["source_ref"], sorted(rad_unknown + dire_unknown)))
 

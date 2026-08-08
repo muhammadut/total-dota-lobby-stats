@@ -31,7 +31,9 @@ sides happened to line up became a permanent win -- Team 3 read 1-0 before
 a league game had been played. Every rule below exists to make that class
 of mistake impossible:
 
-  * all five players on a side must belong to the SAME team
+  * every STARTER on a side must belong to the SAME team, and at least
+    three of them must be there; the rest may only be registered
+    stand-ins, who are shared across teams in practice
   * the two sides must be two DIFFERENT teams
   * those two teams must actually have a fixture against each other
   * the match's clock must fall in that fixture's night
@@ -137,21 +139,72 @@ def team_index(teams: dict, aliases: list) -> dict:
     return idx
 
 
-def side_team(match: dict, side: str, idx: dict):
+def stand_ins(teams: dict, aliases: list) -> set:
     """
-    Return (team_id, [unknown_names]) for one side of a match.
+    Lowercased names of everyone whose role is `stand_in`, on ANY team,
+    including their `aka` nicks and merged spellings.
 
-    team_id is None unless EVERY player on that side maps to the same team.
+    A stand-in is not tied to one side of the league the way a starter is.
+    Scarface [FUBU] filled a Team 1 slot on 7 Aug and a Team 3 slot on
+    8 Aug, both legitimately -- so a name-to-team map alone cannot decide
+    which team a side is, and `side_team` needs to know who is a floater.
+    """
+    canon, out = {}, set()
+    for t in teams["teams"]:
+        for r in t["roster"]:
+            if r.get("role") != "stand_in":
+                continue
+            canon[r["name"]] = True
+            out.add(r["name"].lower())
+            out.update(a.lower() for a in r.get("aka", []))
+    for a in aliases:
+        if canon.get(a["canonical"]):
+            out.add(a["alias"].lower())
+    return out
+
+
+# A side must be mostly its own team. Five-of-five was the original rule
+# and it refused a real game the first time a stand-in crossed teams;
+# three-of-five still means a majority of the players on that side are
+# that team's own starters, which no casual inhouse mix satisfies.
+MIN_STARTERS = 3
+
+
+def side_team(match: dict, side: str, idx: dict, floaters=frozenset()):
+    """
+    Return (team_id, [unknown_names], [names]) for one side of a match.
+
+    A side resolves to team T when:
+
+      * every player maps to some roster (a stranger refuses the match),
+      * the STARTERS present all belong to T -- a starter from a second
+        team is a mixed side and refuses,
+      * at least MIN_STARTERS of them are there,
+      * and anyone else on the side is a registered stand-in, whichever
+        team's sheet they sit on.
+
+    The last clause is the whole reason this is not a one-line `len(set)`
+    check. Stand-ins are shared in practice: the same person filled in for
+    Team 1 one night and Team 3 the next, and a strict all-five rule
+    called the second game "a mix of teams" and refused a real result.
+
+    Pass an empty `floaters` to get the original strict behaviour.
     """
     names = [p["name"] for p in match["players"] if p["side"] == side]
-    tids, unknown = set(), []
+    unknown, starters, spares = [], set(), 0
     for n in names:
         t = idx.get(n.lower())
         if t is None:
             unknown.append(n)
+        elif n.lower() in floaters:
+            spares += 1
         else:
-            tids.add(t)
-    return (tids.pop() if len(tids) == 1 and not unknown else None), unknown, names
+            starters.add(t)
+    if unknown or len(starters) != 1:
+        return None, unknown, names
+    if len(names) - spares < MIN_STARTERS:
+        return None, unknown, names
+    return starters.pop(), unknown, names
 
 
 # ── fixtures ────────────────────────────────────────────────────────────
@@ -228,9 +281,11 @@ def resolve(ref: str, explicit_series: str | None):
 
     lobby_aliases = (json.loads(LOBBY.read_text(encoding="utf-8")).get("aliases", [])
                      if LOBBY.exists() else [])
-    idx = team_index(teams, payload.get("aliases", []) + lobby_aliases)
-    rad, rad_unknown, rad_names = side_team(match, "radiant", idx)
-    dire, dire_unknown, dire_names = side_team(match, "dire", idx)
+    all_aliases = payload.get("aliases", []) + lobby_aliases
+    idx = team_index(teams, all_aliases)
+    spare = stand_ins(teams, all_aliases)
+    rad, rad_unknown, rad_names = side_team(match, "radiant", idx, spare)
+    dire, dire_unknown, dire_names = side_team(match, "dire", idx, spare)
     info.update({"radiant_team": rad, "dire_team": dire,
                  "radiant_names": rad_names, "dire_names": dire_names})
 

@@ -210,6 +210,33 @@
         {"name": "I'M Still Noob", "side": "dire", "hero": "Undying", "hero_level": 18, "kills": 12, "deaths": 10, "assists": 17, "net_worth": 8879, "last_hits": 50, "denies": 3, "gpm": 345, "xpm": 511, "hero_damage": 20127, "building_damage": 0, "healing": 1942},
         {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Grimstroke", "hero_level": 16, "kills": 3, "deaths": 8, "assists": 18, "net_worth": 6698, "last_hits": 12, "denies": 1, "gpm": 240, "xpm": 418, "hero_damage": 6591, "building_damage": 0, "healing": 0}
       ]
+    },
+    {
+      "source_ref": "discord-1535758097702977547",
+      "dota_match_id": null,
+      "played_on": "2026-08-08",
+      "played_at": "2026-08-08 17:14",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Team Targaryen",
+      "dire_team_name": "Rubix",
+      "radiant_score": 27,
+      "dire_score": 37,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 1 of the Team 1 vs Team 3 best-of-three (W1-SAT-S1). Posted in #dota-league-2026 by fzr2k, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 27 = score 27 = dire deaths 27, and dire kills 37 = score 37 = radiant deaths 37, so all four columns cross-validate. Screenshot is 1920x1200 and cut off after net worth, so last hits, denies, GPM, XPM and damage are unrecorded. Team 3 fielded Scarface [FUBU] in Trollmitsu's slot; Scarface stood in for Team 1 the night before, which is why he is a stand-in on both rosters.",
+      "players": [
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Faceless Void", "hero_level": 27, "kills": 6, "deaths": 6, "assists": 8, "net_worth": 26266, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Snapfire", "hero_level": 19, "kills": 4, "deaths": 8, "assists": 8, "net_worth": 10710, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Outworld Destroyer", "hero_level": 24, "kills": 10, "deaths": 6, "assists": 10, "net_worth": 20067, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Slardar", "hero_level": 21, "kills": 5, "deaths": 9, "assists": 7, "net_worth": 16188, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Disruptor", "hero_level": 15, "kills": 2, "deaths": 8, "assists": 15, "net_worth": 10876, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 12, "deaths": 3, "assists": 17, "net_worth": 26207, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "samundar khan", "side": "dire", "hero": "Lich", "hero_level": 19, "kills": 5, "deaths": 8, "assists": 19, "net_worth": 13631, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Anti-Mage", "hero_level": 26, "kills": 11, "deaths": 4, "assists": 7, "net_worth": 28778, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 18, "kills": 3, "deaths": 9, "assists": 19, "net_worth": 12794, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Underlord", "hero_level": 25, "kills": 6, "deaths": 3, "assists": 26, "net_worth": 24811, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null}
+      ]
     }
   ]
 }
