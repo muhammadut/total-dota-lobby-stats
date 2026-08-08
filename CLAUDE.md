@@ -408,10 +408,20 @@ Series-level guards refuse a game once a Bo3 is decided (2 wins) or full
 schedule no longer contains is **printed as a warning at export** rather
 than silently vanishing.
 
-**As of 2026-08-07 the league channel has never had a screenshot posted
-in it** — 100 messages, all commands and chat. The tab renders its empty
-state, and every team correctly reads 0. That is the schedule waiting,
-not a bug.
+**As of 2026-08-08 the league ledger holds 7 games across 3 series** —
+W1-FRI-S1 (Team 1 1–1 Team 2, still open), W1-FRI-S2 (Team 3 beat Team 4
+2–1) and W1-SAT-S2 (Team 2 beat Team 4 2–0). Standings: Team 2 on 6
+points, Team 3 on 5, Teams 1 and 4 on 1 each. The lobby ledger is
+untouched at 46 matches throughout — check both numbers after any league
+work, because "the league game went into the lobby ledger" is the exact
+mistake that was made on day one.
+
+**Teams do not always play the slot they were scheduled for.** Team 2 vs
+Team 4 was fixtured into Saturday's 3 AM slot and actually played in the
+11 PM one. `league_result.py` still resolved it unaided: the acceptance
+window is `start − 2h .. end + 6h`, which is wide enough to swallow a slot
+swap on the right night, and the roster check is what actually identifies
+the fixture. Do not narrow that window to "fix" a mis-slotted game.
 
 The Schedule tab has two layouts, **Timeline** (default, one column per
 week scrolling sideways, current week scrolled into view) and **List**.

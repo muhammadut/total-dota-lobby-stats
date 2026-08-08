@@ -156,6 +156,60 @@
         {"name": "samundar khan", "side": "dire", "hero": "Disruptor", "hero_level": 21, "kills": 3, "deaths": 6, "assists": 27, "net_worth": 11379, "last_hits": 32, "denies": 2, "gpm": 305, "xpm": 514, "hero_damage": 13000, "building_damage": 281, "healing": 195},
         {"name": "Scarface [FUBU]", "side": "dire", "hero": "Silencer", "hero_level": 22, "kills": 10, "deaths": 3, "assists": 29, "net_worth": 16819, "last_hits": 51, "denies": 4, "gpm": 388, "xpm": 587, "hero_damage": 19970, "building_damage": 602, "healing": 0}
       ]
+    },
+    {
+      "source_ref": "discord-1535748258964578454",
+      "dota_match_id": null,
+      "played_on": "2026-08-08",
+      "played_at": "2026-08-08 16:35",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Kaya He Karna Hai?",
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 37,
+      "dire_score": 13,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 1 of the Team 2 vs Team 4 best-of-three (W1-SAT-S2). Posted in #dota-league-2026 by ut70 as Screenshot_37, dated from the Discord upload time. Radiant chain triple-exact: kills 37 = score 37 = dire deaths 37, so all four columns cross-validate. Dire reads 12 kills against a score of 13 and 13 radiant deaths -- a left gap of one, which is a tower kill credited to the team with no player behind it.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Slardar", "hero_level": 21, "kills": 8, "deaths": 0, "assists": 14, "net_worth": 18275, "last_hits": 221, "denies": 17, "gpm": 539, "xpm": 729, "hero_damage": 19878, "building_damage": 3388, "healing": 0},
+        {"name": "-Oden", "side": "radiant", "hero": "Dark Willow", "hero_level": 14, "kills": 2, "deaths": 5, "assists": 23, "net_worth": 8024, "last_hits": 6, "denies": 3, "gpm": 280, "xpm": 359, "hero_damage": 11723, "building_damage": 485, "healing": 0},
+        {"name": "Downlander", "side": "radiant", "hero": "Necrophos", "hero_level": 23, "kills": 15, "deaths": 2, "assists": 13, "net_worth": 25722, "last_hits": 361, "denies": 7, "gpm": 754, "xpm": 906, "hero_damage": 37871, "building_damage": 3182, "healing": 10026},
+        {"name": "UT", "side": "radiant", "hero": "Underlord", "hero_level": 21, "kills": 8, "deaths": 3, "assists": 19, "net_worth": 17342, "last_hits": 192, "denies": 2, "gpm": 516, "xpm": 703, "hero_damage": 17675, "building_damage": 6260, "healing": 0},
+        {"name": "vAnzO", "side": "radiant", "hero": "Phoenix", "hero_level": 18, "kills": 4, "deaths": 3, "assists": 19, "net_worth": 11823, "last_hits": 73, "denies": 4, "gpm": 374, "xpm": 537, "hero_damage": 25251, "building_damage": 1439, "healing": 4672},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Tiny", "hero_level": 16, "kills": 4, "deaths": 7, "assists": 6, "net_worth": 12776, "last_hits": 196, "denies": 9, "gpm": 396, "xpm": 459, "hero_damage": 23866, "building_damage": 557, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 19, "kills": 4, "deaths": 8, "assists": 1, "net_worth": 15823, "last_hits": 298, "denies": 6, "gpm": 516, "xpm": 582, "hero_damage": 12336, "building_damage": 1437, "healing": 0},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Keeper of the Light", "hero_level": 15, "kills": 1, "deaths": 6, "assists": 8, "net_worth": 8733, "last_hits": 120, "denies": 4, "gpm": 329, "xpm": 390, "hero_damage": 23899, "building_damage": 0, "healing": 3574},
+        {"name": "beetlebum [FUBU]", "side": "dire", "hero": "Tidehunter", "hero_level": 17, "kills": 1, "deaths": 7, "assists": 6, "net_worth": 11444, "last_hits": 196, "denies": 4, "gpm": 359, "xpm": 477, "hero_damage": 8414, "building_damage": 0, "healing": 0},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Jakiro", "hero_level": 13, "kills": 2, "deaths": 9, "assists": 10, "net_worth": 6064, "last_hits": 30, "denies": 0, "gpm": 241, "xpm": 282, "hero_damage": 12917, "building_damage": 0, "healing": 0}
+      ]
+    },
+    {
+      "source_ref": "discord-1535748341835636766",
+      "dota_match_id": null,
+      "played_on": "2026-08-08",
+      "played_at": "2026-08-08 16:35",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Pyaray Pairo Wali Bachiya",
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 48,
+      "dire_score": 29,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 2 of the Team 2 vs Team 4 best-of-three (W1-SAT-S2), which it wins 2-0. Posted in #dota-league-2026 by ut70 as Screenshot_38, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 48 = score 48 = dire deaths 48, and dire kills 29 = score 29 = radiant deaths 29, so all four columns cross-validate. Team 2 played under a different lobby name from game 1 -- the roster is identical and lobby names are cosmetic, so identity comes from the players.",
+      "players": [
+        {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Ember Spirit", "hero_level": 25, "kills": 17, "deaths": 1, "assists": 18, "net_worth": 24779, "last_hits": 314, "denies": 3, "gpm": 719, "xpm": 1068, "hero_damage": 43978, "building_damage": 4438, "healing": 1280},
+        {"name": "-Oden", "side": "radiant", "hero": "Dark Willow", "hero_level": 17, "kills": 7, "deaths": 12, "assists": 29, "net_worth": 8624, "last_hits": 36, "denies": 4, "gpm": 329, "xpm": 488, "hero_damage": 14259, "building_damage": 1809, "healing": 0},
+        {"name": "vAnzO", "side": "radiant", "hero": "Ancient Apparition", "hero_level": 17, "kills": 1, "deaths": 9, "assists": 26, "net_worth": 9888, "last_hits": 63, "denies": 7, "gpm": 323, "xpm": 461, "hero_damage": 16038, "building_damage": 542, "healing": 0},
+        {"name": "UT", "side": "radiant", "hero": "Underlord", "hero_level": 21, "kills": 6, "deaths": 5, "assists": 25, "net_worth": 18013, "last_hits": 175, "denies": 8, "gpm": 520, "xpm": 712, "hero_damage": 20502, "building_damage": 2327, "healing": 0},
+        {"name": "Downlander", "side": "radiant", "hero": "Spectre", "hero_level": 25, "kills": 17, "deaths": 2, "assists": 21, "net_worth": 25722, "last_hits": 337, "denies": 20, "gpm": 753, "xpm": 1085, "hero_damage": 42682, "building_damage": 8056, "healing": 717},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Kunkka", "hero_level": 21, "kills": 4, "deaths": 8, "assists": 11, "net_worth": 17531, "last_hits": 309, "denies": 7, "gpm": 558, "xpm": 707, "hero_damage": 24431, "building_damage": 47, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Phantom Assassin", "hero_level": 21, "kills": 7, "deaths": 9, "assists": 11, "net_worth": 18001, "last_hits": 296, "denies": 9, "gpm": 553, "xpm": 684, "hero_damage": 15794, "building_damage": 453, "healing": 0},
+        {"name": "beetlebum [FUBU]", "side": "dire", "hero": "Axe", "hero_level": 16, "kills": 3, "deaths": 13, "assists": 7, "net_worth": 8130, "last_hits": 118, "denies": 3, "gpm": 297, "xpm": 443, "hero_damage": 7755, "building_damage": 0, "healing": 0},
+        {"name": "I'M Still Noob", "side": "dire", "hero": "Undying", "hero_level": 18, "kills": 12, "deaths": 10, "assists": 17, "net_worth": 8879, "last_hits": 50, "denies": 3, "gpm": 345, "xpm": 511, "hero_damage": 20127, "building_damage": 0, "healing": 1942},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Grimstroke", "hero_level": 16, "kills": 3, "deaths": 8, "assists": 18, "net_worth": 6698, "last_hits": 12, "denies": 1, "gpm": 240, "xpm": 418, "hero_damage": 6591, "building_damage": 0, "healing": 0}
+      ]
     }
   ]
 }
