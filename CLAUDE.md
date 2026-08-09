@@ -289,23 +289,31 @@ pair has met exactly once.
 
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
-FIVE teams from 2026-08-08.  17 nights, Fri + Sat, 7 Aug -> 2 Oct
-(9 weeks): 2 already played by four teams, 15 generated for five.
+FIVE teams from 2026-08-08.  10 nights, Fri + Sat, 7 Aug -> 5 Sep
+(5 weeks): 2 already played by four teams, 8 generated for five.
 NO playoffs, NO final — the season runs straight through.
-each team: 12 new best-of-threes, 3 byes; every pair meets 3x
+every pair meets 2x; each team: 8 series over the season
 ```
 
 **Five teams changes the shape, not just the count.** Two slots a night
-means four teams play and **one has a bye**. A cycle is 5 nights rather
-than 3, so 3 meetings is 15 nights rather than 9. `rounds(n)` is the
-standard circle method with a dummy opponent for odd `n`; the dummy's
-pairing IS the bye. `--teams 4` still produces the old three splits.
+means four play and **one has a bye**. Weekend one has no bye — there
+were only four teams — so Team 5 owes more games than anyone and never
+sits out: **byes are T1–T4 two each, T5 zero**, and every team still ends
+on 8 series. An uneven bye count is the correct answer here, not a bug.
 
-**Season length is expressed as `--meetings`, never as a night count.**
-Nights are `meetings × rounds-per-cycle` by construction, so a
-half-finished cycle — which would leave some pairs having met once more
-than others — cannot be expressed. `--first`, `--days` and `--teams` set
-the rest. Re-running the tool with no flags reproduces what is on the site.
+**`--meetings` is a SEASON target, not another rotation.** Nights already
+played count towards it, so `--meetings 2` after weekend one leaves four
+pairs owing one game and six owing two. That is why the generator no
+longer cycles the circle method: a fixed rotation can only express a
+season where every pair owes the same number. `plan_nights()` searches
+instead — depth-first, most-constrained pair first, sending home whoever
+has sat out least, pruning on "a pair owes more games than there are
+nights left" and "a team owes more games than there are nights left".
+
+**Season length is never expressed as a night count.** Nights fall out of
+`sum(remaining meetings) ÷ 2`, so a schedule that leaves some pairs having
+met more often than others cannot be expressed. `--first`, `--days` and
+`--teams` set the rest. Re-running with no flags reproduces the site.
 
 **A night with a recorded result is carried forward verbatim, never
 regenerated** (`carried()`, on unless `--no-carry`). Weekend one was
@@ -313,12 +321,19 @@ played by FOUR teams in pairings a five-team round-robin cannot even
 express; regenerating it would have orphaned eleven real games. The
 fairness checks therefore cover the generated part of the season only.
 
-**The 3 AM slot is solved across the whole season at once, not night by
-night.** A greedy pass shipped first and refused to write a five-team
-schedule: it produced 7/7/4/6/6 when **6/6/6/6/6 exists**. `late_plan()`
-searches exhaustively up to `LATE_EXACT_MAX` nights and falls back to
-greedy beyond it. The pairing that balances tonight can strand a team
-three weeks later — that is why the greedy could not see it.
+**The 3 AM slot is solved across the whole season at once, and seeded
+with the nights already played.** A greedy pass shipped first and refused
+to write a five-team schedule: it produced 7/7/4/6/6 when **6/6/6/6/6
+exists**. The pairing that balances tonight can strand a team three weeks
+later, which a greedy cannot see. `late_plan()` searches exhaustively up
+to `LATE_EXACT_MAX` nights, greedy beyond. Seeding matters: balancing
+only the remainder would leave whoever drew 3 AM in week one permanently
+ahead. Current season splits it exactly — 4 nights each.
+
+**The fairness checks cover the WHOLE season, carried nights included** —
+every pair on exactly `--meetings`, every team on the same number of
+series, late slot within the arithmetic minimum. That is what the promise
+on the site is about, so that is what gets checked.
 
 **The schedule was Sat + Sun until 2026-08-08 and it was wrong** — the
 season actually started on Friday 7 Aug, and the first two series were

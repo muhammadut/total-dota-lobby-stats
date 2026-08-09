@@ -16,30 +16,30 @@ refuses to write a schedule that fails either check.
 THE SHAPE
 ---------
 Two best-of-three series a night, one per slot, so a team can watch the
-other match. Pairings come from the standard circle method:
+other match. With five teams that leaves one team off each night -- the
+BYE -- and with four it leaves nobody.
 
-    4 teams -> 3 rounds per cycle, everybody plays every night
-    5 teams -> 5 rounds per cycle, ONE TEAM HAS A BYE each night
+`--meetings` is how many times each pair should meet ACROSS THE SEASON.
+It is not an instruction to run another rotation: nights already played
+count towards it, and what gets generated is the remainder.
 
-That bye is the whole difference the fifth team makes. With four teams
-the two matches used up all four; with five, four play and one is off.
-Each team therefore sits out exactly once per cycle, and a cycle is five
-nights rather than three.
-
-Season length is expressed as `--meetings` -- how many times each pair
-should meet -- never as a raw night count. Nights are
-`meetings x rounds_per_cycle`, so a part-finished cycle (which would
-leave some pairs having met once more than others) cannot be expressed.
+That is why this does not cycle a fixed rotation any more. It used to
+repeat the circle method, which only works while every pair owes the same
+number of games. After weekend one, four pairs owed one more meeting and
+six owed two, and Team 5 -- who did not exist yet -- owed more than
+anyone and could never take a bye. `plan_nights` searches instead.
 
 NIGHTS THAT HAVE BEEN PLAYED ARE NEVER REGENERATED
 ---------------------------------------------------
 `--carry` (on by default) copies forward, verbatim, every night whose
 series already has a recorded result, and generates only from the first
 playing night after it. Without this, adding the fifth team would have
-rewritten weekend one -- which was played by four teams, in pairings a
-five-team round-robin cannot even express -- and orphaned eleven real
-games. The fairness checks below therefore apply to the GENERATED part
-of the season; carried nights are history and are not up for inspection.
+rewritten weekend one -- which was played by four teams -- and orphaned
+eleven real games.
+
+Those nights still COUNT: their pairings go towards `--meetings` and
+their 3 AM slots seed the balance. The fairness checks below are about
+the whole season, because that is what the promise on the site is about.
 
 WHICH PAIR TAKES 3 AM
 ---------------------
@@ -72,7 +72,7 @@ UTC = ZoneInfo("UTC")
 FIRST_NIGHT = date(2026, 8, 7)
 NIGHT_DAYS = ("Fri", "Sat")
 TEAM_COUNT = 5
-MEETINGS = 3                             # times each pair meets
+MEETINGS = 2                             # times each pair meets
 SEASON_END = date(2026, 12, 31)          # from data/teams.json's season block
 SLOT_START_HOURS = {1: 23, 2: 27}        # 11 PM, and 3 AM the next morning
 SLOT_LENGTH_H = 3
@@ -82,25 +82,6 @@ SLOTS = 2                                # two series a night
 def ampm(dt: datetime) -> str:
     """3:00 AM, not 03:00 -- the league reads these, not a machine."""
     return dt.strftime("%I:%M %p").lstrip("0")
-
-
-def rounds(n: int) -> list:
-    """
-    One full cycle of the circle method: every pair of `n` teams exactly
-    once, as a list of rounds, each round a list of (a, b) team ids.
-
-    An odd `n` gets a dummy opponent whose pairing is the bye, so a round
-    for five teams yields two real matches and one team with the night
-    off. Rounds per cycle is `n - 1` for even n and `n` for odd.
-    """
-    ids = list(range(1, n + 1)) + ([None] if n % 2 else [])
-    m = len(ids)
-    out = []
-    for _ in range(m - 1):
-        pairs = [(ids[i], ids[m - 1 - i]) for i in range(m // 2)]
-        out.append([p for p in pairs if p[0] is not None and p[1] is not None])
-        ids = [ids[0]] + [ids[-1]] + ids[1:-1]        # fix the first, rotate
-    return out
 
 
 def playing_nights(first: date, days: tuple, count: int) -> list:
@@ -121,45 +102,48 @@ def playing_nights(first: date, days: tuple, count: int) -> list:
 LATE_EXACT_MAX = 18
 
 
-def _tally(cycle: list, picks, teams: int) -> Counter:
+def _tally(night_pairs: list, picks, teams: int, seed: Counter) -> Counter:
     late = Counter({t: 0 for t in range(1, teams + 1)})
-    for i, pick in enumerate(picks):
-        for t in cycle[i % len(cycle)][pick]:
+    late.update(seed)
+    for pairs, pick in zip(night_pairs, picks):
+        for t in pairs[pick]:
             late[t] += 1
     return late
 
 
-def late_plan(cycle: list, n_nights: int, teams: int) -> list:
+def late_plan(night_pairs: list, teams: int, seed: Counter) -> list:
     """
     Decide, for every night, WHICH pairing takes the 3 AM slot.
 
-    Searched over the whole season at once, not night by night. A greedy
-    pass shipped first and was wrong: for five teams over fifteen nights it
-    produced 7/7/4/6/6 and the fairness check refused to write. An
-    exhaustive search finds 6/6/6/6/6 -- a perfectly even split existed and
-    the greedy simply could not see it, because the pairing that balances
-    tonight can strand a team three weeks later.
+    Solved across the whole season at once, not night by night, and seeded
+    with the late slots the already-played nights handed out -- otherwise
+    balancing only the remainder leaves whoever drew 3 AM in week one
+    permanently ahead.
+
+    A greedy pass shipped first and was wrong: for five teams over fifteen
+    nights it produced 7/7/4/6/6 and the fairness check refused to write,
+    when 6/6/6/6/6 exists. The pairing that balances tonight can strand a
+    team three weeks later, which is exactly what a greedy cannot see.
 
     Scored on the sorted-descending tuple of resulting counts, so the
     arrangement that lowers the worst-off team wins.
     """
-    n_choices = len(cycle[0])
-    if n_nights <= LATE_EXACT_MAX:
+    n = len(night_pairs)
+    if n <= LATE_EXACT_MAX:
         best = None
-        for picks in itertools.product(range(n_choices), repeat=n_nights):
-            key = tuple(sorted(_tally(cycle, picks, teams).values(), reverse=True))
+        for picks in itertools.product(range(SLOTS), repeat=n):
+            key = tuple(sorted(_tally(night_pairs, picks, teams, seed).values(),
+                               reverse=True))
             if best is None or key < best[0]:
                 best = (key, list(picks))
         return best[1]
 
-    # Long season: fall back to greedy, which is exact for four teams and
-    # good enough beyond the reach of the search.
-    picks, late = [], Counter({t: 0 for t in range(1, teams + 1)})
-    for n in range(n_nights):
+    picks, late = [], Counter(seed)
+    for pairs in night_pairs:
         best = None
-        for c in range(n_choices):
+        for c in range(SLOTS):
             trial = Counter(late)
-            for t in cycle[n % len(cycle)][c]:
+            for t in pairs[c]:
                 trial[t] += 1
             key = tuple(sorted(trial.values(), reverse=True))
             if best is None or key < best[0]:
@@ -175,11 +159,19 @@ def carried(results: dict):
 
     A night is history the moment one of its series has a recorded game.
     Regenerating it would rewrite what happened -- and after a roster
-    change it may not even be expressible by the new rotation. Returns
-    (weeks, last_night_date).
+    change it may not even be expressible by the new rotation.
+
+    Also returns what those nights ALREADY CONTRIBUTE to the season: which
+    pairs have met, and who has taken the 3 AM slot. Both count towards
+    the season targets -- "every pair meets twice" means twice in total,
+    not twice more -- so the generator schedules the remainder rather than
+    a fresh full rotation.
+
+    Returns (weeks, last_night_date, met, late).
     """
+    met, late = Counter(), Counter()
     if not OUT.exists() or not results:
-        return [], None
+        return [], None, met, late
     old = json.loads(OUT.read_text(encoding="utf-8"))
     played, last = [], None
     for wk in old.get("weeks", []):
@@ -189,12 +181,93 @@ def carried(results: dict):
             continue
         for n in nights:
             for s in n["series"]:
+                met[tuple(sorted(s["teams"]))] += 1
+                if s["slot"] == max(SLOT_START_HOURS):
+                    for t in s["teams"]:
+                        late[t] += 1
                 s["status"] = "scheduled"
                 s["score"] = [0, 0]
                 s["games"] = []           # results are merged at export, not here
             last = max(last or n["date"], n["date"])
         played.append({**wk, "nights": nights})
-    return played, (date.fromisoformat(last) if last else None)
+    return played, (date.fromisoformat(last) if last else None), met, late
+
+
+def plan_nights(need: Counter, teams: int, byes: Counter, limit: int = 4000):
+    """
+    Lay the REMAINING series out over nights of `SLOTS` disjoint matches.
+
+    The old generator repeated one clean cycle of the circle method, which
+    only works when every pair owes the same number of games. It stops
+    working the moment part of the season has been played: after weekend
+    one, four pairs owed one more meeting and six owed two, and Team 5 --
+    who did not exist yet -- owed more than anyone and could never take a
+    bye. So this searches instead of cycling.
+
+    Depth-first, most-constrained-first: the pair with the most games left
+    is placed first, and among equal choices the team with the fewest byes
+    so far is the one sent home. Prunes on the two facts that make a
+    remainder infeasible -- a pair owing more games than there are nights
+    left, and a team owing more games than there are nights left, since
+    nobody plays twice in a night. Yields solutions lazily so the caller
+    can keep looking for one whose 3 AM split is even.
+    """
+    total = sum(need.values())
+    if total % SLOTS:
+        sys.exit(f"  {total} series left does not divide into nights of "
+                 f"{SLOTS}. Adjust --meetings.")
+    n_nights = total // SLOTS
+    found = 0
+
+    def combos(remaining):
+        """Every set of SLOTS disjoint pairs that still owe a game."""
+        live = sorted([p for p, c in remaining.items() if c > 0],
+                      key=lambda p: -remaining[p])
+        for pick in itertools.combinations(live, SLOTS):
+            used = [t for p in pick for t in p]
+            if len(set(used)) == len(used):
+                yield pick
+
+    def per_team(remaining):
+        c = Counter()
+        for (a, b), n in remaining.items():
+            c[a] += n
+            c[b] += n
+        return c
+
+    def walk(remaining, byes_now, left, acc):
+        nonlocal found
+        if left == 0:
+            found += 1
+            yield list(acc)
+            return
+        if found >= limit:
+            return
+        if any(n > left for n in remaining.values()):
+            return
+        counts = per_team(remaining)
+        if any(n > left for n in counts.values()):
+            return
+        cands = list(combos(remaining))
+        # Send home whoever has sat out least; break ties by placing the
+        # most-owed pairs first, which is what keeps the search shallow.
+        cands.sort(key=lambda pick: (
+            byes_now[next(iter(set(range(1, teams + 1))
+                               - {t for p in pick for t in p}), 0)],
+            -sum(remaining[p] for p in pick)))
+        for pick in cands:
+            off = set(range(1, teams + 1)) - {t for p in pick for t in p}
+            nxt = Counter(remaining)
+            for p in pick:
+                nxt[p] -= 1
+            nb = Counter(byes_now)
+            for t in off:
+                nb[t] += 1
+            acc.append(pick)
+            yield from walk(nxt, nb, left - 1, acc)
+            acc.pop()
+
+    yield from walk(Counter(need), Counter(byes), n_nights, [])
 
 
 def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
@@ -202,26 +275,59 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
           carry: bool = True) -> dict:
     results = (json.loads(RESULTS.read_text(encoding="utf-8")).get("results", {})
                if RESULTS.exists() else {})
-    weeks, last_played = carried(results) if carry else ([], None)
+    weeks, last_played, done, late_seed = (carried(results) if carry
+                                           else ([], None, Counter(), Counter()))
 
-    cycle = rounds(teams)
-    if any(len(r) != SLOTS for r in cycle):
-        sys.exit(f"  {teams} teams gives {len(cycle[0])} match(es) a night, but "
-                 f"there are {SLOTS} slots. Only 4 or 5 teams fit.")
+    # `--meetings` is a SEASON target, not an instruction to run another
+    # rotation. Nights already played count towards it, so what is
+    # generated is the remainder -- which is why this cannot be a cycle:
+    # after weekend one four pairs owed one game and six owed two.
+    need = Counter()
+    for a, b in itertools.combinations(range(1, teams + 1), 2):
+        short = meetings - done.get((a, b), 0)
+        if short < 0:
+            print(f"  ! Team {a} and Team {b} have already met "
+                  f"{done[(a, b)]} time(s), more than the {meetings} asked "
+                  f"for. Leaving them alone.", file=sys.stderr)
+        if short > 0:
+            need[(a, b)] = short
 
     start = first
     if last_played:
         start = last_played + timedelta(days=1)
-    nights = playing_nights(start, days, len(cycle) * meetings)
+    nights = playing_nights(start, days, sum(need.values()) // SLOTS)
 
-    picks = late_plan(cycle, len(nights), teams)
-    late_count = _tally(cycle, picks, teams)
-    played, met, byes = Counter(), Counter(), Counter()
+    # Search for a layout whose 3 AM split is as even as the arithmetic
+    # allows, rather than taking the first one that covers the fixtures.
+    total_nights = len(nights) + sum(len(w["nights"]) for w in weeks)
+    ideal = 2 * total_nights / teams
+    allowed = 1 if float(ideal).is_integer() else 2
+    best = None
+    byes_seed = Counter({t: 0 for t in range(1, teams + 1)})
+    for layout in plan_nights(need, teams, byes_seed):
+        picks = late_plan(layout, teams, late_seed)
+        tally = _tally(layout, picks, teams, late_seed)
+        gap = max(tally.values()) - min(tally.values())
+        if best is None or gap < best[0]:
+            best = (gap, layout, picks, tally)
+        if gap <= allowed:
+            break
+    if best is None:
+        sys.exit(f"  no schedule covers {sum(need.values())} remaining series "
+                 f"over {len(nights)} nights. Adjust --meetings.")
+    _, layout, picks, late_count = best
+
+    played, met = Counter(), Counter()
+    # Seeded with every team so a side that never sits out reads 0
+    # rather than vanishing from the totals.
+    byes = Counter({t: 0 for t in range(1, teams + 1)})
+    for pair, n in done.items():
+        met[pair] += n
 
     for n, night in enumerate(nights):
         wk = (night - first).days // 7 + 1
         # The chosen pairing goes LAST, which is slot 2 -- the 3 AM one.
-        night_pairs = list(cycle[n % len(cycle)])
+        night_pairs = list(layout[n])
         late_pair = night_pairs.pop(picks[n])
         pairs = night_pairs + [late_pair]
         off = set(range(1, teams + 1)) - {t for p in pairs for t in p}
@@ -266,21 +372,29 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
         w["nights"].sort(key=lambda n: n["date"])
 
     # --- the checks this script exists for --------------------------------
-    # They cover the GENERATED nights only. Carried nights were played
-    # under whatever rules were in force then and are not up for review.
+    # They cover the WHOLE season -- carried nights included -- because
+    # that is what the promise on the site is about. "Every pair meets
+    # twice" has to be true of the season, not of the part of it that
+    # happens to have been generated on this run.
+    season_played = Counter()
+    for (a, b), n in met.items():
+        season_played[a] += n
+        season_played[b] += n
+
     problems = []
-    if len(set(met.values())) != 1:
-        problems.append(f"pairs do not meet equally often: {dict(met)}")
-    if len(set(played.values())) != 1:
-        problems.append(f"teams do not play equally often: {dict(played)}")
-    if byes and len(set(byes.values())) != 1:
-        problems.append(f"byes are not shared equally: {dict(byes)}")
+    off_target = {p: n for p, n in met.items() if n != meetings}
+    missing = [(a, b) for a, b in itertools.combinations(range(1, teams + 1), 2)
+               if (a, b) not in met]
+    if off_target or missing:
+        problems.append(f"pairs do not all meet {meetings}x: "
+                        f"{off_target or ''}{' never: ' + str(missing) if missing else ''}")
+    if len(set(season_played.values())) != 1:
+        problems.append(f"teams do not play equally often over the season: "
+                        f"{dict(sorted(season_played.items()))}")
     gap = max(late_count.values()) - min(late_count.values())
-    ideal = 2 * len(nights) / teams
-    allowed = 1 if float(ideal).is_integer() else 2
     if gap > allowed:
         problems.append(f"late slot is not shared evenly (gap {gap}, max "
-                        f"{allowed} for {len(nights)} nights over {teams} "
+                        f"{allowed} for {total_nights} nights over {teams} "
                         f"teams): {dict(late_count)}")
     if problems:
         for p in problems:
@@ -318,7 +432,8 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
             {"n": 2, "label": "Slot 2", "pkt_window": "3:00 AM - 6:00 AM"},
         ],
         "totals": {
-            "series_per_team": played[1],
+            "series_per_team": season_played[1],
+            "new_series_per_team": dict(sorted(played.items())),
             "late_slots_per_team": dict(sorted(late_count.items())),
             "meetings_per_pair": next(iter(met.values())),
             "byes_per_team": dict(sorted(byes.items())) if byes else {},
@@ -366,11 +481,15 @@ def main() -> int:
     if s_["carried_nights"]:
         print(f"  {s_['carried_nights']} night(s) already played were carried "
               f"forward untouched; the rest is newly generated.")
-    print(f"  each team plays {t['series_per_team']} new best-of-threes · "
-          f"every pair meets {t['meetings_per_pair']}x · "
-          + (f"byes {list(t['byes_per_team'].values())[0]} each · "
-             if t["byes_per_team"] else "")
-          + "late slot: "
+    print(f"  every team plays {t['series_per_team']} best-of-threes over the "
+          f"season · every pair meets {t['meetings_per_pair']}x")
+    if s_["carried_nights"]:
+        print("  newly scheduled per team: "
+              + ", ".join(f"T{k}:{v}" for k, v in t["new_series_per_team"].items()))
+    if t["byes_per_team"]:
+        print("  byes: " + ", ".join(f"T{k}:{v}" for k, v in
+                                     t["byes_per_team"].items()))
+    print("  late slot (season): "
           + ", ".join(f"T{k}:{v}" for k, v in late.items()))
     if max(late.values()) - min(late.values()):
         light = [k for k, v in late.items() if v == min(late.values())]
