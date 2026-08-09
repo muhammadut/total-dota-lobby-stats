@@ -1714,6 +1714,27 @@
     });
   }
 
+  /* Team standings need their own tie-break. The generic one above puts
+     MORE GAMES first, which is right on the individual board — more games
+     is more evidence — and wrong here. Team 2 went 4–1 and Team 3 went
+     4–2, both reaching 10 points, and "more games" ranked the worse
+     record first. A points table breaks a tie the way every league does:
+     series won, then game difference, then win rate. */
+  function teamSort(list, key, dir) {
+    return list.slice().sort(function (a, b) {
+      var x = a[key], y = b[key];
+      if (key === "name") return dir * String(x).localeCompare(String(y));
+      if (x === null || x === undefined) x = dir === -1 ?  Infinity : -Infinity;
+      if (y === null || y === undefined) y = dir === -1 ?  Infinity : -Infinity;
+      if (x !== y) return dir * (x - y);
+      if (a.seriesWins !== b.seriesWins) return b.seriesWins - a.seriesWins;
+      var ad = a.wins - a.losses, bd = b.wins - b.losses;
+      if (ad !== bd)             return bd - ad;
+      if (a.winPct !== b.winPct) return b.winPct - a.winPct;
+      return String(a.name).localeCompare(String(b.name));
+    });
+  }
+
   function sortHead(cols, key, dir, attr) {
     return '<tr>' + cols.map(function (c) {
       if (!c.k) return '<th class="' + (c.cls || "") + '">' + c.t + '</th>';
@@ -1746,7 +1767,7 @@
     var agg = aggregateTeams();
     if (!agg) return "";
     var any = agg.teams.some(function (t) { return t.games > 0; });
-    var teams = tourSort(agg.teams, state.trSort, state.trDir);
+    var teams = teamSort(agg.teams, state.trSort, state.trDir);
     var rows = teams.map(function (t, i) {
       var lead = i === 0 && t.games && state.trSort === "points";
       return '<tr' + (lead ? ' class="is-lead"' : '') + ' style="--i:' + i + '">' +

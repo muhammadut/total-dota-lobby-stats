@@ -47,6 +47,12 @@
           "winner": 1,
           "game_no": 2,
           "linked_at": "2026-08-08T16:31:48+00:00"
+        },
+        {
+          "source_ref": "discord-1535822950652055572",
+          "winner": 2,
+          "game_no": 3,
+          "linked_at": "2026-08-09T01:36:28+00:00"
         }
       ]
     },
@@ -73,6 +79,18 @@
           "winner": 1,
           "game_no": 1,
           "linked_at": "2026-08-08T21:40:16+00:00"
+        },
+        {
+          "source_ref": "discord-1535781181528870972",
+          "winner": 3,
+          "game_no": 2,
+          "linked_at": "2026-08-09T01:36:19+00:00"
+        },
+        {
+          "source_ref": "discord-1535806297528729701",
+          "winner": 3,
+          "game_no": 3,
+          "linked_at": "2026-08-09T01:36:19+00:00"
         }
       ]
     }

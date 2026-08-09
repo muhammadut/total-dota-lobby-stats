@@ -408,13 +408,30 @@ Series-level guards refuse a game once a Bo3 is decided (2 wins) or full
 schedule no longer contains is **printed as a warning at export** rather
 than silently vanishing.
 
-**As of 2026-08-08 the league ledger holds 8 games across 4 series** —
-W1-FRI-S1 (Team 1 1–1 Team 2, open), W1-FRI-S2 (Team 3 beat Team 4 2–1),
-W1-SAT-S1 (Team 1 1–0 Team 3, open) and W1-SAT-S2 (Team 2 beat Team 4
-2–0). Standings: Team 2 on 6 points, Team 3 on 5, Team 1 on 2, Team 4 on
-1. The lobby ledger is untouched at 46 matches throughout — check both
-numbers after any league work, because "the league game went into the
-lobby ledger" is the exact mistake that was made on day one.
+**As of 2026-08-08 the league ledger holds 11 games across 4 series**,
+weekend one complete bar one dead rubber — W1-FRI-S1 (Team 2 beat Team 1
+2–1), W1-FRI-S2 (Team 3 beat Team 4 2–1), W1-SAT-S1 (Team 3 beat Team 1
+2–1) and W1-SAT-S2 (Team 2 beat Team 4 2–0). Standings: Team 2 and
+Team 3 tied on 10 points, Team 1 on 2, Team 4 on 1. The lobby ledger is
+untouched at 46 matches throughout — check both numbers after any league
+work, because "the league game went into the lobby ledger" is the exact
+mistake that was made on day one.
+
+**The team standings have their own tie-break (`app.js::teamSort`).** The
+generic `tourSort` breaks a tie on MORE GAMES PLAYED, which is right on
+the individual board — more games is more evidence — and wrong on a
+points table. Team 2 (4–1) and Team 3 (4–2) both reached 10 points and
+the generic rule ranked the worse record first. Team standings now break
+a tie the way every league does: series won, then game difference, then
+win rate.
+
+**A best-of-three can finish on a different night than it started.** The
+Team 1 vs Team 2 decider was played a day after games 1 and 2, so the
+clock check correctly refused to place it and listed the three fixtures
+between those teams. `--series W1-FRI-S1` is the documented answer, and
+the refusal message says so. Do not widen `LATE` to make this class of
+game self-attach — a Bo3 finished a week later would then land on the
+wrong fixture silently.
 
 **A side is read from its STARTERS, and stand-ins are shared.** The rule
 was once "all five players on a side belong to the same team", and it
