@@ -276,8 +276,12 @@ _fs = date.today() + timedelta(days=1)
 L.do_avail(f"{_fs:%b} {_fs.day} 8PM to 11PM", "ut70", UID_UT, dp)
 
 r = L.do_find("")
-check("find (no args) — lists all 6 pairs",
-      r.count("**Team") == 6, r[:200])
+# Pairs, not a constant. This read "all 6 pairs" and broke the day a fifth
+# team was added, which is n*(n-1)/2 = 10 -- derive it from the roster.
+_n = len(_tj["teams"])
+_pairs = _n * (_n - 1) // 2
+check(f"find (no args) — lists all {_pairs} pairs",
+      r.count("**Team") == _pairs, r[:200])
 
 r = L.do_find("1 vs 3")
 check("find '1 vs 3' — single pair",

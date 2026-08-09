@@ -1248,6 +1248,7 @@
   }
 
   function drawTeams() {
+    teamsLede();
     if (!LEAGUE) {
       drawTeamStandings(null);
       drawRosterGrid();
@@ -1305,6 +1306,27 @@
      make_fixtures.py was re-run onto Friday nights with an odd number of
      cycles, and prose has no checksum to catch it. Same rule as the
      ledger: say what the data says, not what was true when it was typed. */
+  /* "Four teams playing continuously..." was typed into the HTML and went
+     false the day a fifth team was added -- the same failure as the old
+     Schedule copy. The count comes from the roster now. */
+  var COUNT_WORD = ["no", "one", "two", "three", "four", "five", "six",
+                    "seven", "eight", "nine", "ten"];
+  function teamsLede() {
+    var el = $("#teamsLede");
+    if (!el || !D.league || !D.league.teams) return;
+    var n = D.league.teams.length;
+    el.innerHTML = el.innerHTML.replace(
+      /^[A-Z][a-z]+ teams/,
+      (COUNT_WORD[n] || n).replace(/^./, function (c) { return c.toUpperCase(); }) +
+      " teams");
+  }
+
+  function anyBye() {
+    return FX.weeks.some(function (w) {
+      return w.nights.some(function (n) { return n.bye && n.bye.length; });
+    });
+  }
+
   function fxCopy() {
     if (!FX || !FX.season) return;
     var s = FX.season, t = FX.totals || {};
@@ -1318,8 +1340,10 @@
         "isn't playing can watch. <b>" + s.nights + " nights</b> over " +
         FX.weeks.length + " weeks — every team plays <b>" +
         (t.series_per_team || 0) + " best-of-threes</b> and meets every other " +
-        "team <b>" + (t.meetings_per_pair || 0) + " times</b>. Pick your country " +
-        "to see every time in your own clock.";
+        "team <b>" + (t.meetings_per_pair || 0) + " times</b>. " +
+        (anyBye() ? "With <b>" + (s.teams || 5) + " teams</b> and two slots one " +
+                    "team is off each night — the <b>bye</b>. " : "") +
+        "Pick your country to see every time in your own clock.";
     }
     var note = $("#fxNote");
     if (note) {
@@ -1444,6 +1468,19 @@
     '</div>';
   }
 
+  /* With five teams and two slots, one team is off every night. That is
+     new information, not a gap in the data -- so it is drawn, quietly, at
+     the foot of the night. A night with nobody off (four teams) renders
+     nothing, so the four-team layout is untouched. */
+  function byeLine(n) {
+    if (!n.bye || !n.bye.length) return "";
+    return '<div class="tl-bye">' +
+      '<span class="tl-bye__lbl">Bye</span>' +
+      n.bye.map(function (t) {
+        return '<span class="team-chip team-chip--' + t + '">' + t + '</span>';
+      }).join("") + '</div>';
+  }
+
   function drawTimeline(host, cur) {
     host.innerHTML = '<div class="tl-rail" id="tlRail">' +
       FX.weeks.map(function (w) {
@@ -1451,7 +1488,7 @@
           return '<div class="tl-night">' +
             '<div class="tl-night__day">' + esc(n.day) + " " +
               esc(dayLabel(n.date)) + '</div>' +
-            n.series.map(renderMatchBox).join("") +
+            n.series.map(renderMatchBox).join("") + byeLine(n) +
           '</div>';
         }).join("");
         var isCur = w.week === cur;
@@ -1482,7 +1519,7 @@
             '<span class="fx-night__date">' + esc(dayLabel(n.date)) + '</span>' +
           '</div>' +
           '<div class="fx-night__body">' +
-            n.series.map(renderSeries).join("") +
+            n.series.map(renderSeries).join("") + byeLine(n) +
           '</div>' +
         '</div>';
       }).join("");

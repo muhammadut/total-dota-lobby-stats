@@ -36,6 +36,8 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, Team 3 (Team Targaryen) vs Team 4 (Frantic Fan Boys). SCOREBOARD tab only; posted in #dota-league-2026 by ut70, dated from the Discord upload time (server-side, absolute). Radiant kills 21 <= score 22 <= dire deaths 22 - one tower kill, no deaths to neutrals/Roshan/self. Dire chain triple-exact at 48, cross-validating all four columns. Duration NULL: the client header reads 'Playtime 01:03', which is session time, not match length. Team 4 fielded Musa (HELL-ANGEL-) in beetlebum's slot, a substitution his roster row permits.",
+      "radiant_team_id": 3,
+      "dire_team_id": 4,
       "players": [
         {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Lion", "hero_level": 12, "kills": 1, "deaths": 12, "assists": 10, "net_worth": 5849, "last_hits": 16, "denies": 1, "gpm": 229, "xpm": 272, "hero_damage": 8282, "building_damage": 190, "healing": 0},
         {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Anti-Mage", "hero_level": 20, "kills": 7, "deaths": 6, "assists": 3, "net_worth": 17303, "last_hits": 288, "denies": 6, "gpm": 586, "xpm": 736, "hero_damage": 12156, "building_damage": 2732, "healing": 0},
@@ -63,6 +65,8 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 2 of the Team 3 vs Team 4 best-of-three. Sides swapped from game 1: Team 4 drafted Radiant here. Posted in #dota-league-2026 by trollmitsu, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 28 = score 28 = dire deaths 28, and dire kills 49 = score 49 = radiant deaths 49, so all four columns cross-validate. Beast Mode [Mn5tR] appears here as 'Boostmode [Mn5tR]' - same clan tag, same roster slot, never in the same game as the old name; recorded as a rename in the aliases table.",
+      "radiant_team_id": 4,
+      "dire_team_id": 3,
       "players": [
         {"name": "MODE:IG.BASHIRA™", "side": "radiant", "hero": "Grimstroke", "hero_level": 19, "kills": 3, "deaths": 12, "assists": 17, "net_worth": 8992, "last_hits": 23, "denies": 0, "gpm": 282},
         {"name": "I'M Still Noob", "side": "radiant", "hero": "Lion", "hero_level": 16, "kills": 2, "deaths": 9, "assists": 12, "net_worth": 8542, "last_hits": 52, "denies": 2, "gpm": 286},
@@ -90,6 +94,8 @@
       "winning_side": "radiant",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 3 of the Team 3 vs Team 4 best-of-three - the decider. Team 3 takes the series 2-1. Posted in #dota-league-2026 by trollmitsu, dated from the Discord upload time. Radiant kills 39 = score 39 <= dire deaths 40, one death to neutrals/Roshan/self. Dire kills 23 <= score 25 <= radiant deaths 26: two tower-credited kills and one death crediting nobody. The gap of 2 is above the usual 1, so both kill columns were re-read at zoom and stand. Seeker finished 16/0/14 on Lifestealer, carried by the exact radiant chain.",
+      "radiant_team_id": 3,
+      "dire_team_id": 4,
       "players": [
         {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 23, "kills": 9, "deaths": 7, "assists": 25, "net_worth": 20627, "last_hits": 253, "denies": 14, "gpm": 578},
         {"name": "Boostmode [Mn5tR]", "side": "radiant", "hero": "Silencer", "hero_level": 16, "kills": 2, "deaths": 7, "assists": 29, "net_worth": 9257, "last_hits": 34, "denies": 3, "gpm": 337},
@@ -117,6 +123,8 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 1 of the Team 1 vs Team 2 best-of-three. Posted in #dota-league-2026 by ut70, dated from the Discord upload time. THE DIRE WON WITH FEWER KILLS - 36 to 42 - on the explicit WINNER badge; the score column counts kills, not the ancient. Radiant kills 40 <= score 42 <= dire deaths 42: two tower-credited kills, no deaths crediting nobody. The gap of 2 is above the usual 1, so the radiant kill column was re-read at zoom and stands. Dire kills 36 = score 36 <= radiant deaths 37, one death to neutrals/Roshan/self. Downlander's Phantom Lancer went 17/4/8 with 1,013 last hits and 56,128 net worth, both the highest recorded in the league so far.",
+      "radiant_team_id": 1,
+      "dire_team_id": 2,
       "players": [
         {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Shadow Shaman", "hero_level": 23, "kills": 1, "deaths": 12, "assists": 23, "net_worth": 15089, "last_hits": 87, "denies": 4, "gpm": 324, "xpm": 474, "hero_damage": 13977, "building_damage": 19666, "healing": 0},
         {"name": "samundar khan", "side": "radiant", "hero": "Grimstroke", "hero_level": 22, "kills": 6, "deaths": 7, "assists": 25, "net_worth": 16328, "last_hits": 95, "denies": 2, "gpm": 336, "xpm": 416, "hero_damage": 15767, "building_damage": 285, "healing": 250},
@@ -144,6 +152,8 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 2 of the Team 1 vs Team 2 best-of-three. Posted in #dota-league-2026 by ut70, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 20 = score 20 = dire deaths 20, and dire kills 45 = score 45 = radiant deaths 45, so all four columns cross-validate. Team 1 fielded Scarface [FUBU] in SOMA's slot. Scarface is the player the captains' sheet calls Tiger-Y - confirmed by the user on 2026-08-07 - and he sits on Team 1, not Team 3 where the sheet had placed Tiger-Y. He is now a Team 1 stand-in backing that slot.",
+      "radiant_team_id": 2,
+      "dire_team_id": 1,
       "players": [
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Puck", "hero_level": 26, "kills": 3, "deaths": 6, "assists": 6, "net_worth": 21433, "last_hits": 549, "denies": 5, "gpm": 615, "xpm": 847, "hero_damage": 23116, "building_damage": 435, "healing": 0},
         {"name": "-Oden", "side": "radiant", "hero": "Lich", "hero_level": 17, "kills": 2, "deaths": 12, "assists": 12, "net_worth": 9098, "last_hits": 36, "denies": 10, "gpm": 248, "xpm": 357, "hero_damage": 12932, "building_damage": 121, "healing": 390},
@@ -171,6 +181,8 @@
       "winning_side": "radiant",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 1 of the Team 2 vs Team 4 best-of-three (W1-SAT-S2). Posted in #dota-league-2026 by ut70 as Screenshot_37, dated from the Discord upload time. Radiant chain triple-exact: kills 37 = score 37 = dire deaths 37, so all four columns cross-validate. Dire reads 12 kills against a score of 13 and 13 radiant deaths -- a left gap of one, which is a tower kill credited to the team with no player behind it.",
+      "radiant_team_id": 2,
+      "dire_team_id": 4,
       "players": [
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Slardar", "hero_level": 21, "kills": 8, "deaths": 0, "assists": 14, "net_worth": 18275, "last_hits": 221, "denies": 17, "gpm": 539, "xpm": 729, "hero_damage": 19878, "building_damage": 3388, "healing": 0},
         {"name": "-Oden", "side": "radiant", "hero": "Dark Willow", "hero_level": 14, "kills": 2, "deaths": 5, "assists": 23, "net_worth": 8024, "last_hits": 6, "denies": 3, "gpm": 280, "xpm": 359, "hero_damage": 11723, "building_damage": 485, "healing": 0},
@@ -198,6 +210,8 @@
       "winning_side": "radiant",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 2 of the Team 2 vs Team 4 best-of-three (W1-SAT-S2), which it wins 2-0. Posted in #dota-league-2026 by ut70 as Screenshot_38, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 48 = score 48 = dire deaths 48, and dire kills 29 = score 29 = radiant deaths 29, so all four columns cross-validate. Team 2 played under a different lobby name from game 1 -- the roster is identical and lobby names are cosmetic, so identity comes from the players.",
+      "radiant_team_id": 2,
+      "dire_team_id": 4,
       "players": [
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Ember Spirit", "hero_level": 25, "kills": 17, "deaths": 1, "assists": 18, "net_worth": 24779, "last_hits": 314, "denies": 3, "gpm": 719, "xpm": 1068, "hero_damage": 43978, "building_damage": 4438, "healing": 1280},
         {"name": "-Oden", "side": "radiant", "hero": "Dark Willow", "hero_level": 17, "kills": 7, "deaths": 12, "assists": 29, "net_worth": 8624, "last_hits": 36, "denies": 4, "gpm": 329, "xpm": 488, "hero_damage": 14259, "building_damage": 1809, "healing": 0},
@@ -225,17 +239,19 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 1 of the Team 1 vs Team 3 best-of-three (W1-SAT-S1). Posted in #dota-league-2026 by fzr2k, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 27 = score 27 = dire deaths 27, and dire kills 37 = score 37 = radiant deaths 37, so all four columns cross-validate. Screenshot is 1920x1200 and cut off after net worth, so last hits, denies, GPM, XPM and damage are unrecorded. Team 3 fielded Scarface [FUBU] in Trollmitsu's slot; Scarface stood in for Team 1 the night before, which is why he is a stand-in on both rosters.",
+      "radiant_team_id": 3,
+      "dire_team_id": 1,
       "players": [
-        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Faceless Void", "hero_level": 27, "kills": 6, "deaths": 6, "assists": 8, "net_worth": 26266, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Snapfire", "hero_level": 19, "kills": 4, "deaths": 8, "assists": 8, "net_worth": 10710, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Outworld Destroyer", "hero_level": 24, "kills": 10, "deaths": 6, "assists": 10, "net_worth": 20067, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Slardar", "hero_level": 21, "kills": 5, "deaths": 9, "assists": 7, "net_worth": 16188, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Disruptor", "hero_level": 15, "kills": 2, "deaths": 8, "assists": 15, "net_worth": 10876, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 12, "deaths": 3, "assists": 17, "net_worth": 26207, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "samundar khan", "side": "dire", "hero": "Lich", "hero_level": 19, "kills": 5, "deaths": 8, "assists": 19, "net_worth": 13631, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Anti-Mage", "hero_level": 26, "kills": 11, "deaths": 4, "assists": 7, "net_worth": 28778, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 18, "kills": 3, "deaths": 9, "assists": 19, "net_worth": 12794, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HURR [PK_]", "side": "dire", "hero": "Underlord", "hero_level": 25, "kills": 6, "deaths": 3, "assists": 26, "net_worth": 24811, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null}
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Faceless Void", "hero_level": 27, "kills": 6, "deaths": 6, "assists": 8, "net_worth": 26266, "last_hits": 464, "denies": 9, "gpm": 652, "xpm": 1079, "hero_damage": 18963, "building_damage": 264, "healing": 0},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Snapfire", "hero_level": 19, "kills": 4, "deaths": 8, "assists": 8, "net_worth": 10710, "last_hits": 73, "denies": 3, "gpm": 322, "xpm": 465, "hero_damage": 14218, "building_damage": 66, "healing": 0},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Outworld Destroyer", "hero_level": 24, "kills": 10, "deaths": 6, "assists": 10, "net_worth": 20067, "last_hits": 277, "denies": 5, "gpm": 505, "xpm": 751, "hero_damage": 31397, "building_damage": 714, "healing": 0},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Slardar", "hero_level": 21, "kills": 5, "deaths": 9, "assists": 7, "net_worth": 16188, "last_hits": 313, "denies": 16, "gpm": 489, "xpm": 580, "hero_damage": 11942, "building_damage": 446, "healing": 0},
+        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Disruptor", "hero_level": 15, "kills": 2, "deaths": 8, "assists": 15, "net_worth": 10876, "last_hits": 35, "denies": 5, "gpm": 265, "xpm": 316, "hero_damage": 12050, "building_damage": 183, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 26, "kills": 12, "deaths": 3, "assists": 17, "net_worth": 26207, "last_hits": 346, "denies": 6, "gpm": 654, "xpm": 933, "hero_damage": 36413, "building_damage": 2091, "healing": 0},
+        {"name": "samundar khan", "side": "dire", "hero": "Lich", "hero_level": 19, "kills": 5, "deaths": 8, "assists": 19, "net_worth": 13631, "last_hits": 56, "denies": 12, "gpm": 369, "xpm": 500, "hero_damage": 17399, "building_damage": 181, "healing": 185},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Anti-Mage", "hero_level": 26, "kills": 11, "deaths": 4, "assists": 7, "net_worth": 28778, "last_hits": 458, "denies": 8, "gpm": 710, "xpm": 997, "hero_damage": 28516, "building_damage": 10310, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 18, "kills": 3, "deaths": 9, "assists": 19, "net_worth": 12794, "last_hits": 45, "denies": 1, "gpm": 345, "xpm": 431, "hero_damage": 7938, "building_damage": 10703, "healing": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Underlord", "hero_level": 25, "kills": 6, "deaths": 3, "assists": 26, "net_worth": 24811, "last_hits": 305, "denies": 29, "gpm": 623, "xpm": 886, "hero_damage": 24612, "building_damage": 6477, "healing": 400}
       ]
     },
     {
@@ -252,17 +268,19 @@
       "winning_side": "dire",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 2 of the Team 1 vs Team 3 best-of-three (W1-SAT-S1), levelling it 1-1. Posted in #dota-league-2026 by fzr2k, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 38 = score 38 = dire deaths 38, and dire kills 27 = score 27 = radiant deaths 27. Team 3 WON this game while 11 kills behind, which is normal -- a game is won on the ancient, not the scoreboard. Trollmitsu is back in his own slot, so Scarface [FUBU] does not appear. Capture is 1920x1200 and cut off after net worth, so last hits, denies, GPM, XPM and damage are unrecorded.",
+      "radiant_team_id": 1,
+      "dire_team_id": 3,
       "players": [
-        {"name": "samundar khan", "side": "radiant", "hero": "Disruptor", "hero_level": 20, "kills": 2, "deaths": 5, "assists": 17, "net_worth": 10459, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Witch Doctor", "hero_level": 19, "kills": 10, "deaths": 6, "assists": 16, "net_worth": 11600, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Lina", "hero_level": 27, "kills": 10, "deaths": 5, "assists": 11, "net_worth": 27241, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HURR [PK_]", "side": "radiant", "hero": "Dawnbreaker", "hero_level": 25, "kills": 7, "deaths": 5, "assists": 17, "net_worth": 22137, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "radiant", "hero": "Necrophos", "hero_level": 27, "kills": 9, "deaths": 6, "assists": 15, "net_worth": 27581, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 23, "kills": 0, "deaths": 10, "assists": 15, "net_worth": 14839, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Rubick", "hero_level": 18, "kills": 1, "deaths": 11, "assists": 10, "net_worth": 10315, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Sand King", "hero_level": 27, "kills": 6, "deaths": 6, "assists": 16, "net_worth": 28987, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 28, "kills": 5, "deaths": 6, "assists": 10, "net_worth": 34710, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Dragon Knight", "hero_level": 28, "kills": 15, "deaths": 5, "assists": 9, "net_worth": 31296, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null}
+        {"name": "samundar khan", "side": "radiant", "hero": "Disruptor", "hero_level": 20, "kills": 2, "deaths": 5, "assists": 17, "net_worth": 10459, "last_hits": 34, "denies": 4, "gpm": 246, "xpm": 449, "hero_damage": 10263, "building_damage": 0, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "radiant", "hero": "Witch Doctor", "hero_level": 19, "kills": 10, "deaths": 6, "assists": 16, "net_worth": 11600, "last_hits": 63, "denies": 4, "gpm": 340, "xpm": 421, "hero_damage": 17031, "building_damage": 0, "healing": 12029},
+        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Lina", "hero_level": 27, "kills": 10, "deaths": 5, "assists": 11, "net_worth": 27241, "last_hits": 517, "denies": 5, "gpm": 659, "xpm": 889, "hero_damage": 25974, "building_damage": 5866, "healing": 0},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Dawnbreaker", "hero_level": 25, "kills": 7, "deaths": 5, "assists": 17, "net_worth": 22137, "last_hits": 375, "denies": 12, "gpm": 539, "xpm": 769, "hero_damage": 21147, "building_damage": 631, "healing": 2974},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "radiant", "hero": "Necrophos", "hero_level": 27, "kills": 9, "deaths": 6, "assists": 15, "net_worth": 27581, "last_hits": 568, "denies": 14, "gpm": 677, "xpm": 956, "hero_damage": 28506, "building_damage": 540, "healing": 4000},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 23, "kills": 0, "deaths": 10, "assists": 15, "net_worth": 14839, "last_hits": 74, "denies": 1, "gpm": 337, "xpm": 597, "hero_damage": 13044, "building_damage": 3292, "healing": 0},
+        {"name": "Beast Mode [Mn5tR]", "side": "dire", "hero": "Rubick", "hero_level": 18, "kills": 1, "deaths": 11, "assists": 10, "net_worth": 10315, "last_hits": 50, "denies": 1, "gpm": 278, "xpm": 365, "hero_damage": 8872, "building_damage": 225, "healing": 3060},
+        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Sand King", "hero_level": 27, "kills": 6, "deaths": 6, "assists": 16, "net_worth": 28987, "last_hits": 431, "denies": 2, "gpm": 643, "xpm": 1004, "hero_damage": 30222, "building_damage": 716, "healing": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Phantom Lancer", "hero_level": 28, "kills": 5, "deaths": 6, "assists": 10, "net_worth": 34710, "last_hits": 609, "denies": 2, "gpm": 738, "xpm": 1149, "hero_damage": 27789, "building_damage": 9231, "healing": 0},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Dragon Knight", "hero_level": 28, "kills": 15, "deaths": 5, "assists": 9, "net_worth": 31296, "last_hits": 423, "denies": 8, "gpm": 697, "xpm": 1016, "hero_damage": 44213, "building_damage": 8875, "healing": 0}
       ]
     },
     {
@@ -279,17 +297,19 @@
       "winning_side": "radiant",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 3 of the Team 1 vs Team 3 best-of-three (W1-SAT-S1), which Team 3 takes 2-1. Posted in #dota-league-2026 by fzr2k, dated from the Discord upload time. Radiant chain triple-exact: kills 57 = score 57 = dire deaths 57. Dire reads 52 kills against a score of 53 and 53 radiant deaths -- a left gap of one, a tower kill credited to the team with no player behind it. 110 kills between the two sides, the bloodiest league game recorded so far. Capture is 1920x1200 and cut off after net worth, so last hits, denies, GPM, XPM and damage are unrecorded.",
+      "radiant_team_id": 3,
+      "dire_team_id": 1,
       "players": [
-        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Hoodwink", "hero_level": 29, "kills": 6, "deaths": 11, "assists": 37, "net_worth": 27767, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Pudge", "hero_level": 30, "kills": 21, "deaths": 9, "assists": 23, "net_worth": 54444, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 30, "kills": 14, "deaths": 8, "assists": 19, "net_worth": 45851, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Juggernaut", "hero_level": 30, "kills": 13, "deaths": 10, "assists": 14, "net_worth": 48278, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Lion", "hero_level": 27, "kills": 3, "deaths": 15, "assists": 26, "net_worth": 16330, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "samundar khan", "side": "dire", "hero": "Lich", "hero_level": 26, "kills": 6, "deaths": 17, "assists": 26, "net_worth": 16948, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "HURR [PK_]", "side": "dire", "hero": "Underlord", "hero_level": 30, "kills": 9, "deaths": 12, "assists": 24, "net_worth": 29543, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Ember Spirit", "hero_level": 30, "kills": 10, "deaths": 9, "assists": 24, "net_worth": 42139, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 26, "kills": 2, "deaths": 14, "assists": 32, "net_worth": 20331, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null},
-        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Medusa", "hero_level": 30, "kills": 25, "deaths": 5, "assists": 11, "net_worth": 61750, "last_hits": null, "denies": null, "gpm": null, "xpm": null, "hero_damage": null, "building_damage": null, "healing": null}
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Hoodwink", "hero_level": 29, "kills": 6, "deaths": 11, "assists": 37, "net_worth": 27767, "last_hits": 274, "denies": 4, "gpm": 434, "xpm": 753, "hero_damage": 23648, "building_damage": 3251, "healing": 2906},
+        {"name": "HypermodeL [M.C]", "side": "radiant", "hero": "Pudge", "hero_level": 30, "kills": 21, "deaths": 9, "assists": 23, "net_worth": 54444, "last_hits": 704, "denies": 5, "gpm": 771, "xpm": 983, "hero_damage": 56574, "building_damage": 5855, "healing": 0},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "radiant", "hero": "Shadow Fiend", "hero_level": 30, "kills": 14, "deaths": 8, "assists": 19, "net_worth": 45851, "last_hits": 858, "denies": 18, "gpm": 806, "xpm": 1086, "hero_damage": 40782, "building_damage": 10260, "healing": 0},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "radiant", "hero": "Juggernaut", "hero_level": 30, "kills": 13, "deaths": 10, "assists": 14, "net_worth": 48278, "last_hits": 954, "denies": 14, "gpm": 831, "xpm": 975, "hero_damage": 46257, "building_damage": 9228, "healing": 16068},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Lion", "hero_level": 27, "kills": 3, "deaths": 15, "assists": 26, "net_worth": 16330, "last_hits": 66, "denies": 1, "gpm": 324, "xpm": 577, "hero_damage": 10655, "building_damage": 2185, "healing": 525},
+        {"name": "samundar khan", "side": "dire", "hero": "Lich", "hero_level": 26, "kills": 6, "deaths": 17, "assists": 26, "net_worth": 16948, "last_hits": 112, "denies": 10, "gpm": 332, "xpm": 474, "hero_damage": 28943, "building_damage": 140, "healing": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Underlord", "hero_level": 30, "kills": 9, "deaths": 12, "assists": 24, "net_worth": 29543, "last_hits": 606, "denies": 16, "gpm": 551, "xpm": 819, "hero_damage": 52833, "building_damage": 694, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Ember Spirit", "hero_level": 30, "kills": 10, "deaths": 9, "assists": 24, "net_worth": 42139, "last_hits": 814, "denies": 0, "gpm": 759, "xpm": 961, "hero_damage": 66739, "building_damage": 350, "healing": 0},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Shadow Shaman", "hero_level": 26, "kills": 2, "deaths": 14, "assists": 32, "net_worth": 20331, "last_hits": 183, "denies": 1, "gpm": 377, "xpm": 521, "hero_damage": 26061, "building_damage": 10939, "healing": 0},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Medusa", "hero_level": 30, "kills": 25, "deaths": 5, "assists": 11, "net_worth": 61750, "last_hits": 1310, "denies": 18, "gpm": 1034, "xpm": 1078, "hero_damage": 136116, "building_damage": 5561, "healing": 0}
       ]
     },
     {
@@ -306,6 +326,8 @@
       "winning_side": "radiant",
       "result_confidence": "confirmed",
       "notes": "League 2026-fall, game 3 of the Team 1 vs Team 2 best-of-three (W1-FRI-S1), which Team 2 takes 2-1. Posted in #dota-league-2026 by ut70, dated from the Discord upload time. BOTH chains triple-exact: radiant kills 35 = score 35 = dire deaths 35, and dire kills 17 = score 17 = radiant deaths 17. The decider was played a day after games 1 and 2, so it is attached to W1-FRI-S1 explicitly rather than by the clock. -Oden's hero level is hidden behind a Discord overlay in the capture and is recorded as unknown rather than guessed.",
+      "radiant_team_id": 2,
+      "dire_team_id": 1,
       "players": [
         {"name": "Stoic (Mode: Sccc)(only solo)", "side": "radiant", "hero": "Lina", "hero_level": 26, "kills": 8, "deaths": 4, "assists": 11, "net_worth": 26145, "last_hits": 398, "denies": 2, "gpm": 670, "xpm": 917, "hero_damage": 21801, "building_damage": 5756, "healing": 0},
         {"name": "Downlander", "side": "radiant", "hero": "Vengeful Spirit", "hero_level": 25, "kills": 10, "deaths": 2, "assists": 11, "net_worth": 28540, "last_hits": 451, "denies": 24, "gpm": 711, "xpm": 877, "hero_damage": 23848, "building_damage": 16933, "healing": 0},

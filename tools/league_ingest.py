@@ -93,6 +93,129 @@ def save_ledger(payload: dict) -> None:
     json.loads(LEAGUE.read_text(encoding="utf-8"))       # must still parse
 
 
+def lobby_aliases() -> list:
+    return json.loads(LOBBY.read_text(encoding="utf-8")).get("aliases", [])
+
+
+def stamp_teams(matches: list, idx: dict, spare: set) -> int:
+    """
+    Write `radiant_team_id` / `dire_team_id` onto each match that lacks them.
+
+    WHY HISTORY IS FROZEN AND NOT RECOMPUTED
+    ----------------------------------------
+    Team attribution used to be derived from teams.json every time the site
+    was exported. That is correct only for as long as nobody ever changes
+    team. On 2026-08-08 a fifth team was added and Rogue Agent moved from
+    Team 4 to Team 5 -- which would have turned five already-played Team 4
+    line-ups into "a mix of teams" and quietly dropped five real results
+    from the standings, months after they were played.
+
+    A recorded game's teams are a fact about the night it was played. So
+    they are resolved ONCE, at ingest, against the roster in force then,
+    and stored. The live roster still gates what may ENTER the ledger --
+    a new game must look like a league game today -- but it no longer
+    rewrites what is already in it.
+    """
+    n = 0
+    for m in matches:
+        if m.get("radiant_team_id") and m.get("dire_team_id"):
+            continue
+        rad, _, _ = LR.side_team(m, "radiant", idx, spare)
+        dire, _, _ = LR.side_team(m, "dire", idx, spare)
+        if rad is None or dire is None:
+            print(f"  ! {_p(m['source_ref'])}: sides do not resolve against the "
+                  f"CURRENT roster, so its teams cannot be frozen. Fix the "
+                  f"roster before it is lost.")
+            continue
+        m["radiant_team_id"] = rad
+        m["dire_team_id"] = dire
+        n += 1
+    return n
+
+
+def freeze_teams() -> int:
+    payload = load_ledger()
+    teams = json.loads(TEAMS.read_text(encoding="utf-8"))
+    lobby = json.loads(LOBBY.read_text(encoding="utf-8"))
+    al = payload.get("aliases", []) + lobby.get("aliases", [])
+    idx = LR.team_index(teams, al)
+    spare = LR.stand_ins(teams, al)
+    already = sum(1 for m in payload["matches"] if m.get("radiant_team_id"))
+    n = stamp_teams(payload["matches"], idx, spare)
+    if n:
+        save_ledger(payload)
+    print(f"\n  {already} match(es) already carried their teams, {n} stamped now.")
+    for m in payload["matches"]:
+        print(f"    {_p(m['source_ref']):<36} Team {m.get('radiant_team_id')} vs "
+              f"Team {m.get('dire_team_id')}")
+    return 0
+
+
+# Never patchable. name and side are identity; kills, deaths and assists
+# are what the checksum chain is computed from. A screenshot that shows a
+# different number for one of these is a different reading of the match,
+# and belongs in a re-ingest with a human looking at it -- not in a patch
+# that says it is only filling in blanks.
+FROZEN_PLAYER_FIELDS = ("name", "side", "kills", "deaths", "assists")
+
+
+def apply_patch(target: dict, patch: dict, overwrite: bool) -> tuple:
+    """
+    Merge `patch` into `target`. Returns (changes, errors).
+
+    Built for the common case: a screenshot arrives showing the columns
+    that were cut off the first one, and the null cells need filling. So
+    filling a null is always allowed, and CHANGING a value that is already
+    recorded is refused unless --overwrite is passed. Without that
+    asymmetry an "amend" is indistinguishable from a silent rewrite, which
+    is the one thing this ledger cannot have.
+    """
+    changes, errs = [], []
+    ref = target["source_ref"]
+
+    for k, v in patch.items():
+        if k in ("source_ref", "players"):
+            continue
+        old = target.get(k)
+        if old == v:
+            continue
+        if old is not None and not overwrite:
+            errs.append(f"{ref}: {k} is already {old!r}; refusing to change it "
+                        f"to {v!r} without --overwrite.")
+            continue
+        target[k] = v
+        changes.append(f"{k}: {old!r} -> {v!r}")
+
+    by_name = {p["name"]: p for p in target["players"]}
+    for pp in patch.get("players", []):
+        name = pp.get("name")
+        if name not in by_name:
+            errs.append(f"{ref}: no player called {name!r} in this match.")
+            continue
+        row = by_name[name]
+        filled = []
+        for k, v in pp.items():
+            if k == "name":
+                continue
+            if k in FROZEN_PLAYER_FIELDS:
+                if row.get(k) != v:
+                    errs.append(f"{ref}: {name}: {k} is checksummed or identity "
+                                f"and cannot be amended ({row.get(k)!r} -> {v!r}).")
+                continue
+            old = row.get(k)
+            if old == v:
+                continue
+            if old is not None and not overwrite:
+                errs.append(f"{ref}: {name}: {k} is already {old!r}; refusing to "
+                            f"change it to {v!r} without --overwrite.")
+                continue
+            row[k] = v
+            filled.append(k)
+        if filled:
+            changes.append(f"{name}: filled {', '.join(filled)}")
+    return changes, errs
+
+
 def check(new: list, existing: list) -> list:
     """Every reason this batch must not be written. Empty list == good."""
     errs = []
@@ -182,7 +305,22 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--from", dest="src", help="JSON file; omit to read stdin")
     ap.add_argument("--dry-run", action="store_true", help="validate only")
+    ap.add_argument("--amend", action="store_true",
+                    help="merge the patch in --from into matches that already "
+                         "exist, matched on source_ref. Players are matched by "
+                         "name and only their NULL columns are filled -- the "
+                         "usual case is a second screenshot showing the columns "
+                         "the first one cut off.")
+    ap.add_argument("--overwrite", action="store_true",
+                    help="with --amend, allow a value that is already recorded "
+                         "to be replaced. Off by default: an amend that can "
+                         "silently rewrite a verified number is not an amend.")
     ap.add_argument("--list", action="store_true", help="show the league ledger")
+    ap.add_argument("--freeze-teams", action="store_true",
+                    help="stamp radiant_team_id/dire_team_id onto any match "
+                         "that lacks them, using the roster in force NOW. Run "
+                         "this BEFORE a roster reshuffle: it is what stops a "
+                         "transfer rewriting games already played.")
     ap.add_argument("--alias", metavar="ALIAS=CANONICAL",
                     help="record a rename inside the league, e.g. "
                          "--alias 'Boostmode [Mn5tR]=Beast Mode [Mn5tR]'. Applied "
@@ -192,6 +330,9 @@ def main() -> int:
 
     if args.list:
         return show_list()
+
+    if args.freeze_teams:
+        return freeze_teams()
 
     if args.alias:
         if "=" not in args.alias:
@@ -232,6 +373,42 @@ def main() -> int:
     payload = load_ledger()
     existing = payload["matches"]
 
+    if args.amend:
+        by_ref = {m["source_ref"]: m for m in existing}
+        touched, errs = [], []
+        for patch in new:
+            ref = patch.get("source_ref")
+            if ref not in by_ref:
+                errs.append(f"no match with source_ref {ref!r} in the league ledger.")
+                continue
+            changes, e = apply_patch(by_ref[ref], patch, args.overwrite)
+            errs += e
+            touched.append((ref, changes))
+        # Re-validate every amended match exactly as a new one would be,
+        # against all the others. Same reasoning as ingest.py: a patch can
+        # touch scores and rosters, so a weaker check here would let a match
+        # be edited into a copy of another, or a winner flipped.
+        if not errs:
+            for ref, _ in touched:
+                others = [m for m in existing if m["source_ref"] != ref]
+                errs += check([by_ref[ref]], others)
+        if errs:
+            print("\n  REFUSED — nothing was written:")
+            for e in errs:
+                print(f"    x {_p(e)}")
+            return 1
+        print(f"\n  amending {len(touched)} league match(es)")
+        for ref, changes in touched:
+            print(f"    {_p(ref)}")
+            for c in changes:
+                print(f"      {_p(c)}")
+        if args.dry_run:
+            print("\n  dry run — nothing written.")
+            return 0
+        save_ledger(payload)
+        print(f"\n  wrote {LEAGUE.relative_to(ROOT)}")
+        return 0 if run([sys.executable, "export_web.py"]) else 3
+
     print(f"\n  validating {len(new)} league match(es) against "
           f"{len(existing)} already recorded")
     errs = check(new, existing)
@@ -248,6 +425,12 @@ def main() -> int:
     if args.dry_run:
         print("\n  dry run — nothing written.")
         return 0
+
+    # Freeze each new match's teams at ingest, against the roster in force
+    # today. See stamp_teams for why this is stored and not recomputed.
+    teams_now = json.loads(TEAMS.read_text(encoding="utf-8"))
+    al = payload.get("aliases", []) + lobby_aliases()
+    stamp_teams(new, LR.team_index(teams_now, al), LR.stand_ins(teams_now, al))
 
     payload["matches"] = existing + new
     save_ledger(payload)

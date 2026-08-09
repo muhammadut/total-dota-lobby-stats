@@ -182,10 +182,18 @@ def build_tournament(aliases: list) -> dict | None:
 
     out, unresolved = [], []
     for i, m in enumerate(payload.get("matches", [])):
-        rad, rad_unknown, _ = LR.side_team(m, "radiant", idx, spare)
-        dire, dire_unknown, _ = LR.side_team(m, "dire", idx, spare)
+        # A recorded game carries the teams it was actually played by --
+        # frozen at ingest (league_ingest.stamp_teams). Only fall back to
+        # live resolution for a row written before that existed, because
+        # recomputing means a transfer months later silently rewrites, or
+        # deletes, a result from a night the player was on the other team.
+        rad, dire = m.get("radiant_team_id"), m.get("dire_team_id")
         if rad is None or dire is None:
-            unresolved.append((m["source_ref"], sorted(rad_unknown + dire_unknown)))
+            rad, rad_unknown, _ = LR.side_team(m, "radiant", idx, spare)
+            dire, dire_unknown, _ = LR.side_team(m, "dire", idx, spare)
+            if rad is None or dire is None:
+                unresolved.append((m["source_ref"],
+                                   sorted(rad_unknown + dire_unknown)))
 
         def roster(side, tid):
             rows = []

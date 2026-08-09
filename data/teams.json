@@ -14,43 +14,51 @@
     "             FOR THIS SLOT, or a LIST of them. Slots without `backup`",
     "             can't be filled by anyone -- the primary must play.",
     "",
-    "2026-08-07 roster refresh, from the captains' sheet. Four changes:",
+    "2026-08-08 RESHUFFLE -- the league went from FOUR teams to FIVE.",
+    "From the captains' sheet, whose columns B/C/D are cores and E/F are",
+    "supports. Changes against the previous sheet:",
     "",
-    "  1. UT and samundar khan SWAPPED TEAMS. UT is now Team 2 core;",
-    "     samundar khan ('XXX') is now Team 1 core, backed by TigerX.",
-    "  2. MODE:IG.BASHIRA moved from Team 3 support to Team 4 support.",
-    "     Confirmed independently by the first league screenshot, where he",
-    "     played for Team 4 ('Frantic Fan Boys').",
-    "  3. Beast Mode is now a Team 3 SUPPORT STARTER, not the stand-in.",
-    "     Tiger-Y backs that slot.",
-    "  4. Khuni Billa dropped from Team 4 support to a stand-in backing",
-    "     beetlebum's slot. Asta takes the support seat.",
+    "  1. TEAM 5 IS NEW: Axo, Eros, Rogue Agent (cores), Eldritch, Musa",
+    "     (supports).",
+    "  2. Rogue Agent moved from Team 4 to Team 5. He had already played 5",
+    "     recorded league games FOR TEAM 4, which is exactly why every",
+    "     match in data/league_matches.json now carries a frozen",
+    "     radiant_team_id / dire_team_id (league_ingest.py --freeze-teams).",
+    "     Rosters describe who plays next, never who played last.",
+    "  3. Gillu was a Team 4 stand-in and is now a Team 4 CORE.",
+    "  4. Musa was a Team 4 stand-in and is now a Team 5 SUPPORT.",
+    "  5. Team 1's roles swapped: Obnoxious is now a core and samundar khan",
+    "     ('XXX') a support. The five people are unchanged.",
+    "  6. Team 1's first support slot reads 'Soma / Tiger-Y' on the sheet --",
+    "     one slot, either player. Tiger-Y is Scarface [FUBU], so he is that",
+    "     slot's backup rather than a sixth starter.",
     "",
-    "Two long-unknown players were identified on 2026-08-07 and are now",
-    "canonical Steam names rather than sheet nicknames -- both already had",
-    "a long record in the ledger under those names:",
+    "Teams 2 and 3 are unchanged.",
     "",
-    "  Shami -> 'HypermodeL [M.C]'   (17 games, also called 'sesto')",
-    "  Asta  -> \"I'M Still Noob\"     (20 games)",
+    "TIMEZONES ON THE SHEET (not authoritative -- data/players_tz.json is",
+    "written by !register and is what the site actually uses):",
+    "  Hurr London · Obnoxious Malaysia · Soma Ireland · UT Canada",
+    "  Vanzo & Seeker Saudi · Trollmitsu Sweden · BeastMode & BeetleBum",
+    "  'Eastern' · Axo US · everyone else Pakistan.",
     "",
-    "Without this, both would have kept minting a second identity every",
-    "time they appeared, and neither could ever be attached to a series.",
+    "STILL UNIDENTIFIED -- no Steam name, so a game they play in cannot be",
+    "attached to a series until someone says which name is theirs:",
+    "  Team 2 'Oden jr'  (plays as -Oden, which IS mapped -- see aka)",
+    "  Team 4 'Gillu'    (never appeared on any scoreboard)",
+    "  Team 5 'Eros'     (never appeared on any scoreboard)",
+    "  Team 5 'Eldritch' (never appeared on any scoreboard)",
+    "Axo was found: he is 'axo [EGAN]', 1 game in the lobby ledger.",
     "",
-    "STILL UNIDENTIFIED: Team 2's 'Oden jr' has never appeared on any",
-    "scoreboard, so his Steam name is unknown. A game he plays in cannot",
-    "be attached to a series until someone says which name is his.",
+    "STAND-INS ARE KEPT EVEN WHEN THE SHEET DROPS THEM. Removing one",
+    "breaks league_result.stand_ins, and a side that legitimately fielded",
+    "them becomes 'a player on no roster' -- which would refuse a game",
+    "already recorded. Scarface [FUBU] filled a Team 1 slot on 7 Aug and a",
+    "Team 3 slot on 8 Aug; both are in the ledger.",
     "",
-    "2026-08-08: Scarface [FUBU] is a SHARED stand-in. He filled a Team 1",
-    "slot on 7 Aug and a Team 3 slot on 8 Aug, both real league games. He",
-    "stays on Team 1's roster (a name may map to exactly ONE team, or",
-    "league_result.team_index resolves it two different ways depending on",
-    "iteration order), and Team 3 lists him as a backup for Trollmitsu's",
-    "slot. Attribution is handled in league_result.side_team, which reads",
-    "a side from its STARTERS and lets registered stand-ins fill the rest.",
-    "",
-    "Theekra, Tiger-Y, Gillu and Soooze were on the sheet but in no roster,",
-    "so they could neither register nor be fielded. They are now stand-ins",
-    "on the teams that list them. None has played a recorded game yet.",
+    "A NAME MAY MAP TO EXACTLY ONE TEAM. league_result.team_index is a flat",
+    "dict, so a second entry wins or loses by iteration order. Shared",
+    "stand-ins therefore sit on one roster and appear in other teams'",
+    "`backup` lists, which are display-only.",
     "",
     "open_pool: players who registered via `!register` in Discord but aren't",
     "on any team's fixed roster. Captains can pull from the pool for stand-ins.",
@@ -85,15 +93,12 @@
           ]
         },
         {
-          "name": "samundar khan",
+          "name": "Obno[X]iouS- 不快な [M.C]",
           "role": "core",
           "aka": [
-            "XXX",
-            "xxx",
-            "rtz",
-            "samundar"
-          ],
-          "backup": "TigerX [GB]"
+            "Obnoxious",
+            "Faraz"
+          ]
         },
         {
           "name": "SOMA [L3vi]",
@@ -102,17 +107,20 @@
             "Soma"
           ],
           "backup": [
-            "TigerX [GB]",
-            "Scarface [FUBU]"
+            "Scarface [FUBU]",
+            "TigerX [GB]"
           ]
         },
         {
-          "name": "Obno[X]iouS- 不快な [M.C]",
+          "name": "samundar khan",
           "role": "support",
           "aka": [
-            "Obnoxious",
-            "Faraz"
-          ]
+            "XXX",
+            "xxx",
+            "rtz",
+            "samundar"
+          ],
+          "backup": "TigerX [GB]"
         },
         {
           "name": "TigerX [GB]",
@@ -273,25 +281,20 @@
             "Beetlebum",
             "BeetleBum"
           ],
-          "backup": [
-            "Khuni Billa [UGI|]",
-            "Musa"
-          ]
+          "backup": "Khuni Billa [UGI|]"
         },
         {
           "name": "X MEN Junior :) [Mkrs.]",
           "role": "core",
           "aka": [
             "Xmen"
-          ],
-          "backup": "Gillu"
+          ]
         },
         {
-          "name": "Rogue Agent [|T|z|]",
+          "name": "Gillu",
           "role": "core",
           "aka": [
-            "Rogue Agent",
-            "Rogue"
+            "Gillu"
           ]
         },
         {
@@ -307,7 +310,8 @@
           "role": "support",
           "aka": [
             "Asta"
-          ]
+          ],
+          "backup": "Khuni Billa [UGI|]"
         },
         {
           "name": "Khuni Billa [UGI|]",
@@ -316,22 +320,51 @@
             "Khuni Billa",
             "Khuni"
           ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Team 5",
+      "roster": [
+        {
+          "name": "axo [EGAN]",
+          "role": "core",
+          "aka": [
+            "Axo",
+            "axo"
+          ]
+        },
+        {
+          "name": "Eros",
+          "role": "core",
+          "aka": [
+            "Eros"
+          ]
+        },
+        {
+          "name": "Rogue Agent [|T|z|]",
+          "role": "core",
+          "aka": [
+            "Rogue Agent",
+            "Rogue"
+          ]
+        },
+        {
+          "name": "Eldritch",
+          "role": "support",
+          "aka": [
+            "Eldritch"
+          ]
         },
         {
           "name": "Musa",
-          "role": "stand_in",
+          "role": "support",
           "aka": [
             "Musa",
             "HELL-ANGEL",
             "HELL-ANGEL-",
             "sroshnak01"
-          ]
-        },
-        {
-          "name": "Gillu",
-          "role": "stand_in",
-          "aka": [
-            "Gillu"
           ]
         }
       ]

@@ -29,7 +29,9 @@ python load.py && python export_web.py
 
 python tools/discord_pull.py --source league   # league screenshots -> inbox_league/
 python tools/league_ingest.py --from f.json    # -> data/league_matches.json (NOT the lobby one)
-python tools/league_ingest.py --alias 'NewName=Roster Name'   # a rename inside the league
+python tools/league_ingest.py --alias 'New=Roster Name'   # a rename inside the league
+python tools/league_ingest.py --amend --from fill.json  # fill NULL columns only
+python tools/league_ingest.py --freeze-teams    # BEFORE any roster reshuffle
 python tools/league_result.py --ref REF [--series ID] [--apply]  # attach to a series
 python tools/league_result.py --list           # every recorded series
 python tools/discord_league.py --watch  # league bot, live (see "The league")
@@ -287,16 +289,36 @@ pair has met exactly once.
 
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
-9 nights, Fri + Sat, 7 Aug -> 4 Sep (5 weeks).  NO playoffs, NO final —
-the season runs straight through, per the user's explicit instruction.
-each team: 9 best-of-threes; every pair meets 3x
+FIVE teams from 2026-08-08.  17 nights, Fri + Sat, 7 Aug -> 2 Oct
+(9 weeks): 2 already played by four teams, 15 generated for five.
+NO playoffs, NO final — the season runs straight through.
+each team: 12 new best-of-threes, 3 byes; every pair meets 3x
 ```
 
+**Five teams changes the shape, not just the count.** Two slots a night
+means four teams play and **one has a bye**. A cycle is 5 nights rather
+than 3, so 3 meetings is 15 nights rather than 9. `rounds(n)` is the
+standard circle method with a dummy opponent for odd `n`; the dummy's
+pairing IS the bye. `--teams 4` still produces the old three splits.
+
 **Season length is expressed as `--meetings`, never as a night count.**
-Nights are `3 × meetings` by construction, so a half-finished cycle —
-which would leave some pairs having met once more than others — cannot
-be expressed. `--first` and `--days` set the calendar. Re-running the
-tool with no flags reproduces exactly what is on the site.
+Nights are `meetings × rounds-per-cycle` by construction, so a
+half-finished cycle — which would leave some pairs having met once more
+than others — cannot be expressed. `--first`, `--days` and `--teams` set
+the rest. Re-running the tool with no flags reproduces what is on the site.
+
+**A night with a recorded result is carried forward verbatim, never
+regenerated** (`carried()`, on unless `--no-carry`). Weekend one was
+played by FOUR teams in pairings a five-team round-robin cannot even
+express; regenerating it would have orphaned eleven real games. The
+fairness checks therefore cover the generated part of the season only.
+
+**The 3 AM slot is solved across the whole season at once, not night by
+night.** A greedy pass shipped first and refused to write a five-team
+schedule: it produced 7/7/4/6/6 when **6/6/6/6/6 exists**. `late_plan()`
+searches exhaustively up to `LATE_EXACT_MAX` nights and falls back to
+greedy beyond it. The pairing that balances tonight can strand a team
+three weeks later — that is why the greedy could not see it.
 
 **The schedule was Sat + Sun until 2026-08-08 and it was wrong** — the
 season actually started on Friday 7 Aug, and the first two series were
@@ -452,6 +474,45 @@ seven previously-recorded league games keep the exact same attribution.
 `team_index` is a flat dict, so a second entry silently wins or loses by
 iteration order. Scarface therefore stays on Team 1's roster and Team 3
 merely lists him under `backup`, which is display-only.
+
+### A recorded game's teams are FROZEN (2026-08-08)
+
+Team attribution used to be recomputed from `teams.json` on every export.
+That is correct exactly as long as nobody changes team. The five-team
+reshuffle moved **Rogue Agent from Team 4 to Team 5** — and he had already
+played five recorded games *for Team 4*. Recomputing would have turned
+those line-ups into "a mix of teams" and dropped five real results out of
+the standings, silently, weeks later.
+
+So every row in `data/league_matches.json` now carries
+`radiant_team_id` / `dire_team_id`, resolved **once at ingest** against
+the roster in force that night. `export_web.build_tournament` and
+`league_result.resolve` prefer the stored ids and only fall back to live
+resolution for a row written before this existed.
+
+```bash
+python tools/league_ingest.py --freeze-teams   # BEFORE any reshuffle
+```
+
+**Run that before editing `teams.json`, not after.** It can only stamp
+what still resolves; once the roster has moved, the answer it needed is
+gone. The live roster still gates what may ENTER the ledger — a new game
+must look like a league game *today* — it just no longer rewrites what is
+already in it.
+
+### `league_ingest.py --amend` fills blanks, and only blanks
+
+A 1920-wide capture is cut off after net worth, so LH/DN/GPM/XPM/damage
+land as NULL. When the scrolled-right screenshot arrives later, `--amend`
+merges it in: matches are found by `source_ref`, players by name.
+
+Filling a NULL is always allowed. **Changing a value that is already
+recorded is refused** unless `--overwrite` is passed, and
+`name/side/kills/deaths/assists` can never be amended at all — they are
+identity and the checksum chain. Without that asymmetry an "amend" is
+indistinguishable from a silent rewrite. The amended match is then
+re-validated exactly as a new one, against all the others, so a patch
+cannot edit one match into a copy of another or flip a winner.
 
 **Teams do not always play the slot they were scheduled for.** Team 2 vs
 Team 4 was fixtured into Saturday's 3 AM slot and actually played in the

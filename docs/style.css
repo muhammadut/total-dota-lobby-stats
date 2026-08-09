@@ -743,8 +743,12 @@ td.none{ padding:2.2rem 1rem; }
 .team-chip--2{ background:#8b5e34; }   /* bronze */
 .team-chip--3{ background:#2f6b5b; }   /* muted teal */
 .team-chip--4{ background:#8b3d5c; }   /* muted plum */
+.team-chip--5{ background:#574a7d; }   /* muted violet */
+/* Violet is the one large gap left in the hue circle -- blue 215, bronze
+   30, teal 165, plum 330 -- so Team 5 reads as its own colour rather than
+   as a shade of Team 1. Radiant green and Dire red stay reserved. */
 /* Open pool chip -- deliberately outlined, not filled, so it doesn't read
-   as a fifth team. Same size and weight as the numbered chips. */
+   as another team. Same size and weight as the numbered chips. */
 .team-chip--pool{
   background:transparent; color:var(--ink-3);
   border:1.5px dashed var(--ink-4);
@@ -1414,3 +1418,20 @@ td.none{ padding:2.2rem 1rem; }
 }
 .pts.is-zero{ background:var(--paper-2); color:var(--ink-4); }
 #tourFilters[hidden]{ display:none; }
+
+
+/* Bye row -- five teams, two slots, so somebody sits out every night.
+   Deliberately quieter than a match box: it is context, not a fixture. */
+.tl-bye{
+  display:flex; align-items:center; gap:.45rem;
+  margin-top:.5rem; padding:.35rem .55rem;
+  border-radius:var(--r-sm);
+  background:var(--paper-2);
+  border:1px dashed var(--line-2);
+}
+.tl-bye__lbl{
+  font-size:.68rem; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-3); margin-right:.1rem;
+}
+.tl-bye .team-chip{ width:1.4rem; height:1.4rem; font-size:.72rem; }
+.fx-night__body .tl-bye{ margin-top:.35rem; }

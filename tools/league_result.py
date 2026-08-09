@@ -286,6 +286,13 @@ def resolve(ref: str, explicit_series: str | None):
     spare = stand_ins(teams, all_aliases)
     rad, rad_unknown, rad_names = side_team(match, "radiant", idx, spare)
     dire, dire_unknown, dire_names = side_team(match, "dire", idx, spare)
+    # If the match was frozen at ingest, that is the truth about the night
+    # it was played -- a later transfer must not re-decide it. Live
+    # resolution above still runs so its errors can be reported for a row
+    # that was never frozen.
+    if match.get("radiant_team_id") and match.get("dire_team_id"):
+        rad, dire = match["radiant_team_id"], match["dire_team_id"]
+        rad_unknown = dire_unknown = []
     info.update({"radiant_team": rad, "dire_team": dire,
                  "radiant_names": rad_names, "dire_names": dire_names})
 
