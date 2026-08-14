@@ -781,69 +781,164 @@ td.none{ padding:2.2rem 1rem; }
 .tier--red    .tier-dot{ background:var(--dire); }
 .tier--empty  .tier-dot{ background:var(--ink-4); opacity:.5; }
 
-/* Roster grid — four cards, one per team.
-   Two columns on wide screens, one on narrow. */
+/* ═══════════════════════════════════════════════════════════════════
+   LINEUP CARDS
+   Five cards, five slots each, in the same order every time — so the
+   row of cards reads across as a grid: mid against mid, carry against
+   carry. The position rail is a fixed-width column for exactly that
+   reason; a label per row would break the alignment that makes a
+   lineup legible at a glance.
+
+   An unfilled slot keeps its row. Team 2 has no carry on the sheet,
+   and collapsing that row would let the card read as a complete team.
+   ═══════════════════════════════════════════════════════════════════ */
+
 .teams-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-  gap:1rem;
-  margin:1.6rem 0 .6rem;
+  grid-template-columns:repeat(auto-fit, minmax(268px, 1fr));
+  gap:.9rem;
+  margin:1.6rem 0 2.2rem;
 }
-.team-card{
-  padding:1rem 1.15rem 1.1rem;
-  display:flex; flex-direction:column; gap:.85rem;
+
+.lineup{
+  padding:0; overflow:hidden;
+  display:flex; flex-direction:column;
+  animation:lineup-in .5s cubic-bezier(.16,.84,.44,1) backwards;
+  animation-delay:calc(var(--i, 0) * 55ms);
 }
-.team-card__head{
-  display:flex; align-items:center; gap:.65rem;
-  padding-bottom:.65rem;
-  border-bottom:1px solid var(--line-2);
+@keyframes lineup-in{
+  from{ opacity:0; transform:translateY(9px); }
+  to  { opacity:1; transform:none; }
 }
-.team-card__name{
-  font-weight:700; font-size:1.05rem; color:var(--ink);
-  letter-spacing:-.01em;
+@media (prefers-reduced-motion:reduce){
+  .lineup{ animation:none; }
 }
-.team-card__meta{
+
+.lineup__head{
+  display:flex; align-items:center; gap:.6rem;
+  padding:.85rem 1rem;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, var(--surface), var(--paper-2));
+}
+.lineup__name{
+  font-weight:700; font-size:1rem; letter-spacing:-.012em; color:var(--ink);
+}
+/* Filled-of-five. Reads as a fraction, in the mono face, so a short
+   roster is visible from the header without reading the rows. */
+.lineup__count{
   margin-left:auto;
-  font-size:.75rem; color:var(--ink-3); font-weight:500;
+  font-family:var(--mono); font-size:.82rem; font-weight:500;
+  color:var(--ink-3); font-variant-numeric:tabular-nums;
 }
-.team-card__body{ display:flex; flex-direction:column; gap:.7rem; }
-.team-card__section{ display:flex; flex-direction:column; gap:.28rem; }
-.team-card__role{
-  font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--ink-3); font-weight:600;
+.lineup__of{ color:var(--ink-4); }
+.lineup__count.is-short{ color:var(--dire); }
+
+.lineup__body{ display:flex; flex-direction:column; }
+
+/* min-height, not a fixed height: every filled row is name + one meta
+   line, so they settle to the same size and the five cards line up
+   row-for-row. An empty slot matches by the same measure. */
+.lu{
+  display:grid;
+  grid-template-columns:4.4rem 1fr auto;
+  align-items:center; gap:.6rem;
+  min-height:3.5rem;
+  padding:.5rem 1rem;
+  border-top:1px solid var(--line-2);
 }
-.team-card__players{
-  list-style:none; margin:0; padding:0;
-  display:flex; flex-direction:column; gap:.15rem;
+.lu:first-child{ border-top:0; }
+
+/* The rail. Mono, small, wide-tracked — it is a column header repeated
+   down the card, not a piece of prose. */
+.lu__pos{
+  font-family:var(--mono);
+  font-size:.62rem; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink-4); font-weight:500;
+  padding-top:.12rem;
 }
-.team-card__player{
-  font-size:.9rem; color:var(--ink);
-  padding:.2rem .35rem;
-  border-radius:var(--r-sm);
+.lu__who{ min-width:0; display:flex; flex-direction:column; gap:.08rem; }
+.lu__meta{
+  display:flex; align-items:baseline; gap:.32rem;
+  min-width:0; overflow:hidden; white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.lu__meta > span{ overflow:hidden; text-overflow:ellipsis; }
+.lu__dot{ color:var(--ink-4); }
+.lu__name{
+  font-size:.94rem; font-weight:600; color:var(--ink);
+  letter-spacing:-.005em;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.team-card__player.is-standin{
-  color:var(--ink-2); font-style:italic;
+.lu__canon{
+  font-family:var(--mono); font-size:.68rem; color:var(--ink-4);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+/* The substitute for this slot. Prefixed with a turnstile so it reads as
+   "or", without spending a word on it. */
+.lu__sub{
+  font-size:.72rem; color:var(--ink-3); font-style:italic;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.lu__sub::before{ content:"or "; font-style:normal; color:var(--ink-4); }
+
+/* An empty slot is drawn, not hidden: hatched, quiet, same height. */
+.lu.is-empty{
+  background:repeating-linear-gradient(
+    -45deg, transparent 0 6px, rgba(22,23,26,.028) 6px 12px);
+}
+.lu__open{
+  font-size:.78rem; font-weight:500; color:var(--ink-4);
+  letter-spacing:.02em;
+}
+
+/* Draft tier chip. Tier 1 gets the only tint — the top of the draft is
+   the one thing worth spotting; everything else stays neutral so the
+   card is read for its names. */
+.tier{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:1.25rem; height:1.25rem; padding:0 .3rem;
+  border-radius:6px;
+  font-family:var(--mono); font-size:.68rem; font-weight:600;
+  background:var(--paper-2); color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+.tier--1{ background:#e9e3f4; color:#4c3f70; }
+.tier--legend{ background:var(--ink); color:var(--paper); }
+
+/* ── The draft table ───────────────────────────────────────────── */
+
+.sec-sub{ margin:2.2rem 0 .9rem; }
+.sec-sub h3{
+  font-size:1.05rem; font-weight:700; letter-spacing:-.015em;
+  color:var(--ink); margin:0 0 .25rem;
+}
+.sec-sub p{ font-size:.85rem; color:var(--ink-2); margin:0; max-width:62ch; }
+
+.tt tbody tr.tt-group th{
+  text-align:left;
+  font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
   background:var(--paper-2);
+  padding:.5rem .8rem;
+  border-top:1px solid var(--line);
 }
-/* Canonical name below the friendly nickname when they differ. */
-.team-card__canonical{
-  display:block;
-  font-size:.7rem; color:var(--ink-4); font-weight:400;
-  font-family:var(--mono);
-  margin-top:.05rem;
+.tt-group__n{
+  float:right; font-family:var(--mono); letter-spacing:0;
+  color:var(--ink-4); font-weight:500;
 }
-/* Backup notation for a substitutable slot ("Beetlebum / Musa"). */
-.team-card__backup-sep{ color:var(--ink-4); margin:0 .15rem; }
-.team-card__backup{
-  color:var(--ink-3); font-weight:500;
-  font-style:italic;
+/* This table inherits .grid, whose stat columns are right-aligned. A
+   roster is read left-to-right, so every column here is reset to left. */
+.tt thead th, .tt tbody td{ text-align:left; }
+.tt-player{ font-weight:600; width:34%; }
+.tt-tier{ width:4.5rem; }
+.tt-pos{
+  font-family:var(--mono); font-size:.72rem; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--ink-3);
 }
-/* Open Pool card visually distinct from the four numbered team cards. */
-.team-card--pool{
-  border:1px dashed var(--line);
-  background:linear-gradient(180deg, var(--surface), var(--paper-2) 100%);
-}
+.tt-where .team-chip{ width:1.5rem; height:1.5rem; font-size:.75rem; }
+.tt-none{ color:var(--ink-4); }
+.tt tr.is-bench .tt-player{ font-weight:500; color:var(--ink-2); }
+.tt tr.is-bench em{ font-style:normal; color:var(--ink-4); font-size:.78rem; }
 
 /* ═══════════════════════════════════════════════════════════════════
    COORD VIEW
@@ -1447,23 +1542,3 @@ td.none{ padding:2.2rem 1rem; }
 }
 .fx-tbd{ font-weight:600; color:var(--ink-2); font-style:italic; }
 
-
-/* Roster rows now carry a position and a draft tier. Both are muted --
-   the player's name is what people read; these are reference. */
-.team-card__player{ display:flex; align-items:baseline; gap:.5rem; }
-.team-card__who{ flex:1 1 auto; min-width:0; }
-.badges{ flex:0 0 auto; display:inline-flex; gap:.3rem; align-items:center; }
-.pos{
-  font-size:.62rem; letter-spacing:.06em; text-transform:uppercase;
-  font-weight:700; color:var(--ink-3);
-}
-.tier{
-  display:inline-flex; align-items:center; justify-content:center;
-  min-width:1.15rem; height:1.15rem; padding:0 .25rem;
-  border-radius:5px; font-size:.66rem; font-weight:800;
-  background:var(--paper-2); color:var(--ink-2);
-  font-variant-numeric:tabular-nums;
-}
-.tier--1{ background:#e8e2f2; color:#4b3d6b; }
-.tier--legend{ background:#16171a; color:#f4f4f1; }
-.team-card--tiers .team-card__players{ column-count:1; }

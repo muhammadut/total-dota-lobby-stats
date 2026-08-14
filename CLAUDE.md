@@ -520,7 +520,26 @@ results gone there is nothing to carry, so the whole season is fresh.
 **Rosters carry `position` and `tier` now** (mid/carry/offlane/support,
 and the draft pool 1–4 or `legend`). Both are **display only** — nothing
 resolves identity or team from them, so a wrong one costs a label, not a
-result. `league.tiers` drives the Draft tiers card on the Teams tab.
+result.
+
+**The Teams tab is a LINEUP SHEET, not a list of names.** Every card runs
+the same five slots in the same order behind a fixed-width position rail,
+so the five cards read across as one grid — mid against mid, carry against
+carry. That alignment is the whole design, which is why a filled row is
+always exactly two lines (canonical name and substitute share one) and
+why `.lu` carries a `min-height`.
+
+**An unfilled slot keeps its row**, hatched and labelled *Open*.
+Collapsing it would let Team 2 read as a complete team of four. The
+header shows `4/5` in Dire red for the same reason, and the standings
+row says "4 of 5" rather than a roster size — stand-ins are no longer on
+the cards, so counting them there was two different counts of one team.
+
+**Stand-ins moved to the draft table** (`#tierTable`), which joins
+`league.tiers` to the rosters and answers what the pools alone cannot:
+where each pick ended up. A name in a pool that is on nobody's roster
+reads "—". Note `.slot` was already taken by the Coord view — the lineup
+classes are `.lu*` for that reason.
 
 **Team 2 has FOUR starters.** The captains' sheet leaves its carry cell
 blank, and inventing a fifth name is exactly the failure this project

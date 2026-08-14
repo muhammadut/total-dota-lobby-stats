@@ -1140,7 +1140,11 @@
         '<td class="c-player"><span class="who">' +
           '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
           '<span><span class="who__name">' + esc(t.name) + "</span>" +
-          '<span class="who__hero">' + t.roster.length + " players</span>" +
+          // Starters, not roster size. The lineup card shows five slots and
+          // no longer lists stand-ins, so "7 players" beside a five-slot
+          // card was two different counts of the same team.
+          '<span class="who__hero">' + t.roster.filter(function (r) {
+            return r.role !== "stand_in"; }).length + " of 5</span>" +
           "</span></span></td>" +
         "<td>" + t.games + "</td>" +
         '<td class="w-num">' + t.wins + "</td>" +
@@ -1156,144 +1160,182 @@
     });
   }
 
-  var ROLE_LABEL = { core: "Core", support: "Support", stand_in: "Stand-in" };
+  /* ── Rosters: a LINEUP SHEET, not a list ─────────────────────────
+     Every card runs the same five slots in the same order, so the five
+     cards read across as one grid — mid against mid, carry against carry.
+     That is the whole reason the position rail is a fixed column rather
+     than a label per row: alignment is what makes a lineup legible.
+
+     A slot with nobody in it stays a slot. Team 2 has no carry on the
+     captains' sheet, and collapsing that row would hide a real gap —
+     the card would silently read as a complete team of four. */
+
+  var SLOTS = [
+    { key: "mid",     label: "Mid" },
+    { key: "carry",   label: "Carry" },
+    { key: "offlane", label: "Offlane" },
+    { key: "support", label: "Support" },
+    { key: "support", label: "Support" }
+  ];
+
+  function friendly(name, roster) {
+    var hit = (roster || []).filter(function (x) { return x.name === name; })[0];
+    return (hit && hit.aka && hit.aka.length) ? hit.aka[0] : name;
+  }
+
+  /* Fill the five-slot template from a team's starters. Extra players in a
+     position spill into the next free slot rather than vanishing, and a
+     position nobody plays leaves its slot empty. */
+  function lineup(team) {
+    var pool = team.roster.filter(function (r) { return r.role !== "stand_in"; });
+    var out = SLOTS.map(function (s) { return { slot: s, player: null }; });
+    var taken = [];
+    out.forEach(function (cell) {
+      for (var i = 0; i < pool.length; i++) {
+        if (taken.indexOf(i) >= 0) continue;
+        if (pool[i].position === cell.slot.key) { cell.player = pool[i]; taken.push(i); return; }
+      }
+    });
+    pool.forEach(function (r, i) {            // anyone with an odd position
+      if (taken.indexOf(i) >= 0) return;
+      for (var j = 0; j < out.length; j++) {
+        if (!out[j].player) { out[j].player = r; taken.push(i); return; }
+      }
+    });
+    return out;
+  }
+
+  function tierBadge(tier) {
+    if (tier == null) return "";
+    return '<span class="tier tier--' + esc(tier) + '" title="Draft tier ' +
+      esc(tier) + '">' + (tier === "legend" ? "L" : esc(tier)) + '</span>';
+  }
 
   function drawRosterGrid() {
     var wrap = $("#teamsGrid");
     if (!wrap) return;
     wrap.innerHTML = "";
     if (!LEAGUE) return;
-    LEAGUE.teams.forEach(function (t) {
-      var card = el("div", "team-card card");
-      var byRole = { core: [], support: [], stand_in: [] };
-      t.roster.forEach(function (r) { (byRole[r.role] || byRole.core).push(r); });
-      // Header
-      var head = el("div", "team-card__head");
+
+    LEAGUE.teams.forEach(function (t, ti) {
+      var rows = lineup(t);
+      var filled = rows.filter(function (r) { return r.player; }).length;
+
+      var card = el("div", "lineup card");
+      card.style.setProperty("--i", ti);          // staggers the reveal
+
+      var head = el("div", "lineup__head");
       head.innerHTML =
         '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
-        '<span class="team-card__name">' + esc(t.name) + '</span>' +
-        '<span class="team-card__meta">' + t.roster.length + ' players</span>';
+        '<span class="lineup__name">' + esc(t.name) + '</span>' +
+        '<span class="lineup__count' + (filled < rows.length ? " is-short" : "") +
+          '">' + filled + '<span class="lineup__of">/' + rows.length + '</span></span>';
       card.appendChild(head);
-      // Look up friendly display for any canonical name (e.g. r.backup names
-      // "TigerX [GB]" but the roster shows him elsewhere as "TigerX").
-      function friendlyOf(canonical) {
-        var hit = t.roster.filter(function (x) { return x.name === canonical; })[0];
-        if (hit && hit.aka && hit.aka.length) return hit.aka[0];
-        return canonical;
-      }
 
-      // Roster rows -- show aka when set (friendly nickname), fall back to name.
-      // Slots with a `backup` render as "Primary / Backup" (matches the source
-      // spreadsheet's "Beetlebum/Musa" notation).
-      var body = el("div", "team-card__body");
-      ["core", "support", "stand_in"].forEach(function (role) {
-        var group = byRole[role];
-        if (!group.length) return;
-        var section = el("div", "team-card__section");
-        section.innerHTML = '<div class="team-card__role">' + esc(ROLE_LABEL[role]) + '</div>';
-        var list = el("ul", "team-card__players");
-        group.forEach(function (r) {
-          var li = el("li", "team-card__player" + (role === "stand_in" ? " is-standin" : ""));
-          var display = (r.aka && r.aka.length) ? r.aka[0] : r.name;
-          var mainLine = esc(display);
-          // `backup` is a single canonical name OR a list of them — Team 4's
-          // beetlebum slot can be filled by either Khuni Billa or Musa, and
-          // rendering only the first would hide a legal substitute.
-          var backups = r.backup == null ? []
-                      : (r.backup.push ? r.backup : [r.backup]);
-          backups.forEach(function (bname) {
-            mainLine += ' <span class="team-card__backup-sep">/</span> ' +
-                        '<span class="team-card__backup">' + esc(friendlyOf(bname)) + '</span>';
-          });
-          // Show canonical as subtitle when the display differs from the name.
-          var subtitle = (display !== r.name)
-            ? '<span class="team-card__canonical">' + esc(r.name) + '</span>' : '';
-          // Position and draft tier, from the captains' sheet. Both are
-          // display only -- nothing resolves a player's identity or team
-          // from them, so a wrong one costs a label, not a result.
-          var badge = "";
-          if (r.position) badge += '<span class="pos">' + esc(r.position) + '</span>';
-          if (r.tier != null) badge += '<span class="tier tier--' + esc(r.tier) +
-            '">' + (r.tier === "legend" ? "L" : esc(r.tier)) + '</span>';
-          li.innerHTML = '<span class="team-card__who">' + mainLine + subtitle +
-                         '</span>' + (badge ? '<span class="badges">' +
-                         badge + '</span>' : "");
-          list.appendChild(li);
-        });
-        section.appendChild(list);
-        body.appendChild(section);
+      var body = el("div", "lineup__body");
+      rows.forEach(function (cell) {
+        var li = el("div", "lu" + (cell.player ? "" : " is-empty"));
+        var pos = '<span class="lu__pos">' + esc(cell.slot.label) + '</span>';
+        if (!cell.player) {
+          li.innerHTML = pos + '<span class="lu__open">Open</span>';
+          body.appendChild(li);
+          return;
+        }
+        var r = cell.player;
+        var display = (r.aka && r.aka.length) ? r.aka[0] : r.name;
+        var backs = r.backup == null ? [] : (r.backup.push ? r.backup : [r.backup]);
+        // Canonical name and substitute share ONE line. Every filled row
+        // is then exactly two lines tall, which is what lets the five
+        // cards line up row-for-row -- the reason the rail exists.
+        var meta = [];
+        if (display !== r.name) {
+          meta.push('<span class="lu__canon">' + esc(r.name) + '</span>');
+        }
+        if (backs.length) {
+          meta.push('<span class="lu__sub" title="Can be filled by">' +
+            backs.map(function (b) { return esc(friendly(b, t.roster)); })
+                 .join(", ") + '</span>');
+        }
+        li.innerHTML = pos +
+          '<span class="lu__who">' +
+            '<span class="lu__name">' + esc(display) + '</span>' +
+            (meta.length ? '<span class="lu__meta">' + meta.join(
+               '<span class="lu__dot">·</span>') + '</span>' : "") +
+          '</span>' + tierBadge(r.tier);
+        body.appendChild(li);
       });
       card.appendChild(body);
       wrap.appendChild(card);
     });
-
-    // Draft tiers — the pools the teams were picked from. Rendered from
-    // league.tiers so it cannot drift from the sheet the way a hand-typed
-    // list would; absent tiers simply render nothing.
-    var tiers = LEAGUE.tiers || [];
-    if (tiers.length) {
-      var tcard = el("div", "team-card team-card--tiers card");
-      var thead = el("div", "team-card__head");
-      thead.innerHTML =
-        '<span class="team-chip team-chip--pool" title="Draft tiers">◈</span>' +
-        '<span class="team-card__name">Draft tiers</span>' +
-        '<span class="team-card__meta">' +
-        tiers.reduce(function (n, t) { return n + t.players.length; }, 0) +
-        ' players</span>';
-      tcard.appendChild(thead);
-      var tbody = el("div", "team-card__body");
-      tiers.forEach(function (t) {
-        var sec = el("div", "team-card__section");
-        sec.innerHTML = '<div class="team-card__role">' + esc(t.label) + '</div>';
-        var ul = el("ul", "team-card__players");
-        t.players.forEach(function (n) {
-          var li = el("li", "team-card__player");
-          li.innerHTML = '<span class="team-card__who">' + esc(n) + '</span>' +
-            '<span class="badges"><span class="tier tier--' + esc(t.tier) +
-            '">' + (t.tier === "legend" ? "L" : esc(t.tier)) + '</span></span>';
-          ul.appendChild(li);
-        });
-        sec.appendChild(ul);
-        tbody.appendChild(sec);
-      });
-      tcard.appendChild(tbody);
-      wrap.appendChild(tcard);
-    }
-
-    // Open Pool card — appended AFTER the team cards. Only rendered
-    // when there's at least one player in the pool. Same "team-card" shell
-    // so it visually belongs; distinct chip so it doesn't read as a 5th team.
-    var pool = LEAGUE.open_pool || [];
-    if (pool.length) {
-      var pcard = el("div", "team-card team-card--pool card");
-      var phead = el("div", "team-card__head");
-      phead.innerHTML =
-        '<span class="team-chip team-chip--pool" title="Open Pool">◇</span>' +
-        '<span class="team-card__name">Open Pool</span>' +
-        '<span class="team-card__meta">' + pool.length +
-          (pool.length === 1 ? ' player' : ' players') + '</span>';
-      pcard.appendChild(phead);
-      var pbody = el("div", "team-card__body");
-      var psec = el("div", "team-card__section");
-      psec.innerHTML = '<div class="team-card__role">Available</div>';
-      var plist = el("ul", "team-card__players");
-      pool.forEach(function (p) {
-        var li = el("li", "team-card__player");
-        li.innerHTML = esc(p.name);
-        plist.appendChild(li);
-      });
-      psec.appendChild(plist);
-      pbody.appendChild(psec);
-      pcard.appendChild(pbody);
-      wrap.appendChild(pcard);
-    }
   }
+
+  /* ── The draft, as a table ───────────────────────────────────────
+     Built by joining the tier pools to the rosters, so it answers the
+     question the pools alone cannot: where did each pick end up. A name
+     in a pool that is on nobody's roster reads "—", which is how an
+     undrafted player shows rather than quietly disappearing. */
+
+  function drawTierTable() {
+    var host = $("#tierTable");
+    if (!host) return;
+    var tiers = (LEAGUE && LEAGUE.tiers) || [];
+    if (!tiers.length) { host.innerHTML = ""; return; }
+
+    var where = {};                              // nickname/name -> roster row
+    LEAGUE.teams.forEach(function (t) {
+      t.roster.forEach(function (r) {
+        var keys = [r.name].concat(r.aka || []);
+        keys.forEach(function (k) {
+          if (!where[k.toLowerCase()]) where[k.toLowerCase()] = { team: t, row: r };
+        });
+      });
+    });
+
+    var body = tiers.map(function (tier) {
+      var head = '<tr class="tt-group"><th colspan="4">' + esc(tier.label) +
+        '<span class="tt-group__n">' + tier.players.length + '</span></th></tr>';
+      var rows = tier.players.map(function (nick) {
+        var hit = where[nick.toLowerCase()];
+        var pos = hit && hit.row.position ? hit.row.position : "";
+        var bench = hit && hit.row.role === "stand_in";
+        var team = hit
+          ? '<span class="team-chip team-chip--' + hit.team.id + '">' +
+              hit.team.id + '</span><span class="tt-team">' +
+              esc(hit.team.name) + (bench ? ' <em>stand-in</em>' : "") + '</span>'
+          : '<span class="tt-none">—</span>';
+        return '<tr' + (bench ? ' class="is-bench"' : "") + '>' +
+          '<td class="tt-player">' + esc(nick) + '</td>' +
+          '<td class="tt-tier">' + tierBadge(tier.tier) + '</td>' +
+          '<td class="tt-pos">' + esc(pos) + '</td>' +
+          '<td class="tt-where">' + team + '</td>' +
+        '</tr>';
+      }).join("");
+      return head + rows;
+    }).join("");
+
+    host.innerHTML =
+      '<div class="card table-card">' +
+        '<div class="table-scroll">' +
+          '<table class="grid tt">' +
+            '<thead><tr>' +
+              '<th class="tt-player">Player</th>' +
+              '<th class="tt-tier">Tier</th>' +
+              '<th class="tt-pos">Position</th>' +
+              '<th class="tt-where">Drafted to</th>' +
+            '</tr></thead>' +
+            '<tbody>' + body + '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>';
+  }
+
 
   function drawTeams() {
     teamsLede();
     if (!LEAGUE) {
       drawTeamStandings(null);
       drawRosterGrid();
+      drawTierTable();          // clears itself when there are no tiers
       drawLeagueHud(null);
       return;
     }
@@ -1301,6 +1343,7 @@
     drawLeagueHud(agg);
     drawTeamStandings(agg);
     drawRosterGrid();
+    drawTierTable();
   }
 
   /* ── Coord (scheduling) ─────────────────────────────────────────
