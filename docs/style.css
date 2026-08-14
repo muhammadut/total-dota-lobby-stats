@@ -1435,3 +1435,35 @@ td.none{ padding:2.2rem 1rem; }
 }
 .tl-bye .team-chip{ width:1.4rem; height:1.4rem; font-size:.72rem; }
 .fx-night__body .tl-bye{ margin-top:.35rem; }
+
+
+/* The final -- one series, no teams until the round robin ends. Marked
+   out rather than left looking like a fixture with missing data. */
+.mb.is-final{ border-style:dashed; background:var(--paper-2); }
+.mb-slot--final{ background:var(--ink); color:var(--paper); }
+.mb-tbd{
+  padding:.55rem .6rem; font-size:.82rem; font-weight:600;
+  color:var(--ink-2); text-align:center;
+}
+.fx-tbd{ font-weight:600; color:var(--ink-2); font-style:italic; }
+
+
+/* Roster rows now carry a position and a draft tier. Both are muted --
+   the player's name is what people read; these are reference. */
+.team-card__player{ display:flex; align-items:baseline; gap:.5rem; }
+.team-card__who{ flex:1 1 auto; min-width:0; }
+.badges{ flex:0 0 auto; display:inline-flex; gap:.3rem; align-items:center; }
+.pos{
+  font-size:.62rem; letter-spacing:.06em; text-transform:uppercase;
+  font-weight:700; color:var(--ink-3);
+}
+.tier{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:1.15rem; height:1.15rem; padding:0 .25rem;
+  border-radius:5px; font-size:.66rem; font-weight:800;
+  background:var(--paper-2); color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.tier--1{ background:#e8e2f2; color:#4b3d6b; }
+.tier--legend{ background:#16171a; color:#f4f4f1; }
+.team-card--tiers .team-card__players{ column-count:1; }

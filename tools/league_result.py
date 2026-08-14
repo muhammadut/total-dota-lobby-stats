@@ -326,7 +326,11 @@ def resolve(ref: str, explicit_series: str | None):
         if not hit:
             return info, [f"no series with id {explicit_series!r}."]
         wk, n, s = hit[0]
-        if set(s["teams"]) != {rad, dire}:
+        # The final has no teams until the round robin decides them, so it
+        # accepts whichever two turn up -- and it can ONLY be reached by
+        # --series, because a teamless fixture never matches an inferred
+        # pair. Every other series still has to match exactly.
+        if s.get("teams") and set(s["teams"]) != {rad, dire}:
             return info, [f"series {s['id']} is Team {s['teams'][0]} vs "
                           f"Team {s['teams'][1]}, but this match is Team {rad} vs "
                           f"Team {dire}."]

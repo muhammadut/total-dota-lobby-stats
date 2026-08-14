@@ -366,7 +366,14 @@ def build_fixtures() -> dict | None:
                 games = sorted((results.get(s["id"], {}) or {}).get("games", []),
                                key=lambda g: g.get("game_no", 0))
                 s["games"] = games
-                if games:
+                if games and not s.get("teams"):
+                    # The final's teams are decided by the results, not the
+                    # schedule: whoever actually turned up. Fill them in on
+                    # the way out so the browser can draw the fixture.
+                    s["teams"] = sorted({g["winner"] for g in games} |
+                                        {g.get("loser") for g in games
+                                         if g.get("loser")})
+                if games and s.get("teams") and len(s["teams"]) == 2:
                     played += 1
                     a, b = s["teams"]
                     s["score"] = [sum(1 for g in games if g["winner"] == a),

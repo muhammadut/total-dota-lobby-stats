@@ -216,6 +216,49 @@ def apply_patch(target: dict, patch: dict, overwrite: bool) -> tuple:
     return changes, errs
 
 
+def reset_season(label: str) -> int:
+    """
+    Empty the league ledger and the series results, keeping a copy.
+
+    A season reset throws away every recorded league game -- which is a
+    real thing to want when the teams are rebuilt from scratch, and a
+    catastrophe if it was a misunderstanding. So it ARCHIVES rather than
+    deletes: both files are copied under data/archive/ first, and the
+    paths are printed. Nothing here touches data/matches.json; the lobby
+    ledger is a different system and a league reset must not cost it a
+    single game.
+    """
+    arc = ROOT / "data" / "archive"
+    arc.mkdir(parents=True, exist_ok=True)
+    results = ROOT / "data" / "series_results.json"
+
+    payload = load_ledger()
+    n = len(payload.get("matches", []))
+    lobby_before = len(json.loads(LOBBY.read_text(encoding="utf-8"))["matches"])
+
+    for src in (LEAGUE, results):
+        if src.exists():
+            dst = arc / f"{label}_{src.name}"
+            dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+            print(f"  archived {src.name} -> {dst.relative_to(ROOT)}")
+
+    save_ledger({"_comment": HEADER, "matches": [], "aliases": []})
+    results.write_text(json.dumps(
+        {"_comment": ["League series results -- reset with the season.",
+                      "Written by tools/league_result.py, read by export_web.py."],
+         "results": {}}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    lobby_after = len(json.loads(LOBBY.read_text(encoding="utf-8"))["matches"])
+    print(f"\n  league ledger reset: {n} match(es) -> 0, series results cleared")
+    print(f"  LOBBY ledger untouched: {lobby_before} -> {lobby_after} matches")
+    if lobby_before != lobby_after:
+        print("  ! the lobby ledger CHANGED. That must never happen here.")
+        return 1
+    print("\n  Next: regenerate the schedule with tools/make_fixtures.py, then "
+          "python export_web.py")
+    return 0
+
+
 def check(new: list, existing: list) -> list:
     """Every reason this batch must not be written. Empty list == good."""
     errs = []
@@ -316,6 +359,10 @@ def main() -> int:
                          "to be replaced. Off by default: an amend that can "
                          "silently rewrite a verified number is not an amend.")
     ap.add_argument("--list", action="store_true", help="show the league ledger")
+    ap.add_argument("--reset-season", metavar="LABEL",
+                    help="archive the league ledger and series results under "
+                         "data/archive/LABEL_* and empty them. Starts a season "
+                         "over. Never touches data/matches.json.")
     ap.add_argument("--freeze-teams", action="store_true",
                     help="stamp radiant_team_id/dire_team_id onto any match "
                          "that lacks them, using the roster in force NOW. Run "
@@ -333,6 +380,9 @@ def main() -> int:
 
     if args.freeze_teams:
         return freeze_teams()
+
+    if args.reset_season:
+        return reset_season(args.reset_season)
 
     if args.alias:
         if "=" not in args.alias:

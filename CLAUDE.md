@@ -32,6 +32,7 @@ python tools/league_ingest.py --from f.json    # -> data/league_matches.json (NO
 python tools/league_ingest.py --alias 'New=Roster Name'   # a rename inside the league
 python tools/league_ingest.py --amend --from fill.json  # fill NULL columns only
 python tools/league_ingest.py --freeze-teams    # BEFORE any roster reshuffle
+python tools/league_ingest.py --reset-season LABEL  # archive + start a season over
 python tools/league_result.py --ref REF [--series ID] [--apply]  # attach to a series
 python tools/league_result.py --list           # every recorded series
 python tools/discord_league.py --watch  # league bot, live (see "The league")
@@ -289,17 +290,28 @@ pair has met exactly once.
 
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
-FIVE teams from 2026-08-08.  10 nights, Fri + Sat, 7 Aug -> 5 Sep
-(5 weeks): 2 already played by four teams, 8 generated for five.
-NO playoffs, NO final — the season runs straight through.
-every pair meets 2x; each team: 8 series over the season
+SEASON RESET 2026-08-14 — tier draft, five teams, ledger archived.
+10 round-robin nights, Fri + Sat, 14 Aug -> 12 Sep, then a
+BEST-OF-FIVE FINAL on Fri 18 Sep between the top two.
+every pair meets 2x; each team: 8 series + 2 byes over the season
 ```
 
+**There IS a final now, and it is the one series with no teams.**
+`make_fixtures.py` emits it with `"teams": []` and a `decided_by` note
+(`--no-final` omits it). Every fairness check skips it — a knockout would
+fail "every pair meets N times" by definition. It can only be reached by
+`league_result.py --series FINAL`, because a teamless fixture never
+matches an inferred pair, and `export_web` fills its teams in from the
+recorded results on the way out. In the browser `isTBD()` routes it to a
+placeholder box; note that `s.teams ? …` was WRONG there — an empty array
+is truthy in JS, so the List view rendered `team-pill--undefined`.
+
 **Five teams changes the shape, not just the count.** Two slots a night
-means four play and **one has a bye**. Weekend one has no bye — there
-were only four teams — so Team 5 owes more games than anyone and never
-sits out: **byes are T1–T4 two each, T5 zero**, and every team still ends
-on 8 series. An uneven bye count is the correct answer here, not a bug.
+means four play and **one has a bye**. After the reset every team byes
+twice and plays 8 series, and the 3 AM slot splits 4 each. (Before the
+reset the numbers were lopsided — Team 5 joined after weekend one, so it
+owed more games and could never sit out. An uneven bye count is the
+correct answer when the teams did not all start together.)
 
 **`--meetings` is a SEASON target, not another rotation.** Nights already
 played count towards it, so `--meetings 2` after weekend one leaves four
@@ -489,6 +501,32 @@ seven previously-recorded league games keep the exact same attribution.
 `team_index` is a flat dict, so a second entry silently wins or loses by
 iteration order. Scarface therefore stays on Team 1's roster and Team 3
 merely lists him under `backup`, which is display-only.
+
+### Resetting a season (2026-08-14)
+
+```bash
+python tools/league_ingest.py --reset-season 2026-fall-v1
+```
+
+**It archives, it does not delete.** `data/league_matches.json` and
+`data/series_results.json` are copied to `data/archive/LABEL_*` and then
+emptied; the first attempt's 11 games live there. It prints the lobby
+ledger count before and after and **fails loudly if that number moved** —
+a league reset must cost `data/matches.json` nothing.
+
+Then regenerate: `make_fixtures.py --first <first night>`. With the
+results gone there is nothing to carry, so the whole season is fresh.
+
+**Rosters carry `position` and `tier` now** (mid/carry/offlane/support,
+and the draft pool 1–4 or `legend`). Both are **display only** — nothing
+resolves identity or team from them, so a wrong one costs a label, not a
+result. `league.tiers` drives the Draft tiers card on the Teams tab.
+
+**Team 2 has FOUR starters.** The captains' sheet leaves its carry cell
+blank, and inventing a fifth name is exactly the failure this project
+cannot have. `MIN_STARTERS` is 3, so a Team 2 side of 4 starters plus a
+registered stand-in still resolves. Five people on the sheet still have
+no Steam name: Gillu, Eros, Eldritch (all starters), Theekra and Rebel.
 
 ### A recorded game's teams are FROZEN (2026-08-08)
 

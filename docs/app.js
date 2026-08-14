@@ -1208,7 +1208,16 @@
           // Show canonical as subtitle when the display differs from the name.
           var subtitle = (display !== r.name)
             ? '<span class="team-card__canonical">' + esc(r.name) + '</span>' : '';
-          li.innerHTML = mainLine + subtitle;
+          // Position and draft tier, from the captains' sheet. Both are
+          // display only -- nothing resolves a player's identity or team
+          // from them, so a wrong one costs a label, not a result.
+          var badge = "";
+          if (r.position) badge += '<span class="pos">' + esc(r.position) + '</span>';
+          if (r.tier != null) badge += '<span class="tier tier--' + esc(r.tier) +
+            '">' + (r.tier === "legend" ? "L" : esc(r.tier)) + '</span>';
+          li.innerHTML = '<span class="team-card__who">' + mainLine + subtitle +
+                         '</span>' + (badge ? '<span class="badges">' +
+                         badge + '</span>' : "");
           list.appendChild(li);
         });
         section.appendChild(list);
@@ -1218,7 +1227,40 @@
       wrap.appendChild(card);
     });
 
-    // Open Pool card — appended AFTER the 4 team cards. Only rendered
+    // Draft tiers — the pools the teams were picked from. Rendered from
+    // league.tiers so it cannot drift from the sheet the way a hand-typed
+    // list would; absent tiers simply render nothing.
+    var tiers = LEAGUE.tiers || [];
+    if (tiers.length) {
+      var tcard = el("div", "team-card team-card--tiers card");
+      var thead = el("div", "team-card__head");
+      thead.innerHTML =
+        '<span class="team-chip team-chip--pool" title="Draft tiers">◈</span>' +
+        '<span class="team-card__name">Draft tiers</span>' +
+        '<span class="team-card__meta">' +
+        tiers.reduce(function (n, t) { return n + t.players.length; }, 0) +
+        ' players</span>';
+      tcard.appendChild(thead);
+      var tbody = el("div", "team-card__body");
+      tiers.forEach(function (t) {
+        var sec = el("div", "team-card__section");
+        sec.innerHTML = '<div class="team-card__role">' + esc(t.label) + '</div>';
+        var ul = el("ul", "team-card__players");
+        t.players.forEach(function (n) {
+          var li = el("li", "team-card__player");
+          li.innerHTML = '<span class="team-card__who">' + esc(n) + '</span>' +
+            '<span class="badges"><span class="tier tier--' + esc(t.tier) +
+            '">' + (t.tier === "legend" ? "L" : esc(t.tier)) + '</span></span>';
+          ul.appendChild(li);
+        });
+        sec.appendChild(ul);
+        tbody.appendChild(sec);
+      });
+      tcard.appendChild(tbody);
+      wrap.appendChild(tcard);
+    }
+
+    // Open Pool card — appended AFTER the team cards. Only rendered
     // when there's at least one player in the pool. Same "team-card" shell
     // so it visually belongs; distinct chip so it doesn't read as a 5th team.
     var pool = LEAGUE.open_pool || [];
@@ -1334,7 +1376,11 @@
     var lede = $("#fxLede");
     if (lede && days.length) {
       lede.innerHTML =
-        "The season runs straight through — no playoffs, no final. Two " +
+        (s.final
+          ? "A double round robin, then a <b>best-of-five final</b> between " +
+            "the top two. "
+          : "The season runs straight through — no playoffs, no final. ") +
+        "Two " +
         "<b>best-of-three</b> matches a night, " + listWords(days) + ": one pair " +
         "of teams plays the early slot, the other the late one, so whoever " +
         "isn't playing can watch. <b>" + s.nights + " nights</b> over " +
@@ -1406,13 +1452,16 @@
      next to the same words in plain text, which said everything twice. */
   function renderSeries(s) {
     var slotCls = s.slot === 2 ? " is-late" : "";
-    var who = s.teams
+    // NOT `s.teams ?` -- an empty array is truthy in JS, so the final would
+    // have rendered as "team-pill--undefined vs team-pill--undefined".
+    var who = !isTBD(s)
       ? '<span class="team-pill team-pill--' + s.teams[0] + '">' +
           esc(fxTeam(s.teams[0])) + '</span>' +
         '<span class="fx-vs">vs</span>' +
         '<span class="team-pill team-pill--' + s.teams[1] + '">' +
           esc(fxTeam(s.teams[1])) + '</span>'
-      : '<span class="fx-tbd">' + esc(s.label || "To be decided") + '</span>';
+      : '<span class="fx-tbd">' + esc(s.decided_by || s.label ||
+                                       "To be decided") + '</span>';
     var bo = s.best_of === 5 ? "best of 5" : "best of 3";
     return '<div class="fx-series' + slotCls + '">' +
       '<span class="fx-slot' + slotCls + '">' + (s.slot === 2 ? "Late" : "Early") + '</span>' +
@@ -1447,6 +1496,7 @@
      stacked pair reads as a fixture, and leaves an obvious place for each
      team's series score to land once results are recorded. */
   function renderMatchBox(s) {
+    if (isTBD(s)) return tbdBox(s);
     var late = s.slot === 2;
     var sc = s.score || [0, 0];
     var played = (s.games || []).length > 0;
@@ -1472,6 +1522,21 @@
      new information, not a gap in the data -- so it is drawn, quietly, at
      the foot of the night. A night with nobody off (four teams) renders
      nothing, so the four-team layout is untouched. */
+  /* The final is the one series whose teams are unknown when the schedule
+     is written. It renders as a labelled placeholder rather than two empty
+     rows -- an empty fixture reads as missing data, which it is not. */
+  function isTBD(s) { return !s.teams || !s.teams.length; }
+
+  function tbdBox(s) {
+    return '<div class="mb is-final">' +
+      '<div class="mb-when">' +
+        '<span class="mb-slot mb-slot--final">Final</span>' +
+        'Best of ' + (s.best_of || 5) + ' · ' + esc(fxWindow(s)) +
+      '</div>' +
+      '<div class="mb-tbd">' + esc(s.decided_by || "To be decided") + '</div>' +
+    '</div>';
+  }
+
   function byeLine(n) {
     if (!n.bye || !n.bye.length) return "";
     return '<div class="tl-bye">' +

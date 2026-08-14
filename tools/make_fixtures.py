@@ -272,11 +272,15 @@ def plan_nights(need: Counter, teams: int, byes: Counter, limit: int = 4000):
 
 def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
           teams: int = TEAM_COUNT, meetings: int = MEETINGS,
-          carry: bool = True) -> dict:
+          carry: bool = True, final: bool = True) -> dict:
     results = (json.loads(RESULTS.read_text(encoding="utf-8")).get("results", {})
                if RESULTS.exists() else {})
     weeks, last_played, done, late_seed = (carried(results) if carry
                                            else ([], None, Counter(), Counter()))
+    # Counted here, not as (all nights - generated nights): the final is
+    # neither carried nor part of the round robin, and subtracting made it
+    # report itself as a night already played.
+    carried_count = sum(len(w["nights"]) for w in weeks)
 
     # `--meetings` is a SEASON target, not an instruction to run another
     # rotation. Nights already played count towards it, so what is
@@ -367,6 +371,38 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
             entry["bye"] = sorted(off)
         wk_entry["nights"].append(entry)
 
+    # --- the final ---------------------------------------------------
+    # The only series in the season whose teams are not known when the
+    # schedule is written. It is emitted with `teams: []` and a `decided_by`
+    # note; export and the browser render it as a placeholder, and
+    # league_result accepts any two teams into it once they are known.
+    # Every fairness check below skips it -- a knockout is not part of the
+    # round robin and would fail "every pair meets N times" by definition.
+    if final and nights:
+        fnight = playing_nights(nights[-1] + timedelta(days=1), days, 1)[0]
+        fwk = (fnight - first).days // 7 + 1
+        begin = (datetime.combine(fnight, datetime.min.time(), PKT)
+                 + timedelta(hours=SLOT_START_HOURS[1]))
+        end = begin + timedelta(hours=SLOT_LENGTH_H)
+        fentry = {"week": fwk, "phase": "Final",
+                  "week_of": (first + timedelta(weeks=fwk - 1)).isoformat(),
+                  "nights": [{"date": fnight.isoformat(),
+                              "day": fnight.strftime("%a"),
+                              "series": [{
+                                  "id": "FINAL",
+                                  "slot": 1,
+                                  "teams": [],
+                                  "decided_by": "Top two of the round robin",
+                                  "best_of": 5,
+                                  "start_utc": begin.astimezone(UTC).isoformat(),
+                                  "end_utc": end.astimezone(UTC).isoformat(),
+                                  "pkt_window": f"{ampm(begin)} - {ampm(end)}",
+                                  "status": "scheduled",
+                                  "score": [0, 0],
+                                  "games": [],
+                              }]}]}
+        weeks.append(fentry)
+
     weeks.sort(key=lambda w: w["week"])
     for w in weeks:
         w["nights"].sort(key=lambda n: n["date"])
@@ -425,7 +461,8 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
                    "night_days": list(days),
                    "teams": teams,
                    "meetings_per_pair": meetings,
-                   "carried_nights": len(all_nights) - len(nights),
+                   "carried_nights": carried_count,
+                   "final": bool(final),
                    "reference_zone": "Asia/Karachi"},
         "slots": [
             {"n": 1, "label": "Slot 1", "pkt_window": "11:00 PM - 2:00 AM"},
@@ -458,6 +495,11 @@ def main() -> int:
                     help=f"how many times each pair meets (default {MEETINGS}). "
                          f"Nights = this x rounds per cycle, so a cycle is "
                          f"never left half finished.")
+    ap.add_argument("--no-final", action="store_true",
+                    help="omit the best-of-five final. By default the season "
+                         "ends with one, between the top two of the round "
+                         "robin -- the only series whose teams are unknown "
+                         "when the schedule is written.")
     ap.add_argument("--no-carry", action="store_true",
                     help="regenerate EVERY night, including ones already "
                          "played. Orphans their recorded results -- only ever "
@@ -472,7 +514,8 @@ def main() -> int:
     if args.meetings < 1:
         sys.exit("  --meetings must be at least 1.")
 
-    data = build(first, days, args.teams, args.meetings, not args.no_carry)
+    data = build(first, days, args.teams, args.meetings, not args.no_carry,
+                 not args.no_final)
     t, s_ = data["totals"], data["season"]
     late = t["late_slots_per_team"]
     print(f"  {s_['teams']} teams · {s_['nights']} nights across "
@@ -502,9 +545,11 @@ def main() -> int:
         for night in w["nights"]:
             d = date.fromisoformat(night["date"])
             for s in night["series"]:
+                who = (f"Team {s['teams'][0]} vs Team {s['teams'][1]}"
+                       if s.get("teams") else
+                       f"FINAL (Bo{s['best_of']}) — {s.get('decided_by', 'TBD')}")
                 print(f"    {d:%a %d %b}  slot {s['slot']}  "
-                      f"{s['pkt_window']:<20} "
-                      f"Team {s['teams'][0]} vs Team {s['teams'][1]}")
+                      f"{s['pkt_window']:<20} {who}")
             if night.get("bye"):
                 print(f"    {d:%a %d %b}  bye        "
                       + ", ".join(f"Team {b}" for b in night["bye"]))
