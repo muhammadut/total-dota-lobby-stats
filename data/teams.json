@@ -25,15 +25,21 @@
     "in that archive, not in the ledger. data/matches.json was not touched:",
     "the lobby is a different system and a league reset costs it nothing.",
     "",
-    "!! TEAM 2 HAS NO CARRY. The sheet's carry cell for Team 2 is blank, so",
     "   Team 2 is recorded with FOUR starters. That is deliberate -- naming a",
     "   fifth would be inventing a player. A Team 2 side therefore has to be",
     "   4 starters plus a registered stand-in, which side_team accepts",
     "   (MIN_STARTERS is 3). Fill the cell and add the player here.",
     "",
+    "!! TEAM 2 HAS THREE STARTERS. The sheet's carry cell is blank, and on",
+    "   2026-08-14 Musa was moved to stand_in after playing FOR TEAM 4 -- a",
+    "   starter on the other side makes the lineup a mix, which side_team",
+    "   refuses. Team 2's carry and second support are therefore OPEN.",
+    "   MIN_STARTERS is 3, so a Team 2 side of its three starters plus two",
+    "   registered stand-ins still resolves. Fill the slots and add them here.",
+    "",
     "STILL UNIDENTIFIED -- no Steam name, so a game they play in cannot be",
     "attached to a series until someone says which scoreboard name is theirs:",
-    "  Team 4 'Gillu'    (carry)    Team 5 'Eros' (carry)",
+    "  Team 5 'Eros' (carry)",
     "  Team 5 'Eldritch' (support)  stand-ins 'Theekra' and 'Rebel'",
     "Everyone else on the sheet maps to a name already in the ledgers.",
     "",
@@ -237,7 +243,7 @@
         },
         {
           "name": "Musa",
-          "role": "support",
+          "role": "stand_in",
           "position": "support",
           "tier": 4,
           "aka": [
@@ -245,8 +251,7 @@
             "HELL-ANGEL",
             "HELL-ANGEL-",
             "sroshnak01"
-          ],
-          "backup": "Theekra"
+          ]
         },
         {
           "name": "¤GerM¤ [LIB0G]",
@@ -345,12 +350,14 @@
           ]
         },
         {
-          "name": "Gillu",
+          "name": "Lucky_Gatto [BCRT]",
           "role": "core",
           "position": "carry",
           "tier": 1,
           "aka": [
-            "Gillu"
+            "Gillu",
+            "Lucky_Gatto",
+            "Gatto"
           ]
         },
         {

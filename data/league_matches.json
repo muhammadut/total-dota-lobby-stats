@@ -21,5 +21,92 @@
   ],
 
   "matches": [
+    {
+      "source_ref": "screenshot-42",
+      "dota_match_id": null,
+      "played_on": "2026-08-14",
+      "played_at": "2026-08-14 20:03",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Frantic Fan Boys",
+      "dire_team_name": "LULA KHASO",
+      "radiant_score": 33,
+      "dire_score": 21,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 1 of the Team 4 vs Team 2 best-of-three. Supplied directly by ut70 as Screenshot (42); all three captures were taken in one sitting at 8:03 PM Toronto time, so played_at is the CAPTURE clock, not the end of the match. Dire chain triple-exact: kills 21 = score 21 = radiant deaths 21. Radiant reads 31 kills against a score of 33 and 34 dire deaths -- a left gap of two (tower kills, credited to the team with no player behind them) and a right gap of one (a death to neutrals, Roshan or self). Both radiant kill columns and the score were re-read at zoom before accepting.",
+      "radiant_team_id": 4,
+      "dire_team_id": 2,
+      "players": [
+        {"name": "UT", "side": "radiant", "hero": "Tidehunter", "hero_level": 21, "kills": 4, "deaths": 1, "assists": 17, "net_worth": 17577, "last_hits": 229, "denies": 5, "gpm": 510, "xpm": 704, "hero_damage": 11922, "building_damage": 1960, "healing": 4644},
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Silencer", "hero_level": 16, "kills": 5, "deaths": 8, "assists": 17, "net_worth": 11131, "last_hits": 22, "denies": 2, "gpm": 324, "xpm": 410, "hero_damage": 7578, "building_damage": 11, "healing": 0},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Snapfire", "hero_level": 22, "kills": 2, "deaths": 6, "assists": 16, "net_worth": 9796, "last_hits": 45, "denies": 1, "gpm": 327, "xpm": 510, "hero_damage": 9362, "building_damage": 458, "healing": 0},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "radiant", "hero": "Outworld Destroyer", "hero_level": 19, "kills": 4, "deaths": 4, "assists": 9, "net_worth": 17286, "last_hits": 223, "denies": 10, "gpm": 517, "xpm": 590, "hero_damage": 15801, "building_damage": 2198, "healing": 0},
+        {"name": "Lucky_Gatto [BCRT]", "side": "radiant", "hero": "Drow Ranger", "hero_level": 24, "kills": 16, "deaths": 2, "assists": 11, "net_worth": 26220, "last_hits": 363, "denies": 16, "gpm": 780, "xpm": 962, "hero_damage": 25771, "building_damage": 15647, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Storm Spirit", "hero_level": 21, "kills": 4, "deaths": 3, "assists": 7, "net_worth": 15632, "last_hits": 285, "denies": 10, "gpm": 488, "xpm": 680, "hero_damage": 10079, "building_damage": 410, "healing": 0},
+        {"name": "Scarface [FUBU]", "side": "dire", "hero": "Grimstroke", "hero_level": 15, "kills": 3, "deaths": 5, "assists": 10, "net_worth": 8476, "last_hits": 62, "denies": 6, "gpm": 293, "xpm": 361, "hero_damage": 11630, "building_damage": 117, "healing": 0},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Axe", "hero_level": 15, "kills": 3, "deaths": 11, "assists": 7, "net_worth": 9704, "last_hits": 166, "denies": 10, "gpm": 363, "xpm": 388, "hero_damage": 15624, "building_damage": 170, "healing": 0},
+        {"name": "vAnzO", "side": "dire", "hero": "Mirana", "hero_level": 15, "kills": 6, "deaths": 8, "assists": 6, "net_worth": 8414, "last_hits": 87, "denies": 0, "gpm": 282, "xpm": 366, "hero_damage": 8883, "building_damage": 219, "healing": 480},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Spectre", "hero_level": 21, "kills": 5, "deaths": 7, "assists": 5, "net_worth": 15140, "last_hits": 340, "denies": 7, "gpm": 515, "xpm": 716, "hero_damage": 16517, "building_damage": 0, "healing": 0}
+      ]
+    },
+    {
+      "source_ref": "screenshot-43",
+      "dota_match_id": null,
+      "played_on": "2026-08-14",
+      "played_at": "2026-08-14 20:03",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Kaya He Karna Hai?",
+      "dire_team_name": "-HunTers",
+      "radiant_score": 29,
+      "dire_score": 52,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 2 of the Team 4 vs Team 2 best-of-three. Supplied directly by ut70 as Screenshot (43). Dire chain triple-exact: kills 52 = score 52 = radiant deaths 52. Radiant reads 26 kills against a score of 29 and 29 dire deaths -- a left gap of THREE, all tower kills. Re-read at zoom: the five radiant kill values are 2, 4, 7, 3, 10 and the header reads SCORE: 29. A gap of three is at the top of what this lobby has produced legitimately, which is why it was measured rather than accepted.",
+      "radiant_team_id": 4,
+      "dire_team_id": 2,
+      "players": [
+        {"name": "Beast Mode [Mn5tR]", "side": "radiant", "hero": "Lion", "hero_level": 23, "kills": 2, "deaths": 19, "assists": 13, "net_worth": 12682, "last_hits": 77, "denies": 3, "gpm": 306, "xpm": 473, "hero_damage": 13634, "building_damage": 20, "healing": 900},
+        {"name": "Trollmitsu [<MC>]", "side": "radiant", "hero": "Ringmaster", "hero_level": 24, "kills": 4, "deaths": 11, "assists": 15, "net_worth": 14104, "last_hits": 76, "denies": 2, "gpm": 303, "xpm": 544, "hero_damage": 22963, "building_damage": 213, "healing": 400},
+        {"name": "Lucky_Gatto [BCRT]", "side": "radiant", "hero": "Faceless Void", "hero_level": 29, "kills": 7, "deaths": 7, "assists": 9, "net_worth": 34332, "last_hits": 681, "denies": 12, "gpm": 684, "xpm": 1013, "hero_damage": 32649, "building_damage": 4193, "healing": 0},
+        {"name": "UT", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 28, "kills": 3, "deaths": 7, "assists": 19, "net_worth": 27892, "last_hits": 451, "denies": 7, "gpm": 530, "xpm": 850, "hero_damage": 32187, "building_damage": 1208, "healing": 30},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "radiant", "hero": "Arc Warden", "hero_level": 29, "kills": 10, "deaths": 8, "assists": 12, "net_worth": 43936, "last_hits": 745, "denies": 11, "gpm": 863, "xpm": 951, "hero_damage": 56439, "building_damage": 11347, "healing": 0},
+        {"name": "Scarface [FUBU]", "side": "dire", "hero": "Dark Willow", "hero_level": 26, "kills": 5, "deaths": 7, "assists": 20, "net_worth": 15915, "last_hits": 64, "denies": 3, "gpm": 364, "xpm": 687, "hero_damage": 26555, "building_damage": 316, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "dire", "hero": "Queen of Pain", "hero_level": 30, "kills": 20, "deaths": 5, "assists": 13, "net_worth": 41499, "last_hits": 581, "denies": 7, "gpm": 797, "xpm": 1069, "hero_damage": 72062, "building_damage": 3118, "healing": 0},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "dire", "hero": "Brewmaster", "hero_level": 28, "kills": 6, "deaths": 4, "assists": 31, "net_worth": 26345, "last_hits": 313, "denies": 25, "gpm": 501, "xpm": 835, "hero_damage": 39687, "building_damage": 1706, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "dire", "hero": "Lifestealer", "hero_level": 29, "kills": 16, "deaths": 4, "assists": 17, "net_worth": 42579, "last_hits": 581, "denies": 5, "gpm": 734, "xpm": 968, "hero_damage": 60208, "building_damage": 16988, "healing": 2017},
+        {"name": "vAnzO", "side": "dire", "hero": "Rubick", "hero_level": 26, "kills": 5, "deaths": 9, "assists": 29, "net_worth": 21829, "last_hits": 202, "denies": 2, "gpm": 442, "xpm": 658, "hero_damage": 35687, "building_damage": 2100, "healing": 0}
+      ]
+    },
+    {
+      "source_ref": "screenshot-44",
+      "dota_match_id": null,
+      "played_on": "2026-08-14",
+      "played_at": "2026-08-14 20:03",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "LULA KHASO",
+      "dire_team_name": "Frantic Fan Boys",
+      "radiant_score": 22,
+      "dire_score": 42,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "League 2026-fall, game 3 of the Team 4 vs Team 2 best-of-three, which Team 4 takes 2-1. Supplied directly by ut70 as Screenshot (44). Dire chain triple-exact: kills 42 = score 42 = radiant deaths 42. Radiant reads 20 kills against a score of 22 and 22 dire deaths -- a left gap of two, tower kills. Re-read at zoom. HELL-ANGEL- (Musa) played on the TEAM 4 side here. He was a Team 2 support starter at the time, which made the lineup a mix and refused the game; ut70 confirmed on 2026-08-14 that Musa is a shared stand-in, not a Team 2 starter, and the roster was corrected. Lucky_Gatto [BCRT] is Gillu, Team 4's carry, confirmed in the same exchange.",
+      "radiant_team_id": 2,
+      "dire_team_id": 4,
+      "players": [
+        {"name": "Scarface [FUBU]", "side": "radiant", "hero": "Silencer", "hero_level": 13, "kills": 1, "deaths": 12, "assists": 13, "net_worth": 6170, "last_hits": 10, "denies": 6, "gpm": 223, "xpm": 296, "hero_damage": 8986, "building_damage": 63, "healing": 0},
+        {"name": "Mandark [<MC>]", "side": "radiant", "hero": "Queen of Pain", "hero_level": 19, "kills": 5, "deaths": 4, "assists": 4, "net_worth": 13718, "last_hits": 215, "denies": 1, "gpm": 477, "xpm": 598, "hero_damage": 16698, "building_damage": 610, "healing": 0},
+        {"name": "Obno[X]iouS- 凶悪な [M.C]", "side": "radiant", "hero": "Pudge", "hero_level": 15, "kills": 9, "deaths": 12, "assists": 8, "net_worth": 9404, "last_hits": 119, "denies": 14, "gpm": 388, "xpm": 398, "hero_damage": 17884, "building_damage": 215, "healing": 0},
+        {"name": "vAnzO", "side": "radiant", "hero": "Windranger", "hero_level": 13, "kills": 2, "deaths": 8, "assists": 11, "net_worth": 6616, "last_hits": 40, "denies": 5, "gpm": 273, "xpm": 309, "hero_damage": 8167, "building_damage": 7, "healing": 0},
+        {"name": "Rogue Agent [|T|z|]", "side": "radiant", "hero": "Medusa", "hero_level": 22, "kills": 3, "deaths": 6, "assists": 7, "net_worth": 16413, "last_hits": 378, "denies": 6, "gpm": 596, "xpm": 832, "hero_damage": 9065, "building_damage": 0, "healing": 0},
+        {"name": "UT", "side": "dire", "hero": "Tidehunter", "hero_level": 21, "kills": 10, "deaths": 3, "assists": 23, "net_worth": 16372, "last_hits": 172, "denies": 5, "gpm": 508, "xpm": 724, "hero_damage": 18544, "building_damage": 1093, "healing": 0},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Nyx Assassin", "hero_level": 14, "kills": 3, "deaths": 9, "assists": 19, "net_worth": 7488, "last_hits": 27, "denies": 0, "gpm": 290, "xpm": 360, "hero_damage": 10540, "building_damage": 0, "healing": 0},
+        {"name": "HELL-ANGEL-", "side": "dire", "hero": "Lich", "hero_level": 17, "kills": 2, "deaths": 8, "assists": 19, "net_worth": 8778, "last_hits": 26, "denies": 10, "gpm": 307, "xpm": 491, "hero_damage": 8808, "building_damage": 76, "healing": 0},
+        {"name": "Lucky_Gatto [BCRT]", "side": "dire", "hero": "Lina", "hero_level": 25, "kills": 17, "deaths": 1, "assists": 9, "net_worth": 25219, "last_hits": 336, "denies": 13, "gpm": 790, "xpm": 1098, "hero_damage": 27064, "building_damage": 9886, "healing": 0},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Luna", "hero_level": 26, "kills": 10, "deaths": 1, "assists": 9, "net_worth": 26784, "last_hits": 452, "denies": 6, "gpm": 826, "xpm": 1231, "hero_damage": 24246, "building_damage": 13380, "healing": 0}
+      ]
+    }
   ]
 }

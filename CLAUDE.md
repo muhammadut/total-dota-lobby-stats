@@ -541,11 +541,26 @@ where each pick ended up. A name in a pool that is on nobody's roster
 reads "—". Note `.slot` was already taken by the Coord view — the lineup
 classes are `.lu*` for that reason.
 
-**Team 2 has FOUR starters.** The captains' sheet leaves its carry cell
-blank, and inventing a fifth name is exactly the failure this project
-cannot have. `MIN_STARTERS` is 3, so a Team 2 side of 4 starters plus a
-registered stand-in still resolves. Five people on the sheet still have
-no Steam name: Gillu, Eros, Eldritch (all starters), Theekra and Rebel.
+**Team 2 has THREE starters** — CPX, Obnoxious, Vanzo. The sheet leaves
+its carry blank, and on 2026-08-14 Musa moved to stand-in after playing
+FOR TEAM 4. `MIN_STARTERS` is 3, so its three starters plus two
+registered stand-ins still resolve; the carry and second support render
+as **Open**. Inventing a name to fill them is exactly the failure this
+project cannot have.
+
+**Identity resolved 2026-08-14, both by the user, neither guessable.**
+`Lucky_Gatto [BCRT]` **is Gillu**, Team 4's carry — he filled that slot
+in all three games of the Team 2 series and Gillu had never appeared on
+a scoreboard. And **Musa is a shared stand-in, not a Team 2 starter**: a
+starter of one team on the other team's side makes the lineup a mix,
+which `side_team` refuses, and it refused correctly. Still unidentified:
+Eros and Eldritch (both starters), Theekra and Rebel.
+
+**Teams play fixtures early.** The Team 2 vs Team 4 Bo3 was played on
+14 Aug against a 22 Aug fixture, so the clock check refused it and listed
+both scheduled meetings. `--series W2-SAT-S1` is the answer, exactly as
+for a series finished late — do not widen the window to absorb a whole
+week.
 
 ### A recorded game's teams are FROZEN (2026-08-08)
 

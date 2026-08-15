@@ -1,7 +1,38 @@
 {
   "_comment": [
-    "League series results -- reset with the season.",
-    "Written by tools/league_result.py, read by export_web.py."
+    "League series results: which match belongs to which best-of-three.",
+    "",
+    "Written by tools/league_result.py, read by export_web.py. Kept",
+    "SEPARATE from data/fixtures.json on purpose -- make_fixtures.py",
+    "regenerates that file from scratch and would erase every result.",
+    "",
+    "  results[series_id].games[] -- source_ref, winner (team id), game_no",
+    "",
+    "`winner` is a TEAM ID, not a side. Which side a team drafted on is a",
+    "property of the individual game and lives in matches.json."
   ],
-  "results": {}
+  "results": {
+    "W2-SAT-S1": {
+      "games": [
+        {
+          "source_ref": "screenshot-42",
+          "winner": 4,
+          "game_no": 1,
+          "linked_at": "2026-08-15T01:23:46+00:00"
+        },
+        {
+          "source_ref": "screenshot-43",
+          "winner": 2,
+          "game_no": 2,
+          "linked_at": "2026-08-15T01:23:46+00:00"
+        },
+        {
+          "source_ref": "screenshot-44",
+          "winner": 4,
+          "game_no": 3,
+          "linked_at": "2026-08-15T01:23:46+00:00"
+        }
+      ]
+    }
+  }
 }
