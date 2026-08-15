@@ -1542,3 +1542,63 @@ td.none{ padding:2.2rem 1rem; }
 }
 .fx-tbd{ font-weight:600; color:var(--ink-2); font-style:italic; }
 
+
+/* ── Season progress — who still owes whom ──────────────────────────
+   The pairing grid, not the calendar, is what the league actually runs
+   on: a night three weeks out is a guess, but "Team 2 still owes Team 4
+   one" stays true however the games get played. */
+
+.sp{ margin:0 0 1rem; overflow:hidden; }
+.sp-head{
+  display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+  padding:.85rem 1rem; border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(22,23,26,.025), transparent);
+}
+.sp-title{ font-size:.9rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
+.sp-sub{ font-size:.82rem; color:var(--ink-3); margin-top:.12rem; }
+.sp-sub b{ color:var(--ink); font-weight:700; }
+.sp-meter{
+  margin-left:auto; flex:0 1 12rem; min-width:7rem; height:.42rem;
+  background:rgba(22,23,26,.08); border-radius:99px; overflow:hidden;
+}
+.sp-meter__fill{ height:100%; background:var(--ink); border-radius:99px; }
+
+.sp-scroll{ overflow-x:auto; }
+.sp-grid{ border-collapse:collapse; width:100%; }
+.sp-grid th, .sp-grid td{
+  padding:.42rem .5rem; text-align:center; border-bottom:1px solid var(--line-2);
+  font-variant-numeric:tabular-nums;
+}
+.sp-grid thead th{
+  border-bottom:1px solid var(--line);
+  font-size:.7rem; font-weight:700; color:var(--ink-4);
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.sp-grid tbody tr:last-child th, .sp-grid tbody tr:last-child td{ border-bottom:0; }
+.sp-corner{ text-align:left !important; padding-left:1rem !important; }
+/* NOT display:flex on the <th> itself -- that yanks the cell out of the
+   table layout and the header row stops lining up with its columns.
+   Flex the inner span instead. */
+.sp-team{
+  text-align:left !important; padding-left:1rem !important;
+  white-space:nowrap; font-size:.84rem; font-weight:600; color:var(--ink);
+}
+.sp-team > span.sp-teamwrap{ display:flex; align-items:center; gap:.45rem; }
+.sp-grid .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
+
+.sp-cell{ min-width:3.4rem; }
+.sp-left-n{ font-size:.92rem; font-weight:700; color:var(--ink); display:block; line-height:1.1; }
+.sp-done{ font-size:.62rem; color:var(--ink-4); display:block; }
+/* A finished pairing goes quiet — the eye should land on what is left. */
+.sp-cell.is-done .sp-left-n{ color:var(--radiant); }
+.sp-cell.is-done{ background:var(--radiant-bg); }
+.sp-cell.is-part .sp-left-n{ color:#8a5a10; }
+.sp-self{ color:var(--ink-4); }
+.sp-total{ font-weight:700; color:var(--ink); background:rgba(22,23,26,.028); }
+.sp-grid thead .sp-left{ color:var(--ink-2); }
+
+.sp-foot{
+  padding:.6rem 1rem; border-top:1px solid var(--line-2);
+  font-size:.76rem; color:var(--ink-3);
+}
+.sp-foot b{ color:var(--ink-2); font-weight:650; }

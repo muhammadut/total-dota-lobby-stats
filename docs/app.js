@@ -1643,7 +1643,69 @@
     }).join("");
   }
 
+  /* Who still owes whom a series.
+     This is the part of the schedule that survives contact with the
+     league. Which night a pair plays on has been wrong every way it can
+     be — played a week early, wrong slot, decider finished days later.
+     What does not drift is the debt: every pair owes N, each one played
+     knocks one off, and the season ends when the board is empty. */
+  function drawProgress() {
+    var host = $("#seasonProgress");
+    if (!host) return;
+    var pr = FX && FX.progress;
+    if (!pr) { host.innerHTML = ""; return; }
+
+    var ids = pr.teams.map(function (t) { return t.id; });
+    var head = '<th class="sp-corner"><span>plays</span></th>' +
+      ids.map(function (i) {
+        return '<th><span class="team-chip team-chip--' + i + '">' + i + '</span></th>';
+      }).join("") + '<th class="sp-left">Left</th>';
+
+    var body = pr.teams.map(function (t) {
+      var cells = ids.map(function (o) {
+        if (o === t.id) return '<td class="sp-self">—</td>';
+        var v = t.vs.filter(function (x) { return x.id === o; })[0] || {};
+        var left = v.remaining || 0, done = v.played || 0;
+        var cls = left === 0 ? " is-done" : (done ? " is-part" : "");
+        return '<td class="sp-cell' + cls + '">' +
+          '<span class="sp-left-n">' + left + '</span>' +
+          (done ? '<span class="sp-done">' + done + ' played</span>' : '') +
+        '</td>';
+      }).join("");
+      return '<tr>' +
+        '<th class="sp-team"><span class="sp-teamwrap">' +
+          '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
+          '<span>' + esc(t.name) + '</span></span></th>' +
+        cells +
+        '<td class="sp-total">' + t.remaining + '</td>' +
+      '</tr>';
+    }).join("");
+
+    var pct = pr.total ? Math.round((pr.played / pr.total) * 100) : 0;
+    host.innerHTML =
+      '<div class="sp card">' +
+        '<div class="sp-head">' +
+          '<div>' +
+            '<div class="sp-title">Season progress</div>' +
+            '<div class="sp-sub"><b>' + pr.played + '</b> of ' + pr.total +
+              ' series played · <b>' + pr.remaining + '</b> still to play' +
+              (pr.playing ? ' · ' + pr.playing + ' in progress' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="sp-meter" role="img" aria-label="' + pct + '% of the season played">' +
+            '<div class="sp-meter__fill" style="width:' + pct + '%"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="sp-scroll"><table class="sp-grid">' +
+          '<thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody>' +
+        '</table></div>' +
+        '<div class="sp-foot">Each number is how many <b>best-of-three</b> series that pair ' +
+          'still owes. Every pair plays <b>' + pr.target + '</b> over the season.</div>' +
+      '</div>';
+  }
+
   function drawSchedule() {
+    drawProgress();
     var host = $("#scheduleBody");
     if (!host) return;
     fxCopy();

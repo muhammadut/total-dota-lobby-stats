@@ -15,6 +15,7 @@ file:// as well as GitHub Pages — no fetch, no CORS, no local server.
 import json
 import sqlite3
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -106,7 +107,7 @@ def main() -> int:
     # than in the browser because zoneinfo does DST math correctly and the
     # browser would need heavy tzdata polyfills otherwise.
     coord = build_coord(league)
-    fixtures = build_fixtures()
+    fixtures = build_fixtures(league)
     tournament = build_tournament(aliases)
 
     payload = {
@@ -315,7 +316,7 @@ LEAGUE_ZONES = [
 ]
 
 
-def build_fixtures() -> dict | None:
+def build_fixtures(league: dict | None = None) -> dict | None:
     """
     Emit LOBBY.fixtures: the season schedule with each series pre-rendered
     into every league timezone.
@@ -396,7 +397,79 @@ def build_fixtures() -> dict | None:
               "or tools/league_result.py --list")
     if played:
         print(f"  fixtures: {played} series with results merged")
+
+    data["progress"] = season_progress(data, league)
     return {k: v for k, v in data.items() if not k.startswith("_")}
+
+
+def season_progress(data: dict, league: dict | None) -> dict | None:
+    """
+    Who still owes whom a series.
+
+    This is the schedule that actually survives contact with the league.
+    A pre-assigned "Team 1 v Team 2, Saturday, late slot" is a guess about
+    a night three weeks away, and it has been wrong every way it can be --
+    teams played a week early, swapped slots, finished a best-of-three on
+    a different night than it started. What never changes is the debt:
+    every pair owes N meetings, and each one played knocks one off. The
+    season is over when every counter reaches zero, whenever those games
+    actually happened.
+
+    The final is excluded on purpose. It has no pair to owe -- its two
+    teams are whoever tops the round robin.
+    """
+    if not league:
+        return None
+    target = (data.get("season") or {}).get("meetings_per_pair")
+    if not target:
+        return None
+
+    names = {t["id"]: t["name"] for t in league.get("teams", [])}
+    ids = sorted(names)
+
+    done = Counter()      # frozenset({a, b}) -> completed series
+    live = Counter()      # started but not decided
+    for wk in data.get("weeks", []):
+        for night in wk.get("nights", []):
+            for s in night.get("series", []):
+                if s.get("decided_by") or s["id"] == "FINAL":
+                    continue
+                pair = s.get("teams") or []
+                if len(pair) != 2:
+                    continue
+                key = frozenset(pair)
+                if s.get("status") == "final":
+                    done[key] += 1
+                elif s.get("status") == "playing":
+                    live[key] += 1
+
+    pairs = []
+    for i, a in enumerate(ids):
+        for b in ids[i + 1:]:
+            key = frozenset((a, b))
+            pairs.append({"a": a, "b": b, "played": done[key],
+                          "playing": live[key],
+                          "remaining": max(0, target - done[key])})
+
+    teams = []
+    for a in ids:
+        vs = [{"id": p["b"] if p["a"] == a else p["a"],
+               "played": p["played"], "remaining": p["remaining"]}
+              for p in pairs if a in (p["a"], p["b"])]
+        teams.append({"id": a, "name": names[a],
+                      "played": sum(v["played"] for v in vs),
+                      "remaining": sum(v["remaining"] for v in vs),
+                      "vs": sorted(vs, key=lambda v: v["id"])})
+
+    return {
+        "target": target,
+        "total": len(pairs) * target,
+        "played": sum(p["played"] for p in pairs),
+        "playing": sum(p["playing"] for p in pairs),
+        "remaining": sum(p["remaining"] for p in pairs),
+        "pairs": pairs,
+        "teams": teams,
+    }
 
 
 def sync_hero_slugs(cur) -> None:
