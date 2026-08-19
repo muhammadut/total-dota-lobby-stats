@@ -1602,3 +1602,17 @@ td.none{ padding:2.2rem 1rem; }
   font-size:.76rem; color:var(--ink-3);
 }
 .sp-foot b{ color:var(--ink-2); font-weight:650; }
+
+/* ── Tournament standings: what is still owed ──────────────────────── */
+.tt-left{
+  font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;
+}
+.tt-left.is-done{ color:var(--radiant); }
+.tt-left-list{ display:inline-flex; align-items:center; gap:.28rem; flex-wrap:nowrap; }
+.tt-opp{ display:inline-flex; align-items:center; gap:.1rem; }
+.tt-opp .team-chip{ width:1.4rem; height:1.4rem; font-size:.72rem; }
+.tt-opp__n{ font-size:.66rem; font-weight:700; color:var(--ink-3); }
+.tt-none{ font-size:.78rem; color:var(--ink-4); font-style:italic; }
+/* A series already under way, as opposed to one not yet arranged. */
+.tt-opp.is-live{ position:relative; }
+.tt-opp.is-live .team-chip{ box-shadow:0 0 0 2px var(--paper), 0 0 0 3.5px #c08a2e; }

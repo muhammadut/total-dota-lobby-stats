@@ -454,7 +454,8 @@ def season_progress(data: dict, league: dict | None) -> dict | None:
     teams = []
     for a in ids:
         vs = [{"id": p["b"] if p["a"] == a else p["a"],
-               "played": p["played"], "remaining": p["remaining"]}
+               "played": p["played"], "playing": p["playing"],
+               "remaining": p["remaining"]}
               for p in pairs if a in (p["a"], p["b"])]
         teams.append({"id": a, "name": names[a],
                       "played": sum(v["played"] for v in vs),

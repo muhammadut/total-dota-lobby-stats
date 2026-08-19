@@ -1952,6 +1952,26 @@
     }).join("") + '</tr>';
   }
 
+  /* Which opponents a team still owes a series to. Chips rather than
+     text: at five teams the names would wrap and the column is scanned,
+     not read. A count above 1 is stacked on the chip. */
+  function leftCell(t) {
+    if (!t.vsLeft || !t.vsLeft.length) {
+      return '<span class="tt-none">' +
+        (t.remaining === 0 ? "season complete" : "—") + '</span>';
+    }
+    return '<span class="tt-left-list">' + t.vsLeft.map(function (v) {
+      // A series already under way is not the same as one not started —
+      // it is the difference between "finish this" and "arrange that".
+      var live = v.playing > 0;
+      return '<span class="tt-opp' + (live ? " is-live" : "") + '"' +
+             (live ? ' title="series in progress"' : '') + '>' +
+        '<span class="team-chip team-chip--' + v.id + '">' + v.id + '</span>' +
+        (v.remaining > 1 ? '<span class="tt-opp__n">×' + v.remaining + '</span>' : '') +
+      '</span>';
+    }).join("") + '</span>';
+  }
+
   /* ── Tournament: team standings, ranked by POINTS ── */
   var TEAM_COLS = [
     { t: "#", cls: "c-rank" },
@@ -1959,6 +1979,9 @@
     { t: "Pts", cls: "c-num c-rating", k: "points",
       title: "3 for winning a best-of-three, 1 for every game won" },
     { t: "Series", cls: "c-num", k: "seriesPlayed" },
+    { t: "Left", cls: "c-num", k: "remaining",
+      title: "Best-of-threes this team still has to play" },
+    { t: "Still to play", cls: "c-player" },
     { t: "SW", cls: "c-num", k: "seriesWins", title: "Best-of-threes won" },
     { t: "SL", cls: "c-num", k: "seriesLosses", title: "Best-of-threes lost" },
     { t: "GP", cls: "c-num", k: "games", title: "Individual games played" },
@@ -1974,6 +1997,15 @@
     var agg = aggregateTeams();
     if (!agg) return "";
     var any = agg.teams.some(function (t) { return t.games > 0; });
+    // The schedule knows what is still owed; the ledger knows what has been
+    // won. They are separate files on purpose, and this is the one place
+    // the two are put side by side.
+    var prog = (FX && FX.progress) ? FX.progress.teams : null;
+    agg.teams.forEach(function (t) {
+      var pt = prog && prog.filter(function (x) { return x.id === t.id; })[0];
+      t.remaining = pt ? pt.remaining : null;
+      t.vsLeft = pt ? pt.vs.filter(function (v) { return v.remaining > 0; }) : [];
+    });
     var teams = teamSort(agg.teams, state.trSort, state.trDir);
     var rows = teams.map(function (t, i) {
       var lead = i === 0 && t.games && state.trSort === "points";
@@ -1985,6 +2017,9 @@
         '<td class="c-rating"><span class="pts' + (t.points ? "" : " is-zero") + '">' +
           t.points + '</span></td>' +
         '<td class="dim">' + (t.seriesPlayed || "—") + '</td>' +
+        '<td class="c-num"><span class="tt-left' + (t.remaining ? "" : " is-done") + '">' +
+          (t.remaining === null ? "—" : t.remaining) + '</span></td>' +
+        '<td class="c-player">' + leftCell(t) + '</td>' +
         '<td class="w-num">' + t.seriesWins + '</td>' +
         '<td class="l-num">' + t.seriesLosses + '</td>' +
         '<td>' + t.games + '</td>' +
@@ -2000,7 +2035,9 @@
       '<div class="tt-block__head">Team standings' +
         '<span class="tt-block__sub">' + (any
           ? '<b>3 points</b> for taking a best-of-three, <b>1 point</b> for every ' +
-            'game won. League ledger only — inhouse games are not counted.'
+            'game won. <b>Left</b> is how many best-of-threes that team still owes, ' +
+            'and <b>Still to play</b> names them — a ringed badge is a series already ' +
+            'under way. League ledger only — inhouse games are not counted.'
           : 'No league games recorded yet.') + '</span></div>' +
       '<div class="table-scroll"><table class="grid" id="ttTeams">' +
         '<thead>' + sortHead(TEAM_COLS, state.trSort, state.trDir, "data-tsort") +
