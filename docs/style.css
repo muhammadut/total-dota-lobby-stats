@@ -1119,28 +1119,11 @@ td.none{ padding:2.2rem 1rem; }
    colours and the only new accent is the "late slot" marker, because
    3 AM is the one thing on this tab a player must not misread. */
 
-.fx-week{ margin:0 0 .85rem; overflow:hidden; }
-.fx-week.is-current{ border-color:var(--ink-4); box-shadow:var(--sh-2), 0 0 0 2px rgba(22,23,26,.05); }
-
-.fx-week__head{
-  display:flex; align-items:center; gap:.6rem;
-  padding:.7rem 1rem; border-bottom:1px solid var(--line-2);
-  background:linear-gradient(180deg, rgba(22,23,26,.016), transparent);
-}
-.fx-week__n{ font-weight:650; font-size:.9rem; color:var(--ink); letter-spacing:-.01em; }
-.fx-week__phase{
-  font-size:.72rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
-  color:var(--ink-3);
-}
-.fx-week__now{
-  margin-left:auto; font-size:.7rem; font-weight:700; letter-spacing:.04em;
-  text-transform:uppercase; color:#fff; background:var(--ink);
-  padding:.2rem .5rem; border-radius:var(--r-pill);
-}
-
-/* Nights are separate blocks with air between them. A tint alone was far
-   too weak -- Saturday and Sunday still read as one run of four rows. */
-.fx-week__body{ padding:.6rem; display:flex; flex-direction:column; gap:.6rem; }
+/* Nights are separate blocks with air between them, in one flat run --
+   there is no week card any more. Week numbering implied both of a
+   week's nights get played together, which is exactly what does not
+   happen; the date is the only part of a fixture that has held up. */
+.fx-list{ display:flex; flex-direction:column; gap:.6rem; }
 
 /* A night is a block, not another row. It used to carry the same hairline
    as the series inside it, so Saturday and Sunday ran together visually
@@ -1152,6 +1135,15 @@ td.none{ padding:2.2rem 1rem; }
   overflow:hidden; background:var(--surface);
 }
 .fx-night.is-alt{ background:rgba(22,23,26,.022); }
+.fx-night.is-done{ opacity:.55; }
+.fx-night.is-current{
+  border-color:var(--ink); box-shadow:var(--sh-2), 0 0 0 2px rgba(22,23,26,.06);
+}
+.fx-night__now{
+  align-self:flex-start; margin-top:.3rem;
+  font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; background:var(--ink); padding:.15rem .45rem; border-radius:var(--r-pill);
+}
 .fx-night__day{
   flex:0 0 7.6rem; padding:.85rem 1rem;
   border-right:1px solid var(--line);
@@ -1209,6 +1201,7 @@ td.none{ padding:2.2rem 1rem; }
 .team-pill--2{ background:#8b5e34; }
 .team-pill--3{ background:#2f6b5b; }
 .team-pill--4{ background:#8b3d5c; }
+.team-pill--5{ background:#574a7d; }
 
 @media (max-width:760px){
   .fx-night{ display:block; }
@@ -1264,6 +1257,10 @@ td.none{ padding:2.2rem 1rem; }
   padding:.62rem .85rem; border-bottom:1px solid var(--line);
   background:linear-gradient(180deg, rgba(22,23,26,.025), transparent);
 }
+.tl-col__dow{
+  font-size:.66rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-4);
+}
 .tl-col__n{ font-size:.84rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
 .tl-col__now{
   margin-left:auto; font-size:.62rem; font-weight:700; letter-spacing:.06em;
@@ -1272,11 +1269,6 @@ td.none{ padding:2.2rem 1rem; }
 }
 
 .tl-col__body{ padding:.7rem .7rem .8rem; display:flex; flex-direction:column; gap:.75rem; }
-.tl-night{ display:flex; flex-direction:column; gap:.45rem; }
-.tl-night__day{
-  font-size:.66rem; font-weight:700; letter-spacing:.07em;
-  text-transform:uppercase; color:var(--ink-4);
-}
 
 /* The match box */
 .mb{
@@ -1355,7 +1347,6 @@ td.none{ padding:2.2rem 1rem; }
 .sr__head:hover{ background:var(--paper); }
 
 .sr__when{ display:flex; flex-direction:column; gap:.1rem; }
-.sr__wk{ font-family:var(--mono); font-size:.68rem; color:var(--ink-4); font-weight:500; }
 .sr__date{ font-size:.8rem; color:var(--ink-2); font-weight:600; }
 
 .sr__slot{
@@ -1564,38 +1555,69 @@ td.none{ padding:2.2rem 1rem; }
 .sp-meter__fill{ height:100%; background:var(--ink); border-radius:99px; }
 
 .sp-scroll{ overflow-x:auto; }
-.sp-grid{ border-collapse:collapse; width:100%; }
-.sp-grid th, .sp-grid td{
-  padding:.42rem .5rem; text-align:center; border-bottom:1px solid var(--line-2);
-  font-variant-numeric:tabular-nums;
+.sp-tbl{ border-collapse:collapse; width:100%; }
+.sp-tbl th, .sp-tbl td{
+  padding:.5rem .75rem; text-align:left; border-bottom:1px solid var(--line-2);
+  vertical-align:middle;
 }
-.sp-grid thead th{
+.sp-tbl th:first-child, .sp-tbl td:first-child{ padding-left:1rem; }
+.sp-tbl th:last-child, .sp-tbl td:last-child{ padding-right:1rem; }
+.sp-tbl thead th{
   border-bottom:1px solid var(--line);
   font-size:.7rem; font-weight:700; color:var(--ink-4);
   text-transform:uppercase; letter-spacing:.05em;
 }
-.sp-grid tbody tr:last-child th, .sp-grid tbody tr:last-child td{ border-bottom:0; }
-.sp-corner{ text-align:left !important; padding-left:1rem !important; }
-/* NOT display:flex on the <th> itself -- that yanks the cell out of the
-   table layout and the header row stops lining up with its columns.
-   Flex the inner span instead. */
-.sp-team{
-  text-align:left !important; padding-left:1rem !important;
-  white-space:nowrap; font-size:.84rem; font-weight:600; color:var(--ink);
+.sp-tbl tbody tr:last-child td{ border-bottom:0; }
+.sp-m{ display:flex; align-items:center; gap:.5rem; white-space:nowrap; }
+.sp-vs{ font-size:.72rem; font-weight:600; color:var(--ink-4); }
+.sp-when{
+  font-size:.82rem; color:var(--ink-3); white-space:nowrap;
+  font-variant-numeric:tabular-nums;
 }
-.sp-team > span.sp-teamwrap{ display:flex; align-items:center; gap:.45rem; }
-.sp-grid .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
+.sp-slot{
+  display:inline-block; margin-left:.45rem;
+  font-size:.6rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; background:#4a5464; border-radius:var(--r-pill); padding:.1rem .4rem;
+  vertical-align:.06rem;
+}
+.sp-slot.is-late{ background:#b6791b; }
+.sp-res{ display:flex; align-items:center; gap:.55rem; white-space:nowrap; }
+.sp-won{
+  display:flex; align-items:center; gap:.4rem;
+  font-size:.84rem; font-weight:700; color:var(--ink);
+}
+.sp-sc{ font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink-2); font-size:.84rem; }
+/* A finished match reads green; one still owed stays quiet, so the eye
+   lands on what is left to play. */
+.sp-tbl tr.is-done{ background:var(--radiant-bg); }
+.sp-tbl tr.is-done .sp-sc{ color:var(--radiant); }
+.sp-badge{
+  font-size:.68rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--ink-3); background:rgba(22,23,26,.055);
+  border-radius:var(--r-pill); padding:.18rem .5rem;
+}
+.sp-badge.is-live{ color:#8a5a10; background:rgba(182,121,27,.15); }
+.sp-tbl .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
+.sp-tbd{ font-style:italic; font-weight:600; color:var(--ink-2); }
 
-.sp-cell{ min-width:3.4rem; }
-.sp-left-n{ font-size:.92rem; font-weight:700; color:var(--ink); display:block; line-height:1.1; }
-.sp-done{ font-size:.62rem; color:var(--ink-4); display:block; }
-/* A finished pairing goes quiet — the eye should land on what is left. */
-.sp-cell.is-done .sp-left-n{ color:var(--radiant); }
-.sp-cell.is-done{ background:var(--radiant-bg); }
-.sp-cell.is-part .sp-left-n{ color:#8a5a10; }
-.sp-self{ color:var(--ink-4); }
-.sp-total{ font-weight:700; color:var(--ink); background:rgba(22,23,26,.028); }
-.sp-grid thead .sp-left{ color:var(--ink-2); }
+/* On a phone three columns do not fit, and a sideways-scrolling table
+   hides the Result column -- which is the whole reason this table
+   exists. Each row becomes a small block instead: the fixture on top,
+   when and result beneath it. */
+@media (max-width:620px){
+  .sp-scroll{ overflow-x:visible; }
+  .sp-tbl thead{ display:none; }
+  .sp-tbl, .sp-tbl tbody{ display:block; }
+  .sp-tbl tr{
+    display:grid; grid-template-columns:1fr auto; gap:.3rem .6rem;
+    align-items:center; padding:.6rem 1rem; border-bottom:1px solid var(--line-2);
+  }
+  .sp-tbl tr:last-child{ border-bottom:0; }
+  .sp-tbl td{ display:block; border:0; padding:0 !important; }
+  .sp-td-m{ grid-column:1 / -1; }
+  .sp-tbl .team-pill{ min-width:5.4rem; font-size:.78rem; padding:.28rem .55rem; }
+  .sp-td-r{ justify-self:end; }
+}
 
 .sp-foot{
   padding:.6rem 1rem; border-top:1px solid var(--line-2);

@@ -639,8 +639,19 @@ swap on the right night, and the roster check is what actually identifies
 the fixture. Do not narrow that window to "fix" a mis-slotted game.
 
 The Schedule tab has two layouts, **Timeline** (default, one column per
-week scrolling sideways, current week scrolled into view) and **List**.
-Both were asked for; keep both.
+NIGHT scrolling sideways, the next night scrolled into view) and
+**List**. Both were asked for; keep both.
+
+**Week numbering is gone from the whole site (2026-08-19), on the user's
+instruction** — "remove the Week 2 ... coz we dont know which teams show
+up etc." A week header groups two nights into one unit and implies they
+get played together, which is precisely what does not happen: teams play
+a fixture early, finish a decider days later, swap slots. The date is the
+only part of a fixture that has ever held up. So a Timeline column is one
+night, the List is a flat run of nights, and a series card carries its
+date alone. `currentWeek()` became `currentNight()`; `allNights()`
+flattens the payload, which still arrives grouped in `FX.weeks` — the
+generator is unchanged, only the display.
 
 Timeline draws each match as a **box with the two teams stacked**, after
 the TI bracket overview — a flat `A vs B` line reads as prose, a stacked
@@ -654,6 +665,21 @@ the same hairline between nights as between the matches inside them, so
 Saturday and Sunday ran together as four identical lines. The seam
 between nights is now a full rule, alternate nights are tinted, and the
 date is stacked under the weekday.
+
+**Above both layouts sits one table: which matches are won, and which
+are left** (`app.js::drawProgress`). It replaced a five-by-five
+"who-owes-whom" grid, which answered a question nobody asks — how many
+series does this *pair* still owe — and made finding a single result a
+matrix-reading exercise. One row per match in playing order answers both
+halves at once. It is built by walking the schedule itself, not from
+`FX.progress`, so the header counts can never disagree with the rows
+beneath them; the final is a row too, so 11 rows means "of 11". Below
+620px the three columns become a two-line block per row — a
+sideways-scrolling table hid the Result column, which is the entire
+point of the table.
+
+`team-pill--5` did not exist until this was built: Team 5 rendered as
+white text on a transparent pill everywhere the List view drew a pill.
 
 ### Team records come from fixtures, never from inference (2026-08-03)
 

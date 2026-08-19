@@ -1406,10 +1406,22 @@
       " teams");
   }
 
-  function anyBye() {
-    return FX.weeks.some(function (w) {
-      return w.nights.some(function (n) { return n.bye && n.bye.length; });
+  /* The season is a list of NIGHTS, not a list of weeks. Week numbering
+     was removed on purpose: nobody in the league thinks in "week 3", and
+     a week header implies both its nights get played together, which is
+     exactly what does not happen -- teams turn up when they turn up. The
+     date is the only part of a fixture that has ever been useful. */
+  function allNights() {
+    var out = [];
+    if (!FX || !FX.weeks) return out;
+    FX.weeks.forEach(function (w) {
+      w.nights.forEach(function (n) { out.push(n); });
     });
+    return out;
+  }
+
+  function anyBye() {
+    return allNights().some(function (n) { return n.bye && n.bye.length; });
   }
 
   function fxCopy() {
@@ -1426,10 +1438,10 @@
         "Two " +
         "<b>best-of-three</b> matches a night, " + listWords(days) + ": one pair " +
         "of teams plays the early slot, the other the late one, so whoever " +
-        "isn't playing can watch. <b>" + s.nights + " nights</b> over " +
-        FX.weeks.length + " weeks — every team plays <b>" +
+        "isn't playing can watch. <b>" + s.nights + " nights</b> — every team plays <b>" +
         (t.series_per_team || 0) + " best-of-threes</b> and meets every other " +
-        "team <b>" + (t.meetings_per_pair || 0) + " times</b>. " +
+        "team " + ((t.meetings_per_pair || 0) === 1
+          ? "<b>once</b>" : "<b>" + t.meetings_per_pair + " times</b>") + ". " +
         (anyBye() ? "With <b>" + (s.teams || 5) + " teams</b> and two slots one " +
                     "team is off each night — the <b>bye</b>. " : "") +
         "Pick your country to see every time in your own clock.";
@@ -1519,14 +1531,12 @@
     return Number(d[2]) + " " + MON[Number(d[1]) - 1];
   }
 
-  // The week in progress: the first whose last night has not yet passed.
-  // Everything before it is done, so both layouts can mark and scroll to it.
-  function currentWeek() {
+  // The next night: the first that has not yet passed. Everything before
+  // it is done, so both layouts can mark it and scroll to it.
+  function currentNight() {
     var today = new Date().toISOString().slice(0, 10);
-    var hit = FX.weeks.filter(function (w) {
-      return w.nights[w.nights.length - 1].date >= today;
-    })[0];
-    return hit ? hit.week : null;
+    var hit = allNights().filter(function (n) { return n.date >= today; })[0];
+    return hit ? hit.date : null;
   }
 
   /* Timeline: one column per week, scrolling sideways, the way a
@@ -1591,116 +1601,145 @@
 
   function drawTimeline(host, cur) {
     host.innerHTML = '<div class="tl-rail" id="tlRail">' +
-      FX.weeks.map(function (w) {
-        var nights = w.nights.map(function (n) {
-          return '<div class="tl-night">' +
-            '<div class="tl-night__day">' + esc(n.day) + " " +
-              esc(dayLabel(n.date)) + '</div>' +
-            n.series.map(renderMatchBox).join("") + byeLine(n) +
-          '</div>';
-        }).join("");
-        var isCur = w.week === cur;
-        var done = cur !== null && w.week < cur;
+      allNights().map(function (n) {
+        var isCur = n.date === cur;
+        var done = cur !== null && n.date < cur;
         return '<div class="tl-col' + (isCur ? " is-current" : "") +
                  (done ? " is-done" : "") + '"' +
                  (isCur ? ' id="tlNow"' : "") + '>' +
           '<div class="tl-col__head">' +
-            '<span class="tl-col__n">Week ' + w.week + '</span>' +
-            (isCur ? '<span class="tl-col__now">Now</span>' : '') +
+            '<span class="tl-col__dow">' + esc(n.day) + '</span>' +
+            '<span class="tl-col__n">' + esc(dayLabel(n.date)) + '</span>' +
+            (isCur ? '<span class="tl-col__now">Next</span>' : '') +
           '</div>' +
-          '<div class="tl-col__body">' + nights + '</div>' +
+          '<div class="tl-col__body">' +
+            n.series.map(renderMatchBox).join("") + byeLine(n) +
+          '</div>' +
         '</div>';
       }).join("") +
     '</div>';
 
-    // Bring the live week into view without yanking the whole page.
+    // Bring the next night into view without yanking the whole page.
     var rail = $("#tlRail"), now = $("#tlNow");
     if (rail && now) rail.scrollLeft = Math.max(0, now.offsetLeft - rail.offsetLeft - 16);
   }
 
   function drawList(host, cur) {
-    host.innerHTML = FX.weeks.map(function (w) {
-      var nights = w.nights.map(function (n, i) {
-        return '<div class="fx-night' + (i % 2 ? " is-alt" : "") + '">' +
+    host.innerHTML = '<div class="fx-list">' +
+      allNights().map(function (n, i) {
+        var isCur = n.date === cur;
+        var done = cur !== null && n.date < cur;
+        return '<div class="fx-night' + (i % 2 ? " is-alt" : "") +
+                 (isCur ? " is-current" : "") + (done ? " is-done" : "") + '">' +
           '<div class="fx-night__day">' +
             '<span class="fx-night__dow">' + esc(n.day) + '</span>' +
             '<span class="fx-night__date">' + esc(dayLabel(n.date)) + '</span>' +
+            (isCur ? '<span class="fx-night__now">Next</span>' : '') +
           '</div>' +
           '<div class="fx-night__body">' +
             n.series.map(renderSeries).join("") + byeLine(n) +
           '</div>' +
         '</div>';
-      }).join("");
-      var isCur = w.week === cur;
-      return '<div class="fx-week card' + (isCur ? " is-current" : "") + '">' +
-        '<div class="fx-week__head">' +
-          '<span class="fx-week__n">Week ' + w.week + '</span>' +
-          '<span class="fx-week__phase">' + esc(w.week_of ? dayLabel(w.week_of) : "") + '</span>' +
-          (isCur ? '<span class="fx-week__now">This week</span>' : '') +
-        '</div>' +
-        '<div class="fx-week__body">' + nights + '</div>' +
-      '</div>';
-    }).join("");
+      }).join("") +
+    '</div>';
   }
 
-  /* Who still owes whom a series.
-     This is the part of the schedule that survives contact with the
-     league. Which night a pair plays on has been wrong every way it can
-     be — played a week early, wrong slot, decider finished days later.
-     What does not drift is the debt: every pair owes N, each one played
-     knocks one off, and the season ends when the board is empty. */
+  /* Which matches are won, and which are left.
+     This replaced a five-by-five "who owes whom" grid. The grid answered
+     a question nobody asks -- how many series does this PAIR still owe --
+     and finding one result in it meant reading a matrix. A row per match
+     in the order they are played answers both halves of the real
+     question at a glance: what happened, and what is left.
+
+     It is built from the schedule itself, not from the progress payload,
+     so the counts in the header can never disagree with the rows under
+     them. */
+  function spMatch(s) {
+    if (isTBD(s)) {
+      return '<span class="sp-tbd">' + esc(s.decided_by || s.label || "The top two") + '</span>';
+    }
+    return '<span class="team-pill team-pill--' + s.teams[0] + '">' +
+             esc(fxTeam(s.teams[0])) + '</span>' +
+           '<span class="sp-vs">vs</span>' +
+           '<span class="team-pill team-pill--' + s.teams[1] + '">' +
+             esc(fxTeam(s.teams[1])) + '</span>';
+  }
+
+  function spResult(s) {
+    var games = s.games || [];
+    if (!games.length || !s.teams || s.teams.length !== 2) {
+      return { cls: "is-open",
+               html: '<span class="sp-badge">Still to play</span>' };
+    }
+    var sc = s.score || [0, 0];
+    var lead = sc[0] >= sc[1] ? 0 : 1;
+    var tid = s.teams[lead];
+    var line = Math.max(sc[0], sc[1]) + '–' + Math.min(sc[0], sc[1]);
+    if (s.status === "final") {
+      return { cls: "is-done", html:
+        '<span class="sp-won">' +
+          '<span class="team-chip team-chip--' + tid + '">' + tid + '</span>' +
+          esc(fxTeam(tid)) + ' won</span>' +
+        '<span class="sp-sc">' + line + '</span>' };
+    }
+    return { cls: "is-live", html:
+      '<span class="sp-badge is-live">In progress</span>' +
+      '<span class="sp-sc">' + (sc[0] === sc[1]
+        ? line
+        : esc(fxTeam(tid)) + ' leads ' + line) + '</span>' };
+  }
+
   function drawProgress() {
     var host = $("#seasonProgress");
     if (!host) return;
-    var pr = FX && FX.progress;
-    if (!pr) { host.innerHTML = ""; return; }
+    if (!FX || !FX.weeks || !FX.weeks.length) { host.innerHTML = ""; return; }
 
-    var ids = pr.teams.map(function (t) { return t.id; });
-    var head = '<th class="sp-corner"><span>plays</span></th>' +
-      ids.map(function (i) {
-        return '<th><span class="team-chip team-chip--' + i + '">' + i + '</span></th>';
-      }).join("") + '<th class="sp-left">Left</th>';
-
-    var body = pr.teams.map(function (t) {
-      var cells = ids.map(function (o) {
-        if (o === t.id) return '<td class="sp-self">—</td>';
-        var v = t.vs.filter(function (x) { return x.id === o; })[0] || {};
-        var left = v.remaining || 0, done = v.played || 0;
-        var cls = left === 0 ? " is-done" : (done ? " is-part" : "");
-        return '<td class="sp-cell' + cls + '">' +
-          '<span class="sp-left-n">' + left + '</span>' +
-          (done ? '<span class="sp-done">' + done + ' played</span>' : '') +
-        '</td>';
-      }).join("");
-      return '<tr>' +
-        '<th class="sp-team"><span class="sp-teamwrap">' +
-          '<span class="team-chip team-chip--' + t.id + '">' + t.id + '</span>' +
-          '<span>' + esc(t.name) + '</span></span></th>' +
-        cells +
-        '<td class="sp-total">' + t.remaining + '</td>' +
+    var all = allSeries();
+    var done = 0, live = 0;
+    var body = all.map(function (e) {
+      var r = spResult(e.s);
+      if (r.cls === "is-done") done++;
+      else if (r.cls === "is-live") live++;
+      return '<tr class="' + r.cls + '">' +
+        '<td class="sp-td-m"><span class="sp-m">' + spMatch(e.s) + '</span></td>' +
+        '<td class="sp-when">' + esc(e.n.day) + ' ' + esc(dayLabel(e.n.date)) +
+          '<span class="sp-slot' + (e.s.slot === 2 ? " is-late" : "") + '">' +
+            (e.s.slot === 2 ? "Late" : "Early") + '</span></td>' +
+        '<td class="sp-td-r"><span class="sp-res">' + r.html + '</span></td>' +
       '</tr>';
     }).join("");
 
-    var pct = pr.total ? Math.round((pr.played / pr.total) * 100) : 0;
+    var total = all.length;
+    var left = total - done - live;
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    var pr = FX.progress;
+    var foot = pr && pr.target
+      ? 'Every pair of teams plays <b>' + pr.target + '</b> best-of-three' +
+        (pr.target === 1 ? '' : 's') + ' over the season.'
+      : '';
+    if (FX.season && FX.season.final) {
+      foot += ' The top two then meet in the <b>final</b>.';
+    }
+
     host.innerHTML =
       '<div class="sp card">' +
         '<div class="sp-head">' +
           '<div>' +
-            '<div class="sp-title">Season progress</div>' +
-            '<div class="sp-sub"><b>' + pr.played + '</b> of ' + pr.total +
-              ' series played · <b>' + pr.remaining + '</b> still to play' +
-              (pr.playing ? ' · ' + pr.playing + ' in progress' : '') +
+            '<div class="sp-title">Matches won and left</div>' +
+            '<div class="sp-sub"><b>' + done + '</b> of ' + total +
+              ' played &middot; <b>' + left + '</b> still to play' +
+              (live ? ' &middot; ' + live + ' in progress' : '') +
             '</div>' +
           '</div>' +
           '<div class="sp-meter" role="img" aria-label="' + pct + '% of the season played">' +
             '<div class="sp-meter__fill" style="width:' + pct + '%"></div>' +
           '</div>' +
         '</div>' +
-        '<div class="sp-scroll"><table class="sp-grid">' +
-          '<thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody>' +
+        '<div class="sp-scroll"><table class="sp-tbl">' +
+          '<thead><tr><th>Match</th><th>When</th><th>Result</th></tr></thead>' +
+          '<tbody>' + body + '</tbody>' +
         '</table></div>' +
-        '<div class="sp-foot">Each number is how many <b>best-of-three</b> series that pair ' +
-          'still owes. Every pair plays <b>' + pr.target + '</b> over the season.</div>' +
+        (foot ? '<div class="sp-foot">' + foot + '</div>' : '') +
       '</div>';
   }
 
@@ -1714,7 +1753,7 @@
         'No schedule has been generated yet.</div>';
       return;
     }
-    var cur = currentWeek();
+    var cur = currentNight();
     if (state.fxView === "list") drawList(host, cur);
     else drawTimeline(host, cur);
   }
@@ -1863,7 +1902,6 @@
     return '<div class="sr' + (open ? " is-open" : "") + '" data-sid="' + esc(s.id) + '">' +
       '<button class="sr__head" aria-expanded="' + (open ? "true" : "false") + '">' +
         '<span class="sr__when">' +
-          '<span class="sr__wk">Week ' + e.w.week + '</span>' +
           '<span class="sr__date">' + esc(e.n.day) + " " + esc(dayLabel(e.n.date)) + '</span>' +
         '</span>' +
         '<span class="sr__slot' + (s.slot === 2 ? " is-late" : "") + '">' +
