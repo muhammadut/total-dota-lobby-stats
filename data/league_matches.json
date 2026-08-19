@@ -169,6 +169,64 @@
         {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Death Prophet", "hero_level": 21, "kills": 5, "deaths": 5, "assists": 6, "net_worth": 16322, "last_hits": 270, "denies": 14, "gpm": 460},
         {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Juggernaut", "hero_level": 25, "kills": 10, "deaths": 5, "assists": 7, "net_worth": 23888, "last_hits": 430, "denies": 18, "gpm": 665}
       ]
+    },
+    {
+      "source_ref": "discord-1538995536063893685",
+      "dota_match_id": null,
+      "played_on": "2026-08-17",
+      "played_at": "2026-08-17 15:37",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Rubix",
+      "dire_team_name": "House 99",
+      "radiant_score": 42,
+      "dire_score": 20,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "Posted by stoicheart in #dota-league-2026. Game 3 of the same best-of-three, but the Dire five is NOT identical to games 1 and 2 - Trollmitsu [<MC>] plays instead of tr!pL3.X. Radiant chain triple-exact: 42 = 42 = 42. Dire kills 20 = score 20, radiant deaths 21 - one death to neutrals/Roshan/self.",
+      "radiant_team_id": 1,
+      "dire_team_id": 3,
+      "players": [
+        {"name": "Stoic (swap cmds)", "side": "radiant", "hero": "Puck", "hero_level": 25, "kills": 21, "deaths": 1, "assists": 10, "net_worth": 25458, "last_hits": 385, "denies": 7, "gpm": 802},
+        {"name": "Soooze [<MC>]", "side": "radiant", "hero": "Spectre", "hero_level": 22, "kills": 7, "deaths": 2, "assists": 20, "net_worth": 19459, "last_hits": 305, "denies": 10, "gpm": 578},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Jakiro", "hero_level": 15, "kills": 2, "deaths": 9, "assists": 27, "net_worth": 8290, "last_hits": 21, "denies": 1, "gpm": 289},
+        {"name": "I'M Still Noob", "side": "radiant", "hero": "Bane", "hero_level": 17, "kills": 2, "deaths": 5, "assists": 22, "net_worth": 8885, "last_hits": 23, "denies": 4, "gpm": 294},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Axe", "hero_level": 21, "kills": 10, "deaths": 4, "assists": 16, "net_worth": 16862, "last_hits": 215, "denies": 10, "gpm": 522},
+        {"name": "Trollmitsu [<MC>]", "side": "dire", "hero": "Hoodwink", "hero_level": 13, "kills": 2, "deaths": 10, "assists": 13, "net_worth": 5866, "last_hits": 40, "denies": 2, "gpm": 222},
+        {"name": "MODE:IG.BASHIRA™", "side": "dire", "hero": "Grimstroke", "hero_level": 13, "kills": 2, "deaths": 10, "assists": 10, "net_worth": 5623, "last_hits": 18, "denies": 0, "gpm": 223},
+        {"name": "SpArtAAAAAAAA [WEPAK]", "side": "dire", "hero": "Viper", "hero_level": 18, "kills": 8, "deaths": 8, "assists": 4, "net_worth": 14230, "last_hits": 223, "denies": 22, "gpm": 443},
+        {"name": "Seeker(swap commends) [<MC>]", "side": "dire", "hero": "Void Spirit", "hero_level": 17, "kills": 4, "deaths": 9, "assists": 3, "net_worth": 11861, "last_hits": 186, "denies": 5, "gpm": 375},
+        {"name": "HypermodeL [M.C]", "side": "dire", "hero": "Medusa", "hero_level": 20, "kills": 4, "deaths": 5, "assists": 3, "net_worth": 18203, "last_hits": 349, "denies": 5, "gpm": 565}
+      ]
+    },
+    {
+      "source_ref": "discord-1538995870874210314",
+      "dota_match_id": null,
+      "played_on": "2026-08-17",
+      "played_at": "2026-08-17 15:39",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Pyaray Pairo Wali Bachiya",
+      "dire_team_name": null,
+      "radiant_score": 47,
+      "dire_score": 29,
+      "winning_side": "radiant",
+      "result_confidence": "confirmed",
+      "notes": "Posted by stoicheart in #dota-league-2026, capture clock 2026.08.18-00.39. A DIFFERENT pairing from the other three - the first game of another series. Radiant kills 45 vs score 47 is a left gap of two, re-read at 6x and confirmed at 13/10/7/14/1; dire deaths 47 exact. Dire kills 28 vs score 29, one tower kill.",
+      "radiant_team_id": 1,
+      "dire_team_id": 5,
+      "players": [
+        {"name": "Stoic (swap cmds)", "side": "radiant", "hero": "Puck", "hero_level": 26, "kills": 13, "deaths": 5, "assists": 25, "net_worth": 26333, "last_hits": 381, "denies": 2, "gpm": 730},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Pudge", "hero_level": 24, "kills": 10, "deaths": 3, "assists": 26, "net_worth": 22444, "last_hits": 236, "denies": 13, "gpm": 563},
+        {"name": "vAnzO", "side": "radiant", "hero": "Phoenix", "hero_level": 23, "kills": 7, "deaths": 9, "assists": 33, "net_worth": 16926, "last_hits": 78, "denies": 0, "gpm": 441},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Lifestealer", "hero_level": 25, "kills": 14, "deaths": 2, "assists": 21, "net_worth": 28429, "last_hits": 314, "denies": 17, "gpm": 687},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Dark Willow", "hero_level": 19, "kills": 1, "deaths": 10, "assists": 34, "net_worth": 11979, "last_hits": 18, "denies": 0, "gpm": 337},
+        {"name": "axo [EGAN]", "side": "dire", "hero": "Axe", "hero_level": 23, "kills": 11, "deaths": 13, "assists": 5, "net_worth": 18826, "last_hits": 253, "denies": 12, "gpm": 490},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 18, "kills": 4, "deaths": 6, "assists": 19, "net_worth": 9284, "last_hits": 26, "denies": 0, "gpm": 257},
+        {"name": "-Oden", "side": "dire", "hero": "Night Stalker", "hero_level": 18, "kills": 5, "deaths": 10, "assists": 13, "net_worth": 15025, "last_hits": 185, "denies": 9, "gpm": 363},
+        {"name": "Eldritch [Горил]", "side": "dire", "hero": "Zeus", "hero_level": 19, "kills": 1, "deaths": 10, "assists": 15, "net_worth": 10240, "last_hits": 142, "denies": 1, "gpm": 343},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Luna", "hero_level": 25, "kills": 7, "deaths": 8, "assists": 7, "net_worth": 26921, "last_hits": 597, "denies": 5, "gpm": 724}
+      ]
     }
   ]
 }

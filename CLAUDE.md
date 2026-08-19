@@ -508,6 +508,25 @@ teams. Old rule 0, new rule **0** — the anti-pub guard is untouched,
 because a casual mix is a mix of *starters*, which still refuses. All
 seven previously-recorded league games keep the exact same attribution.
 
+**Stand-ins are LOOSE — whoever is free that night (2026-08-19).** The
+rule was "every starter on a side is on one team, and the rest are
+*registered* stand-ins", and it refused three real results in one evening.
+CPX's slot was covered by Stoic one game and HURR the next; neither is a
+registered stand-in and both start elsewhere. `side_team` now resolves a
+side on a **plurality with a margin of two**: the leading roster needs
+`MIN_STARTERS` present and at least two more than any other single team.
+So 4-1 is a team with a sub, 3-1-1 is a team with two subs, and 3-2 still
+refuses — half a side borrowed from one place reads either way.
+
+**That relaxation was measured, and it does cost something.** Run every
+recorded inhouse game through both rules: the strict one resolved 0 to
+two league teams, the plurality one resolves **1** (`discord-1533296439172792350`,
+3-1 and 4-1). The roster check alone can no longer tell that pub game from
+a league game. What still stops it is the OTHER gate — a match already in
+`data/matches.json` is refused — plus the fact that a human chooses which
+screenshots go through `league_ingest.py` at all. If those two ever stop
+being true, this rule is not enough on its own.
+
 **A player name may map to exactly ONE team in `teams.json`.**
 `team_index` is a flat dict, so a second entry silently wins or loses by
 iteration order. Scarface therefore stays on Team 1's roster and Team 3

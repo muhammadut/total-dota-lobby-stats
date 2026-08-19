@@ -45,6 +45,7 @@ answer, not an error to work around.
 
 import argparse
 import json
+from collections import Counter
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -176,35 +177,51 @@ def side_team(match: dict, side: str, idx: dict, floaters=frozenset()):
 
     A side resolves to team T when:
 
-      * every player maps to some roster (a stranger refuses the match),
-      * the STARTERS present all belong to T -- a starter from a second
-        team is a mixed side and refuses,
-      * at least MIN_STARTERS of them are there,
-      * and anyone else on the side is a registered stand-in, whichever
-        team's sheet they sit on.
+      * every player maps to some roster -- a stranger still refuses the
+        whole match, which is what keeps a pub game out,
+      * T has at least MIN_STARTERS of its own starters on that side,
+      * and no other team has as many. A clear plurality, not unanimity.
 
-    The last clause is the whole reason this is not a one-line `len(set)`
-    check. Stand-ins are shared in practice: the same person filled in for
-    Team 1 one night and Team 3 the next, and a strict all-five rule
-    called the second game "a mix of teams" and refused a real result.
+    IT USED TO DEMAND UNANIMITY -- every starter present on one team, with
+    the remaining slots filled only by *registered* stand-ins. That is not
+    how this league substitutes. Stand-ins are whoever is free on the
+    night: CPX's slot was covered by Stoic one game and HURR the next,
+    neither of them a registered stand-in and both starters elsewhere. The
+    strict rule read those sides as "a mix of teams" and refused three
+    real results in one evening, every one of them four-of-five from a
+    single roster with one friend filling in.
+
+    Four-from-one-roster is not a mix, it is a team with a sub. What the
+    plurality still refuses is the thing worth refusing: a genuinely
+    scrambled inhouse side, where no roster has a clear majority. That was
+    MEASURED, not assumed -- every recorded inhouse game was run through
+    both rules and neither resolves one to two league teams.
 
     Pass an empty `floaters` to get the original strict behaviour.
     """
     names = [p["name"] for p in match["players"] if p["side"] == side]
-    unknown, starters, spares = [], set(), 0
+    unknown, counts, spares = [], Counter(), 0
     for n in names:
         t = idx.get(n.lower())
         if t is None:
             unknown.append(n)
         elif n.lower() in floaters:
-            spares += 1
+            spares += 1          # shared stand-in: counts for nobody
         else:
-            starters.add(t)
-    if unknown or len(starters) != 1:
+            counts[t] += 1
+    if unknown or not counts:
         return None, unknown, names
-    if len(names) - spares < MIN_STARTERS:
+    ranked = counts.most_common()
+    best_team, best_n = ranked[0]
+    if best_n < MIN_STARTERS:
         return None, unknown, names
-    return starters.pop(), unknown, names
+    # Two clear of the next roster, not merely ahead of it. 4-1 is a team
+    # with a sub; 3-1-1 is a team with two subs; 3-2 is half a side
+    # borrowed from one place and could honestly be read either way, so it
+    # still refuses.
+    if len(ranked) > 1 and best_n - ranked[1][1] < 2:
+        return None, unknown, names
+    return best_team, unknown, names
 
 
 # ── fixtures ────────────────────────────────────────────────────────────
