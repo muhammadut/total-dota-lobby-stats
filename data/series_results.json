@@ -12,7 +12,7 @@
     "property of the individual game and lives in matches.json."
   ],
   "results": {
-    "W2-SAT-S1": {
+    "2026-08-22-S1": {
       "games": [
         {
           "source_ref": "screenshot-42",
@@ -31,6 +31,22 @@
           "winner": 4,
           "game_no": 3,
           "linked_at": "2026-08-15T01:23:46+00:00"
+        }
+      ]
+    },
+    "2026-08-29-S1": {
+      "games": [
+        {
+          "source_ref": "discord-1538995464802799738",
+          "winner": 3,
+          "game_no": 1,
+          "linked_at": "2026-08-19T05:23:17+00:00"
+        },
+        {
+          "source_ref": "discord-1538995514274746378",
+          "winner": 1,
+          "game_no": 2,
+          "linked_at": "2026-08-19T05:23:17+00:00"
         }
       ]
     }

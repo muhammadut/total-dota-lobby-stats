@@ -174,12 +174,21 @@ def main():
     check("refusal lists the options", any(SID1 in e for e in errs), errs)
 
     # A time inside a LATER meeting of the same pair must pick that one.
-    later = [s["id"] for _, _, s in LR.all_series(FIXTURES)
-             if set(s["teams"]) == {t_a, t_b}][1]
-    write_matches([make_match("g1", roster(t_a), roster(t_b), "radiant", at(later))])
-    info, errs = LR.resolve("g1", None)
-    check(f"second meeting resolves to {later}",
-          info.get("series", {}).get("id") == later, info.get("series", {}).get("id"))
+    # Only meaningful when the season actually schedules a repeat: at
+    # --meetings 1 every pair meets once and there is no second window to
+    # disambiguate. Say so rather than crashing on the missing index --
+    # and rather than skipping quietly, which would read as a pass.
+    repeats = [s["id"] for _, _, s in LR.all_series(FIXTURES)
+               if set(s["teams"]) == {t_a, t_b}]
+    if len(repeats) > 1:
+        later = repeats[1]
+        write_matches([make_match("g1", roster(t_a), roster(t_b), "radiant", at(later))])
+        info, errs = LR.resolve("g1", None)
+        check(f"second meeting resolves to {later}",
+              info.get("series", {}).get("id") == later, info.get("series", {}).get("id"))
+    else:
+        print(f"  SKIP  second-meeting disambiguation — Team {t_a} vs Team {t_b} "
+              f"is scheduled only once this season")
 
     group("series-level guards")
     write_matches([make_match("g1", roster(t_a), roster(t_b), "radiant", at(SID1))])

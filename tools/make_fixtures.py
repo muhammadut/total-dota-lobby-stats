@@ -407,6 +407,24 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
     for w in weeks:
         w["nights"].sort(key=lambda n: n["date"])
 
+    # Series ids are derived from the NIGHT'S DATE, not from a week number.
+    #
+    # They used to be f"W{week}-{Day}-S{slot}", where week counted from
+    # `first`. A carried night keeps the id it was generated with, so
+    # moving `--first` re-numbered the new nights while the carried ones
+    # kept the old numbering -- and 22 Aug (carried, W2-SAT-S1) collided
+    # head-on with 29 Aug (new, W2-SAT-S1). Two different fixtures, one
+    # id, and series_results.json is keyed by id: the Team 4 v Team 2
+    # result attached itself to the Team 1 v Team 3 fixture as well.
+    #
+    # A date is unique by construction and survives any --first.
+    for w in weeks:
+        for night in w["nights"]:
+            for s_ in night["series"]:
+                if s_["id"] == "FINAL":
+                    continue
+                s_["id"] = f"{night['date']}-S{s_['slot']}"
+
     # --- the checks this script exists for --------------------------------
     # They cover the WHOLE season -- carried nights included -- because
     # that is what the promise on the site is about. "Every pair meets
@@ -418,6 +436,12 @@ def build(first: date = FIRST_NIGHT, days: tuple = NIGHT_DAYS,
         season_played[b] += n
 
     problems = []
+    seen_ids = Counter(s_["id"] for w in weeks for n in w["nights"]
+                       for s_ in n["series"])
+    dupes = {k: v for k, v in seen_ids.items() if v > 1}
+    if dupes:
+        problems.append(f"duplicate series ids {dupes} — results are keyed by "
+                        f"id, so a result would attach to more than one fixture")
     off_target = {p: n for p, n in met.items() if n != meetings}
     missing = [(a, b) for a, b in itertools.combinations(range(1, teams + 1), 2)
                if (a, b) not in met]

@@ -322,6 +322,17 @@ instead — depth-first, most-constrained pair first, sending home whoever
 has sat out least, pruning on "a pair owes more games than there are
 nights left" and "a team owes more games than there are nights left".
 
+**Series ids are DATE-based (`2026-08-29-S1`), never week-based.** They
+used to be `W{week}-{Day}-S{slot}` with the week counted from `--first`.
+A carried night keeps the id it was generated with, so moving `--first`
+re-numbered the new nights while carried ones kept the old numbering —
+and 22 Aug (carried, `W2-SAT-S1`) collided head-on with 29 Aug (new,
+`W2-SAT-S1`). `series_results.json` is keyed by id, so one recorded
+result attached itself to BOTH fixtures, and `carried()` then treated two
+nights as played. `build()` now refuses to write duplicate ids at all.
+If ids ever change again, migrate the result keys by matching the
+recorded winners against the fixture's teams — never by position.
+
 **Season length is never expressed as a night count.** Nights fall out of
 `sum(remaining meetings) ÷ 2`, so a schedule that leaves some pairs having
 met more often than others cannot be expressed. `--first`, `--days` and
