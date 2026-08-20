@@ -32,6 +32,10 @@ SERIES_RESULTS = ROOT / "data" / "series_results.json"
 # tools/league_ingest.py. Lobby statistics are computed from the database
 # and therefore cannot include a league game.
 LEAGUE_MATCHES = ROOT / "data" / "league_matches.json"
+# The SHORT format under consideration. Hand-authored, unlike fixtures.json:
+# it holds only the pools and the best-of, and build_mini() derives every
+# match, box, placing and count on the page from them.
+MINI = ROOT / "data" / "mini_tournament.json"
 
 # Path for importing tools.find_slot
 sys.path.insert(0, str(ROOT / "tools"))
@@ -109,6 +113,7 @@ def main() -> int:
     coord = build_coord(league)
     fixtures = build_fixtures(league)
     tournament = build_tournament(aliases)
+    mini = build_mini(league, fixtures)
 
     payload = {
         "meta": {
@@ -121,6 +126,7 @@ def main() -> int:
         "coord": coord,
         "fixtures": fixtures,
         "tournament": tournament,
+        "mini": mini,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -400,6 +406,225 @@ def build_fixtures(league: dict | None = None) -> dict | None:
 
     data["progress"] = season_progress(data, league)
     return {k: v for k, v in data.items() if not k.startswith("_")}
+
+
+def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None:
+    """
+    Emit LOBBY.mini: the SHORT format -- two pools of three, then a
+    four-team double-elimination playoff.
+
+    data/mini_tournament.json holds only what cannot be worked out: which
+    teams are in which pool, how many advance, the best-of at each stage,
+    and the tie-break ladder. Everything the page shows is derived here --
+    the six pool matches, the four playoff boxes, which box feeds which,
+    the final placings, the game and night counts, and the comparison
+    against the full season. Same reasoning as app.js::fxCopy: prose and
+    counts typed by hand have no checksum, and the schedule copy went
+    false the first time the schedule was regenerated.
+
+    Nothing on this page is a result. The mini tournament is a proposal;
+    if it is ever played, its games go through tools/league_ingest.py into
+    the league ledger exactly as any other league game.
+
+    A configuration this function cannot draw is REFUSED with a message,
+    never drawn approximately -- the bracket below is specific to two
+    pools with two advancing from each, and a half-right bracket is worse
+    than no bracket.
+    """
+    if not MINI.exists():
+        return None
+    cfg = json.loads(MINI.read_text(encoding="utf-8"))
+    cfg = {k: v for k, v in cfg.items() if not k.startswith("_")}
+
+    pools_in = cfg.get("pools") or []
+    advance = cfg.get("advance_per_pool", 2)
+
+    def refuse(why):
+        print(f"  ! mini tournament not drawn: {why}")
+        print("    Fix data/mini_tournament.json and re-run export_web.py.")
+        return None
+
+    if len(pools_in) != 2 or advance != 2:
+        return refuse(f"the bracket is built for 2 pools with 2 advancing "
+                      f"from each; got {len(pools_in)} pool(s), "
+                      f"{advance} advancing")
+
+    seen = {}
+    for pool in pools_in:
+        for tid in pool["teams"]:
+            if tid in seen:
+                return refuse(f"team {tid} is in pool {seen[tid]} and pool "
+                              f"{pool['id']} at once")
+            seen[tid] = pool["id"]
+        if len(pool["teams"]) <= advance:
+            return refuse(f"pool {pool['id']} has {len(pool['teams'])} teams "
+                          f"and {advance} advance -- nothing is decided")
+
+    bo = cfg.get("best_of") or {}
+    bo_pool = bo.get("pool", 1)
+    bo_play = bo.get("playoff", 3)
+    bo_final = bo.get("final", bo_play)
+
+    # Names. A team in data/teams.json is a real roster; anything else is
+    # provisional and is marked as such all the way to the browser, so the
+    # page can never present three empty chairs as a settled team.
+    real = {t["id"]: t["name"] for t in (league or {}).get("teams", [])}
+    prov = {t["id"]: t for t in cfg.get("provisional_teams", [])}
+    for tid in sorted(t for t in seen if t not in real and t not in prov):
+        print(f"  ! mini tournament: team {tid} is in neither "
+              f"data/teams.json nor provisional_teams -- it will show as "
+              f"'Team {tid}' with no players")
+
+    def team(tid):
+        p = prov.get(tid) or {}
+        return {
+            "id": tid,
+            "name": real.get(tid) or p.get("name") or f"Team {tid}",
+            "provisional": tid not in real,
+            "players": p.get("players", []),
+            "unfilled": p.get("unfilled", 0),
+            "note": p.get("note"),
+        }
+
+    # Pools. A round robin inside a pool of n is every unordered pair, in
+    # the order the teams are listed -- which is the order the draft was
+    # written in, so the page reads back the way it was drawn.
+    pools, pool_matches = [], []
+    for pool in pools_in:
+        ids = list(pool["teams"])
+        ms = []
+        for i, a in enumerate(ids):
+            for b in ids[i + 1:]:
+                ms.append({"id": f"MINI-{pool['id']}-{a}v{b}",
+                           "pool": pool["id"], "teams": [a, b],
+                           "best_of": bo_pool})
+        pool_matches += ms
+        pools.append({
+            "id": pool["id"],
+            "label": pool.get("label") or f"Pool {pool['id']}",
+            "teams": [team(t) for t in ids],
+            "matches": ms,
+            "advance": advance,
+            "out": len(ids) - advance,
+        })
+
+    A, B = pools[0]["id"], pools[1]["id"]
+
+    # The four playoff boxes. `col`/`row` is the grid the browser draws
+    # them on; `feeds` is what fills each of the two slots in a box; and
+    # `links` says which box feeds which slot of which other box -- the
+    # lines. All of it is data so the drawing code holds no bracket
+    # knowledge of its own that could fall out of step with this.
+    nodes = [
+        {"id": "MINI-UB", "round": "Upper match", "best_of": bo_play,
+         "col": 1, "row": 1,
+         "feeds": [{"kind": "pool", "pool": A, "rank": 1, "label": "Winner"},
+                   {"kind": "pool", "pool": B, "rank": 1, "label": "Winner"}],
+         "stakes": "Winner goes straight to the grand final. The loser drops "
+                   "to the lower final and still has a life left.",
+         "knockout": False},
+        {"id": "MINI-ELIM", "round": "Elimination match", "best_of": bo_play,
+         "col": 1, "row": 2,
+         "feeds": [{"kind": "pool", "pool": A, "rank": 2, "label": "Runner-up"},
+                   {"kind": "pool", "pool": B, "rank": 2, "label": "Runner-up"}],
+         "stakes": "Loser is knocked out, in 4th.",
+         "knockout": True},
+        {"id": "MINI-LF", "round": "Lower final", "best_of": bo_play,
+         "col": 2, "row": 2,
+         "feeds": [{"kind": "node", "node": "MINI-UB", "side": "loser",
+                    "label": "Loser"},
+                   {"kind": "node", "node": "MINI-ELIM", "side": "winner",
+                    "label": "Winner"}],
+         "stakes": "Loser is knocked out, in 3rd.",
+         "knockout": True},
+        {"id": "MINI-GF", "round": "Grand final", "best_of": bo_final,
+         "col": 3, "row": "center",
+         "feeds": [{"kind": "node", "node": "MINI-UB", "side": "winner",
+                    "label": "Winner"},
+                   {"kind": "node", "node": "MINI-LF", "side": "winner",
+                    "label": "Winner"}],
+         "stakes": "Whoever wins it wins the whole thing.",
+         "knockout": True, "final": True},
+    ]
+    links = [
+        {"from": "MINI-UB",   "to": "MINI-GF", "slot": 0, "kind": "win"},
+        {"from": "MINI-UB",   "to": "MINI-LF", "slot": 0, "kind": "loss"},
+        {"from": "MINI-ELIM", "to": "MINI-LF", "slot": 1, "kind": "win"},
+        {"from": "MINI-LF",   "to": "MINI-GF", "slot": 1, "kind": "win"},
+    ]
+    by_id = {n["id"]: n for n in nodes}
+    for ln in links:                    # a typo here would draw a lie
+        assert ln["from"] in by_id and ln["to"] in by_id, ln
+        assert 0 <= ln["slot"] < len(by_id[ln["to"]]["feeds"]), ln
+
+    placings = [
+        {"place": "1st", "from": "Wins the grand final"},
+        {"place": "2nd", "from": "Loses the grand final"},
+        {"place": "3rd", "from": "Loses the lower final"},
+        {"place": "4th", "from": "Loses the elimination match"},
+        {"place": "5th & 6th", "from": "Third in a pool \u2014 out before the "
+                                       "bracket starts"},
+    ]
+
+    # Two matches a night, the way the season already runs. Matches are
+    # played in the order above and none starts before the ones it depends
+    # on have finished, so filling nights in order is enough: every box's
+    # feeders always land in an earlier slot than the box itself.
+    slots = len((fixtures or {}).get("slots") or []) or 2
+    nights, used = 0, slots
+    for _ in pool_matches + nodes:
+        if used >= slots:
+            nights += 1
+            used = 0
+        used += 1
+
+    def span(count, best_of):
+        return (count * (best_of // 2 + 1), count * best_of)
+
+    p_lo, p_hi = span(len(pool_matches), bo_pool)
+    k_lo, k_hi = span(3, bo_play)
+    f_lo, f_hi = span(1, bo_final)
+
+    totals = {
+        "pool_matches": len(pool_matches),
+        "playoff_matches": len(nodes),
+        "matches": len(pool_matches) + len(nodes),
+        "games_min": p_lo + k_lo + f_lo,
+        "games_max": p_hi + k_hi + f_hi,
+        "nights": nights,
+        "slots_per_night": slots,
+        "teams": len(seen),
+    }
+
+    # What "shorter" actually means, measured against the season on the
+    # Schedule tab rather than asserted. Regenerate the season and this
+    # moves with it.
+    season = None
+    if fixtures and fixtures.get("weeks"):
+        s_nights = s_series = s_lo = s_hi = 0
+        for wk in fixtures["weeks"]:
+            for night in wk.get("nights", []):
+                s_nights += 1
+                for s in night.get("series", []):
+                    s_series += 1
+                    b = s.get("best_of", 3)
+                    s_lo += b // 2 + 1
+                    s_hi += b
+        season = {"nights": s_nights, "matches": s_series,
+                  "games_min": s_lo, "games_max": s_hi}
+
+    return {
+        "status": cfg.get("status", "proposal"),
+        "name": cfg.get("name", "Mini Cup"),
+        "pools": pools,
+        "bracket": nodes,
+        "links": links,
+        "placings": placings,
+        "tie_breaks": cfg.get("tie_breaks", []),
+        "best_of": {"pool": bo_pool, "playoff": bo_play, "final": bo_final},
+        "totals": totals,
+        "season": season,
+    }
 
 
 def season_progress(data: dict, league: dict | None) -> dict | None:

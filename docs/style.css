@@ -323,14 +323,18 @@ tr.is-lead .rank{ color:var(--ink); }
    pill row is centred, so the overflow gets clipped on BOTH sides —
    "Standings" and "Heroes" would both lose letters. Let the bar scroll
    instead, and stop centring once it no longer fits. */
-@media (max-width:560px){
+@media (max-width:960px){
   .tabbar{
     justify-content:flex-start; overflow-x:auto; scrollbar-width:none;
     -webkit-overflow-scrolling:touch;
   }
   .tabbar::-webkit-scrollbar{ display:none; }
   .tabs{ flex:0 0 auto; margin:0 auto; }
-  .tab{ padding:.5rem .85rem; font-size:.8rem; white-space:nowrap; }
+  .tab{ white-space:nowrap; }
+}
+
+@media (max-width:560px){
+  .tab{ padding:.5rem .85rem; font-size:.8rem; }
   /* Same story for the toolbars, which now carry two pill groups plus
      a Clear button on the Duos view. */
   .toolbar{ flex-wrap:wrap; }
@@ -1641,3 +1645,203 @@ td.none{ padding:2.2rem 1rem; }
 /* A series already under way, as opposed to one not yet arranged. */
 .tt-opp.is-live{ position:relative; }
 .tt-opp.is-live .team-chip{ box-shadow:0 0 0 2px var(--paper), 0 0 0 3.5px #c08a2e; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MINI CUP — the short format
+   Two pool cards, then a real bracket: boxes with the two teams
+   stacked, joined by measured connector lines the way a tournament
+   bracket is drawn. Connectors are RIGHT here, unlike the Schedule
+   timeline, because something genuinely progresses from one box to the
+   next -- and the drop line is the whole point of a double
+   elimination, so it is drawn, dashed, in Dire red.
+   Nothing on this tab has been played, so every slot is a dashed
+   placeholder. Dashed means "not settled" throughout: the placeholder
+   slots, Team 6's chip, and the Proposal pill all use it.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Sixth team. Petrol, in the gap between teal (165) and slate (215);
+   Radiant green and Dire red stay reserved, as everywhere else. While
+   the roster is unconfirmed .is-prov overrides this anyway. */
+.team-chip--6{ background:#2f6b7d; }
+.team-pill--6{ background:#2f6b7d; }
+
+/* A team that is not on a roster in data/teams.json. Outlined, never
+   filled, so it cannot be mistaken for a settled side. */
+.team-chip.is-prov{
+  background:transparent; color:var(--ink-3);
+  border:1.5px dashed var(--ink-4);
+}
+.team-pill.is-prov{
+  background:transparent; color:var(--ink-2);
+  border:1.5px dashed var(--ink-4);
+}
+
+.pill--draft{
+  background:transparent; border-style:dashed; border-color:var(--ink-4);
+  color:var(--ink-3); box-shadow:none;
+}
+
+/* A third line under a HUD figure: what it is measured against. */
+.mc-hud{ margin:1.1rem 0 .4rem; }
+.hud__sub{ font-size:.72rem; color:var(--ink-3); margin-top:.35rem; }
+
+/* ── Pools ──────────────────────────────────────────────────────── */
+.mc-pools{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+  gap:1rem;
+}
+.mc-pool{ overflow:hidden; }
+.mc-pool__head{
+  display:flex; align-items:center; gap:.65rem;
+  padding:.8rem 1rem; border-bottom:1px solid var(--line-2);
+}
+.mc-pool__badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.75rem; height:1.75rem; border-radius:var(--r-sm);
+  background:var(--ink); color:#fff; font-weight:700; font-size:.82rem;
+  flex:0 0 auto;
+}
+.mc-pool__title{ font-weight:700; letter-spacing:-.015em; }
+.mc-pool__adv{
+  margin-left:auto; font-size:.72rem; color:var(--ink-3); white-space:nowrap;
+}
+.mc-pool__teams{ padding:.45rem .55rem; }
+.mc-team{ display:flex; align-items:center; gap:.65rem; padding:.4rem .5rem; }
+.mc-team__name{ font-weight:600; font-size:.9rem; }
+.mc-team.is-prov .mc-team__name{ color:var(--ink-2); }
+.mc-team__meta{
+  margin-left:auto; text-align:right; font-size:.72rem; color:var(--ink-3);
+}
+/* The group-stage table reuses the Schedule tab's .sp component; the
+   only thing it needs of its own is the pool letter in the Pool cell. */
+.mc-group{ margin:1.1rem 0 0; }
+.sp-pool{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:1.25rem; height:1.25rem; margin-right:.45rem; border-radius:5px;
+  background:var(--ink); color:#fff; font-size:.66rem; font-weight:700;
+  vertical-align:-.18rem;
+}
+
+/* Where each place in the pool goes next -- the join between this card
+   and the bracket underneath it. */
+.mc-pool__foot{
+  display:flex; flex-wrap:wrap; gap:.2rem 1.2rem;
+  padding:.62rem 1rem .72rem; border-top:1px solid var(--line-2);
+  background:var(--paper-2); font-size:.73rem; color:var(--ink-3);
+}
+.mc-pool__foot b{ color:var(--ink-2); font-weight:700; margin-right:.28rem; }
+.mc-pool__foot .is-out, .mc-pool__foot .is-out b{ color:var(--dire); }
+
+.mc-tie{ margin-top:1rem; padding:1rem 1.2rem 1.1rem; }
+.mc-tie__lbl{
+  font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; margin-bottom:.5rem;
+}
+.mc-tie__list{ margin:0; padding-left:1.15rem; font-size:.86rem; color:var(--ink-2); }
+.mc-tie__list li{ margin:.16rem 0; }
+.mc-tie__why{ margin:.75rem 0 0; font-size:.78rem; color:var(--ink-3); max-width:62ch; }
+
+/* ── The bracket ────────────────────────────────────────────────── */
+.br-scroll{ overflow-x:auto; scrollbar-width:thin; }
+.br-grid{
+  position:relative; display:grid;
+  grid-template-columns:repeat(3, minmax(215px, 1fr));
+  gap:1.5rem 3.6rem; align-items:center;
+  min-width:780px; padding:.7rem .25rem 1.1rem;
+}
+/* Absolutely positioned, so it is out of the grid's flow. The boxes are
+   given position:relative in turn -- otherwise the positioned SVG would
+   paint OVER them and every line would cut across the boxes. */
+.br-lines{ position:absolute; inset:0; pointer-events:none; overflow:visible; }
+.br-line{
+  fill:none; stroke:var(--ink-4); stroke-width:1.6;
+  stroke-linejoin:round; stroke-linecap:round;
+}
+.br-line--loss{ stroke:var(--dire); opacity:.5; stroke-dasharray:4 4.5; }
+.br-dot{ fill:var(--ink-4); }
+.br-dot--loss{ fill:var(--dire); opacity:.55; }
+/* What the two kinds of line mean, said once, underneath. Labels ON
+   the paths sat in clear space at one width and across a box at the
+   next -- the column gap is fixed, so the only room is whatever gap
+   between boxes happens to fall beside the elbow, and that moves. */
+.br-key{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.35rem 1.4rem;
+  margin:.15rem .2rem 0; font-size:.75rem; color:var(--ink-3);
+}
+.br-key__i{ display:inline-flex; align-items:center; gap:.45rem; }
+.br-key__ln{
+  width:1.5rem; height:0; border-top:1.6px solid var(--ink-4);
+  display:inline-block;
+}
+.br-key__i.is-loss{ color:#a5331f; }
+.br-key__i.is-loss .br-key__ln{
+  border-top-style:dashed; border-top-color:var(--dire); opacity:.65;
+}
+
+.br-box{
+  position:relative; z-index:1;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-md); box-shadow:var(--sh-1); overflow:hidden;
+}
+.br-box__head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:.6rem;
+  padding:.55rem .8rem; background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);
+}
+.br-round{
+  font-size:.68rem; letter-spacing:.13em; text-transform:uppercase;
+  font-weight:700; color:var(--ink-2);
+}
+.br-bo{ font-size:.7rem; color:var(--ink-3); white-space:nowrap; }
+
+.br-slot{ display:flex; align-items:center; gap:.65rem; padding:.55rem .8rem; }
+.br-slot + .br-slot{ border-top:1px solid var(--line-2); }
+.br-ph{
+  width:1.55rem; height:1.55rem; border-radius:var(--r-sm);
+  border:1.5px dashed var(--ink-4); flex:0 0 auto;
+}
+.br-from{ font-size:.82rem; font-weight:600; color:var(--ink-2); }
+.br-sc{
+  margin-left:auto; font-family:var(--mono); font-size:.85rem; color:var(--ink-4);
+}
+.br-box__foot{
+  padding:.5rem .8rem .58rem; border-top:1px solid var(--line-2);
+  font-size:.72rem; color:var(--ink-3); line-height:1.4;
+}
+/* Red where a team goes out, green where one wins the thing: the same
+   two meanings those hues carry everywhere else on the site. */
+.br-box.is-knockout .br-box__foot{ color:#a5331f; background:var(--dire-bg); }
+.br-box.is-final{ box-shadow:var(--sh-2); }
+.br-box.is-final .br-box__head{ background:var(--ink); border-bottom-color:var(--ink); }
+.br-box.is-final .br-round{ color:#fff; }
+.br-box.is-final .br-bo{ color:rgba(255,255,255,.7); }
+.br-box.is-final .br-box__foot{ color:var(--radiant); background:var(--radiant-bg); }
+
+.mc-place{ margin-top:1.4rem; padding:1rem 1.2rem 1.1rem; }
+.mc-place__lbl{
+  font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; margin-bottom:.55rem;
+}
+.mc-place__list{
+  list-style:none; margin:0; padding:0; display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:.42rem 1.5rem;
+}
+.mc-place__list li{
+  display:flex; align-items:baseline; gap:.6rem;
+  font-size:.84rem; color:var(--ink-2);
+}
+.mc-place__pos{
+  font-weight:700; color:var(--ink); min-width:3.4rem; flex:0 0 auto;
+}
+
+/* Shown only where the bracket genuinely does not fit -- .br-grid's
+   min-width is 780px, so that is the width the hint appears below. */
+.br-hint{ display:none; }
+@media (max-width:860px){
+  .br-hint{ display:inline; margin-left:auto; }
+}
+
+@media (max-width:520px){
+  .mc-team__meta{ display:none; }
+  .mc-pool__adv{ font-size:.68rem; }
+}

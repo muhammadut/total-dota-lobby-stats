@@ -937,6 +937,9 @@
       v.classList.remove("is-active");
     });
     view.classList.add("is-active");
+    // Measured layout: the bracket's connector lines cannot be drawn while
+    // its tab is hidden, because every box rect is 0x0 there.
+    if (name === "mini") miLines();
     return true;
   }
 
@@ -2461,6 +2464,396 @@
     wrap.innerHTML = chunks.join("");
   }
 
+  /* ── Mini Cup — the short format ──────────────────────────────────
+     A PROPOSAL, not a season. Two pools of three play a round robin,
+     the top two of each go into a four-team double-elimination bracket,
+     and the third in each pool is out.
+
+     Every word and number below comes out of LOBBY.mini, which
+     export_web.build_mini() derives from data/mini_tournament.json.
+     Nothing here is typed: change a pool in that file and the matches,
+     the boxes, the counts and the copy all move together. The Schedule
+     tab's prose went false the first time the season was regenerated —
+     prose has no checksum, so it does not get to hold facts.
+
+     Nothing on this tab is a result either. If the league ever plays
+     this, the games go through tools/league_ingest.py into the league
+     ledger like any other league game. */
+
+  var MINI = D.mini || null;
+
+  var MI_TEAM = {};
+  if (MINI) {
+    MINI.pools.forEach(function (p) {
+      p.teams.forEach(function (t) { MI_TEAM[t.id] = t; });
+    });
+  }
+
+  function miTeam(id) {
+    return MI_TEAM[id] ||
+      { id: id, name: "Team " + id, provisional: true, players: [], unfilled: 0 };
+  }
+
+  /* A team that is not on a roster in data/teams.json is drawn with a
+     dashed ring, everywhere it appears. Team 6 is two named people and
+     three empty chairs; it must never read as a settled side. */
+  function miChip(id) {
+    var t = miTeam(id);
+    return '<span class="team-chip team-chip--' + id +
+      (t.provisional ? " is-prov" : "") + '">' + id + '</span>';
+  }
+
+  function miPill(id) {
+    var t = miTeam(id);
+    return '<span class="team-pill team-pill--' + id +
+      (t.provisional ? " is-prov" : "") + '">' + esc(t.name) + '</span>';
+  }
+
+  function miBo(n) { return n === 1 ? "one game" : "best of " + n; }
+
+  // "3th" shipped once. 11th-13th are the exception every naive version
+  // of this gets wrong, so they are handled even though a pool of eleven
+  // is not on the cards.
+  function miOrd(n) {
+    var t = n % 100;
+    if (t >= 11 && t <= 13) return n + "th";
+    return n + (["th", "st", "nd", "rd"][n % 10] || "th");
+  }
+
+  /* Where each place in a pool goes next, read out of the bracket's own
+     feeds rather than typed here. Move a pool around in the config and
+     this follows; type it and it is one edit away from being a lie. */
+  function miExits(p) {
+    var out = [];
+    MINI.bracket.forEach(function (n) {
+      n.feeds.forEach(function (f) {
+        if (f.kind === "pool" && f.pool === p.id) {
+          out.push({ rank: f.rank, to: n.round.toLowerCase() });
+        }
+      });
+    });
+    out.sort(function (a, b) { return a.rank - b.rank; });
+    for (var r = out.length + 1; r <= p.teams.length; r++) {
+      out.push({ rank: r, to: "out", gone: true });
+    }
+    return out;
+  }
+
+  function miPool(p) {
+    var teams = p.teams.map(function (t) {
+      var meta = "";
+      if (t.provisional) {
+        meta = t.players.length
+          ? t.players.join(", ") + (t.unfilled
+              ? " · " + t.unfilled + " still to name" : "")
+          : "not confirmed";
+      }
+      return '<div class="mc-team' + (t.provisional ? " is-prov" : "") + '">' +
+        miChip(t.id) +
+        '<span class="mc-team__name">' + esc(t.name) + '</span>' +
+        (meta ? '<span class="mc-team__meta">' + esc(meta) + '</span>' : "") +
+      '</div>';
+    }).join("");
+
+    return '<div class="mc-pool card">' +
+      '<div class="mc-pool__head">' +
+        '<span class="mc-pool__badge">' + esc(p.id) + '</span>' +
+        '<span class="mc-pool__title">' + esc(p.label) + '</span>' +
+        '<span class="mc-pool__adv">Top ' + p.advance + ' go through</span>' +
+      '</div>' +
+      '<div class="mc-pool__teams">' + teams + '</div>' +
+      '<div class="mc-pool__foot">' + miExits(p).map(function (x) {
+        return '<span' + (x.gone ? ' class="is-out"' : '') + '><b>' +
+          miOrd(x.rank) + '</b> ' + esc(x.to) + '</span>';
+      }).join("") + '</div>' +
+    '</div>';
+  }
+
+  /* The group stage as a table, built from the SAME component the
+     Schedule tab uses for played matches (.sp / .sp-tbl). Sharing it
+     means the two read alike and the phone treatment is already solved:
+     below 620px each row becomes a block rather than scrolling the
+     Result column off the edge, which is the column the table is for.
+
+     It lists every pool's matches in one place rather than three inside
+     each pool card -- six matches stated twice is two things to keep in
+     step, and the pool card's job is the roster and where each place
+     goes next. */
+  function miGroupTable() {
+    var ms = [];
+    MINI.pools.forEach(function (p) {
+      p.matches.forEach(function (m) { ms.push({ p: p, m: m }); });
+    });
+
+    var body = ms.map(function (x) {
+      return '<tr>' +
+        '<td class="sp-td-m"><span class="sp-m">' +
+          miPill(x.m.teams[0]) + '<span class="sp-vs">vs</span>' +
+          miPill(x.m.teams[1]) + '</span></td>' +
+        '<td class="sp-when"><span class="sp-pool">' + esc(x.p.id) + '</span>' +
+          esc(x.p.label) + '</td>' +
+        '<td class="sp-td-r"><span class="sp-res">' +
+          '<span class="sp-badge">Still to play</span></span></td>' +
+      '</tr>';
+    }).join("");
+
+    return '<div class="sp card mc-group">' +
+      '<div class="sp-head">' +
+        '<div>' +
+          '<div class="sp-title">Group stage</div>' +
+          '<div class="sp-sub"><b>' + ms.length + '</b> matches &middot; ' +
+            miBo(MINI.best_of.pool) + ' each &middot; ' +
+            'nobody meets the other pool until the bracket</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="sp-scroll"><table class="sp-tbl">' +
+        '<thead><tr><th>Match</th><th>Pool</th><th>Result</th></tr></thead>' +
+        '<tbody>' + body + '</tbody>' +
+      '</table></div>' +
+      '<div class="sp-foot">Nothing has been played. This is the format ' +
+        'drawn out, not a season that is running.</div>' +
+    '</div>';
+  }
+
+  /* One bracket box: the round, the best-of, its two slots and what is
+     at stake. A slot is drawn as a waiting placeholder because nobody
+     has qualified — the label under it says where its occupant will
+     come from, which is the only thing known today. */
+  function miBox(n) {
+    var slots = n.feeds.map(function (f, i) {
+      var from = f.kind === "pool"
+        ? f.label + " · Pool " + f.pool
+        : f.label + " · " + miRound(f.node).toLowerCase();
+      return '<div class="br-slot" data-slot="' + i + '">' +
+        '<span class="br-ph" aria-hidden="true"></span>' +
+        '<span class="br-from">' + esc(from) + '</span>' +
+        '<span class="br-sc">–</span>' +
+      '</div>';
+    }).join("");
+
+    var row = n.row === "center" ? "1 / span 2" : String(n.row);
+    return '<div class="br-box' + (n.final ? " is-final" : "") +
+             (n.knockout && !n.final ? " is-knockout" : "") + '"' +
+             ' data-node="' + n.id + '"' +
+             ' style="grid-column:' + n.col + ';grid-row:' + row + '">' +
+      '<div class="br-box__head">' +
+        '<span class="br-round">' + esc(n.round) + '</span>' +
+        '<span class="br-bo">' + miBo(n.best_of) + '</span>' +
+      '</div>' +
+      slots +
+      '<div class="br-box__foot">' + esc(n.stakes) + '</div>' +
+    '</div>';
+  }
+
+  function miRound(id) {
+    var hit = MINI.bracket.filter(function (n) { return n.id === id; })[0];
+    return hit ? hit.round : id;
+  }
+
+  /* The connector lines.
+
+     Drawn as one SVG measured from the boxes AFTER layout rather than
+     with CSS elbows, because the boxes are laid out by the grid at
+     whatever width the browser gives them and a hard-coded elbow is
+     right at exactly one width. The elbow sits just left of the target
+     so two lines arriving at the same box share a gutter instead of
+     crossing the box between them.
+
+     A hidden tab measures 0×0 — every rect would be zero and the lines
+     would collapse onto the origin. Hence the width guard, plus a
+     ResizeObserver, which fires the moment the tab is shown and the
+     grid goes from no size to its real one. */
+  function miLines() {
+    var grid = $("#brGrid"), svg = $("#brLines");
+    if (!grid || !svg || !MINI) return;
+    var g = grid.getBoundingClientRect();
+    if (!g.width || !g.height) return;
+
+    var out = [];
+    var fanned = {};
+    MINI.links.forEach(function (l) { fanned[l.from] = (fanned[l.from] || 0) + 1; });
+    var seen = {};
+
+    MINI.links.forEach(function (l) {
+      var from = grid.querySelector('[data-node="' + l.from + '"]');
+      var to = grid.querySelector('[data-node="' + l.to +
+                                 '"] .br-slot[data-slot="' + l.slot + '"]');
+      if (!from || !to) return;
+      var a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+
+      // A box that both a winner and a loser leave gets two anchors, one
+      // above the other, so the two paths read as a fork rather than as
+      // one line that mysteriously splits.
+      var i = seen[l.from] = (seen[l.from] === undefined ? 0 : seen[l.from] + 1);
+      var spread = fanned[l.from] > 1 ? (i === 0 ? -11 : 11) : 0;
+
+      var x1 = a.right - g.left, y1 = a.top + a.height / 2 - g.top + spread;
+      var x2 = b.left - g.left,  y2 = b.top + b.height / 2 - g.top;
+      var ex = Math.max(x1 + 16, x2 - 24);
+
+      out.push('<path class="br-line br-line--' + l.kind + '" d="M' +
+        x1 + ' ' + y1 + ' H' + ex + ' V' + y2 + ' H' + x2 + '"/>');
+      out.push('<circle class="br-dot br-dot--' + l.kind + '" cx="' +
+        (x2 - 1) + '" cy="' + y2 + '" r="3.5"/>');
+      // No text on the paths. Labelling them read well at one width and
+      // sat on top of a box at another: the column gap is a fixed 3.6rem,
+      // so the only clear space is whatever vertical gap happens to fall
+      // beside the elbow, and that moves as the boxes reflow. What the
+      // lines mean is said once, in the key underneath, which cannot
+      // collide with anything.
+    });
+
+    svg.setAttribute("viewBox", "0 0 " + g.width + " " + g.height);
+    svg.setAttribute("width", g.width);
+    svg.setAttribute("height", g.height);
+    svg.innerHTML = out.join("");
+  }
+
+  var miRO = null;
+  function miWatch() {
+    var grid = $("#brGrid");
+    if (!grid || typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", miLines);
+      return;
+    }
+    if (miRO) miRO.disconnect();
+    miRO = new ResizeObserver(function () { miLines(); });
+    miRO.observe(grid);
+  }
+
+  function miCopy() {
+    var t = MINI.totals, s = MINI.season;
+    var title = $("#miniTitle"); if (title) title.textContent = MINI.name;
+
+    var lede = $("#miniLede");
+    if (lede) {
+      lede.innerHTML =
+        'A shorter way to run the league. ' + MINI.pools.length +
+        ' pools of ' + MINI.pools[0].teams.length +
+        ' play a round robin; the top ' + MINI.pools[0].advance +
+        ' of each go through and the last one is out. Then a ' +
+        (MINI.pools.length * MINI.pools[0].advance) +
+        '-team bracket where a team has to lose <b>twice</b> to be knocked out. ' +
+        '<b>' + t.matches + ' matches over ' + t.nights + ' nights</b>' +
+        (s ? ', against ' + s.matches + ' matches over ' + s.nights +
+             ' nights for the season on the Schedule tab.' : '.');
+    }
+
+    var pill = $("#miniStatus");
+    if (pill) {
+      var live = MINI.status === "live";
+      pill.className = "pill" + (live ? "" : " pill--draft");
+      pill.textContent = live ? "Agreed" : "Proposal — nothing agreed yet";
+    }
+
+    var note = $("#miniNote");
+    if (note) {
+      note.innerHTML =
+        '<b>Nothing on this tab is a result.</b> It is the format drawn out, ' +
+        'not a season that is running: no match here is scheduled and none is ' +
+        'recorded. The pools, the best-of at each stage and the tie-breaks live ' +
+        'in <code>data/mini_tournament.json</code>, and every match, box and ' +
+        'count on this page is worked out from them — so moving a team between ' +
+        'pools redraws the whole page and no two numbers here can disagree. ' +
+        'If the league plays it, the games are posted in ' +
+        '<b>#dota-league-2026</b> and land in the league ledger exactly as they ' +
+        'do now.';
+    }
+  }
+
+  function drawMini() {
+    var tab = $("#miniTab"), host = $("#miniBody");
+    if (!MINI) {                       // no config, or a config it refused
+      if (tab) tab.hidden = true;
+      if (host) host.innerHTML = "";
+      return;
+    }
+    if (!host) return;
+    miCopy();
+
+    var t = MINI.totals, s = MINI.season;
+    var hud =
+      '<div class="mc-hud">' +
+        '<div class="hud card">' +
+          '<div class="hud__cell">' +
+            '<div class="hud__label">Teams</div>' +
+            '<div class="hud__value">' + t.teams + '</div>' +
+            '<div class="hud__sub">' + MINI.pools.map(function (p) {
+              return p.teams.length + " in " + p.label; }).join(" · ") + '</div>' +
+          '</div>' +
+          '<div class="hud__cell">' +
+            '<div class="hud__label">Matches</div>' +
+            '<div class="hud__value">' + t.matches + '</div>' +
+            '<div class="hud__sub">' + t.pool_matches + ' in the pools · ' +
+              t.playoff_matches + ' in the bracket</div>' +
+          '</div>' +
+          '<div class="hud__cell">' +
+            '<div class="hud__label">Nights</div>' +
+            '<div class="hud__value">' + t.nights + '</div>' +
+            '<div class="hud__sub">' + t.slots_per_night +
+              ' matches a night' + (s ? ' · the season takes ' + s.nights : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="hud__cell">' +
+            '<div class="hud__label">Games</div>' +
+            '<div class="hud__value">' + t.games_min + '–' + t.games_max + '</div>' +
+            '<div class="hud__sub">' + (s ? 'season is ' + s.games_min + '–' +
+              s.games_max : 'depending on how the matches go') + '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    var tie = MINI.tie_breaks.length
+      ? '<div class="mc-tie card">' +
+          '<div class="mc-tie__lbl">If two teams finish level</div>' +
+          '<ol class="mc-tie__list">' + MINI.tie_breaks.map(function (x) {
+            return '<li>' + esc(x) + '</li>'; }).join("") + '</ol>' +
+          '<p class="mc-tie__why">Three teams playing ' +
+            miBo(MINI.best_of.pool) + ' each can all finish 1–1, and then the ' +
+            'result between two of them settles nothing. That is what the ' +
+            'rest of the ladder is for.</p>' +
+        '</div>'
+      : "";
+
+    var pools =
+      '<div class="sec-sub"><h3>The pools</h3>' +
+      '<p>Everyone plays everyone inside their own pool. Nobody meets the ' +
+      'other pool until the bracket.</p></div>' +
+      '<div class="mc-pools">' + MINI.pools.map(miPool).join("") + '</div>' +
+      miGroupTable() + tie;
+
+    var bracket =
+      '<div class="sec-sub"><h3>The bracket</h3>' +
+      '<p>Four teams, and you have to lose twice to go out. The winners of ' +
+      'the two pools meet first: the winner of that match is straight into ' +
+      'the grand final, the loser drops down with one life left.</p></div>' +
+      '<div class="br-scroll">' +
+        '<div class="br-grid" id="brGrid">' +
+          '<svg class="br-lines" id="brLines" aria-hidden="true" ' +
+            'preserveAspectRatio="none"></svg>' +
+          MINI.bracket.map(miBox).join("") +
+        '</div>' +
+      '</div>' +
+      '<div class="br-key">' +
+        '<span class="br-key__i"><i class="br-key__ln"></i>Winner advances</span>' +
+        '<span class="br-key__i is-loss"><i class="br-key__ln"></i>' +
+          'Loser drops down a bracket</span>' +
+        '<span class="br-hint">Swipe sideways to see the whole bracket.</span>' +
+      '</div>';
+
+    var placings =
+      '<div class="mc-place card">' +
+        '<div class="mc-place__lbl">Where everyone finishes</div>' +
+        '<ol class="mc-place__list">' + MINI.placings.map(function (p) {
+          return '<li><span class="mc-place__pos">' + esc(p.place) + '</span>' +
+            '<span>' + esc(p.from) + '</span></li>'; }).join("") + '</ol>' +
+      '</div>';
+
+    host.innerHTML = hud + pools + bracket + placings;
+    miLines();
+    miWatch();
+  }
+
   /* ── Render ───────────────────────────────────────────────────── */
   function renderAll() {
     applyYear();
@@ -2476,6 +2869,7 @@
     drawZonePicker();
     drawSchedule();
     drawSeries();
+    drawMini();
     var none = cur.matches.length === 0;
     $("#empty").hidden = !none;
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {

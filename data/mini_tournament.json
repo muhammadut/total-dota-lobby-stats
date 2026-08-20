@@ -1,0 +1,50 @@
+{
+  "_comment": [
+    "The SHORT format, under consideration -- two pools of three, then a",
+    "four-team double-elimination playoff. Nothing here is a result and",
+    "nothing here enters any ledger; it is a proposal drawn on the site so",
+    "the captains can look at it before anyone commits.",
+    "",
+    "UNLIKE data/fixtures.json this file is HAND-AUTHORED. It is an input,",
+    "not an output: only the parts that cannot be worked out are written",
+    "down. The six pool matches, the four playoff boxes, who feeds which",
+    "box, the final placings and every count on the page are DERIVED by",
+    "export_web.build_mini() -- so a pool edited here redraws the whole",
+    "page and no two numbers can disagree.",
+    "",
+    "Team 6 is NOT in data/teams.json on purpose: a roster row there is",
+    "what resolves a player to a team, and Team 6 is two named people and",
+    "three empty chairs. It is named here instead, display-only, so it can",
+    "appear on the bracket without becoming a name that could quietly",
+    "claim a league result.",
+    "",
+    "Set \"status\" to \"live\" once the league agrees to play it."
+  ],
+
+  "status": "proposal",
+  "name": "Mini Cup",
+
+  "pools": [
+    { "id": "A", "teams": [1, 3, 5] },
+    { "id": "B", "teams": [2, 4, 6] }
+  ],
+  "advance_per_pool": 2,
+
+  "best_of": { "pool": 1, "playoff": 3, "final": 3 },
+
+  "provisional_teams": [
+    {
+      "id": 6,
+      "name": "Team 6",
+      "players": ["Narai", "Vanilla"],
+      "unfilled": 3,
+      "note": "On the captains' sheet only -- two players named, three chairs empty."
+    }
+  ],
+
+  "tie_breaks": [
+    "The result between the two teams",
+    "Kill difference across the pool games",
+    "A single decider game"
+  ]
+}

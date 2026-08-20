@@ -210,6 +210,7 @@ data/players_tz.json   canonical name -> IANA zone
 data/discord_players.json   discord uid -> canonical name
 data/avail_pending.json     !avail messages the regex could not read
 data/fixtures.json          the season schedule (GENERATED — never hand-edit)
+data/mini_tournament.json   the SHORT format proposal (hand-authored input)
 data/league_matches.json    the LEAGUE match ledger -- never enters dota_stats.db
 data/series_results.json    which match belongs to which best-of-three
 tools/make_fixtures.py      generates it, and self-checks fairness
@@ -553,6 +554,95 @@ being true, this rule is not enough on its own.
 `team_index` is a flat dict, so a second entry silently wins or loses by
 iteration order. Scarface therefore stays on Team 1's roster and Team 3
 merely lists him under `backup`, which is display-only.
+
+### The Mini Cup tab — a format proposal, not a season (2026-08-19)
+
+A shorter way to run the league, drawn on the site so the captains can
+look at it before anyone commits. **Two pools of three** play a round
+robin — A is teams 1/3/5, B is 2/4/6 — the top two of each go into a
+**four-team double elimination** bracket and the third in each pool is
+out. Winners of the pools meet first: that winner goes straight to the
+grand final, the loser drops with a life left; the two runners-up play
+an elimination match. **10 matches over 5 nights**, against 21 over 11
+for the season on the Schedule tab.
+
+**The group stage is one table, not three lines inside each pool
+card.** It reuses the Schedule tab's `.sp` / `.sp-tbl` component rather
+than growing a second one, so the two read alike and the phone layout is
+already solved — below 620px each row becomes a block instead of
+scrolling the Result column off the edge, which is the column the table
+exists for. Listing the six matches in both places would have been two
+things to keep in step; the pool card's job is the roster and where each
+place goes next.
+
+**`data/mini_tournament.json` is an INPUT, not an output** — the
+opposite of `fixtures.json`, which is generated and must never be
+hand-edited. It holds what cannot be worked out — which teams are in
+which pool, how many advance, the best-of at each stage, the tie-break
+ladder — and `export_web.build_mini()` derives the rest: the six pool
+matches, the four boxes, which box feeds which slot of which other box,
+the final placings, every count, and the comparison against the season.
+Move a team between pools and the whole page follows. Same reason as
+`app.js::fxCopy`: prose and counts typed by hand have no checksum, and
+the schedule copy went false the first time the season was regenerated.
+
+**A configuration it cannot draw is refused, never approximated.** The
+bracket shape is specific to two pools with two advancing, so three
+pools, three advancing, a team in two pools at once, or a pool no larger
+than the number that advance all print why and return `None` — and the
+tab then **hides itself**. All four refusals were run against the real
+file and restored afterwards. A team on no roster anywhere only warns:
+the bracket is still right, it just says `Team 6`.
+
+**Connector lines are correct HERE and wrong on the Schedule timeline.**
+The timeline is a round robin where nothing progresses from one column
+to the next, so arrows there would imply a knockout that does not exist.
+This is an actual bracket, and the *drop* line — the loser of the upper
+match falling to the lower final — is the whole point of a double
+elimination, so it is drawn, dashed, in Dire red. Red means knocked out
+and green means won the thing, the same as everywhere else.
+
+**The lines are measured after layout, not drawn with CSS elbows.** The
+boxes are sized by the grid at whatever width the browser gives them, so
+a hard-coded elbow is right at exactly one width. `miLines()` reads the
+box rects and emits one SVG of orthogonal paths, elbowing just left of
+the target so two lines arriving at the same box share a gutter.
+
+**Nothing is written ON the paths, and that was the second attempt.**
+Labelling the two lines `wins` / `loses` read perfectly at 1440px and sat
+across a box at 900px: the column gap is a fixed 3.6rem, so the only
+clear space is whatever vertical gap between boxes happens to fall beside
+the elbow — and that moves as the boxes reflow. A key underneath says it
+once and cannot collide with anything.
+
+**A hidden tab measures 0×0**, which would collapse every line onto the
+origin — so `miLines()` bails on a zero-width grid, a `ResizeObserver`
+redraws the moment the tab is revealed, and `showTab` calls it too so
+the lines are never a frame late. The bail is what keeps a good drawing
+from being overwritten with zeros when another tab is opened.
+
+**Team 6 is named here and still not in `teams.json`.** It is two people
+(Narai, Vanilla) and three empty chairs, and a roster row in `teams.json`
+is what resolves a player to a team — so it lives in the mini file as a
+display-only `provisional_teams` entry. Anything provisional is drawn
+**outlined and dashed** rather than filled, everywhere it appears, so it
+cannot read as a settled side. `team-chip--6` / `team-pill--6` exist
+(petrol, the gap between teal and slate) for when it becomes real.
+
+**Three teams playing one game each can all finish 1–1**, and then the
+result between two of them settles nothing. That is why the tie-break
+ladder is three deep and printed on the page rather than left to the
+night it happens.
+
+**Nothing on the tab is a result and none of it is scheduled.** If the
+league plays it, the games go through `tools/league_ingest.py` into the
+league ledger exactly as any other league game. `status` in the JSON
+flips `Proposal — nothing agreed yet` to `Agreed`.
+
+**A ninth tab no longer fits between a phone and a laptop.** The tab bar
+scrolled below 560px only; it now scrolls below 960px, because the row
+is centred and the overflow gets clipped at BOTH ends — "Standings" and
+"Heroes" would each lose letters.
 
 ### Resetting a season (2026-08-14)
 
