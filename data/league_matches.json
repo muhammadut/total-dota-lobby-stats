@@ -227,6 +227,64 @@
         {"name": "Eldritch [Горил]", "side": "dire", "hero": "Zeus", "hero_level": 19, "kills": 1, "deaths": 10, "assists": 15, "net_worth": 10240, "last_hits": 142, "denies": 1, "gpm": 343},
         {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Luna", "hero_level": 25, "kills": 7, "deaths": 8, "assists": 7, "net_worth": 26921, "last_hits": 597, "denies": 5, "gpm": 724}
       ]
+    },
+    {
+      "source_ref": "discord-1539743589049962596",
+      "dota_match_id": null,
+      "played_on": "2026-08-19",
+      "played_at": "2026-08-19 17:10",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": "Pyaray Pairo Wali Bachiya",
+      "dire_team_name": "Naphunsak log",
+      "radiant_score": 19,
+      "dire_score": 48,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "Game 2 of the no_nakhra_clan vs axo_clan series. Posted by stoicheart in #dota-league-2026, capture clock 2026.08.20-02.10 on a UTC+5 machine = 2026-08-19 17:10 for the user. Radiant kills 17 vs score 19 is a left gap of two, re-read at 4x and confirmed at 4/6/3/1/3; dire deaths 19 exact. Dire kills 47 vs score 48, one tower kill, radiant deaths 48 exact. The twelve dots in the UGI name were measured by ink projection, not eyeballed, and match the existing alias to the pixel. Game order against game 3 is fixed by two independent signals: the plain filename was saved before the _1 collision suffix, and the unread-chat badge reads 34 here against 36 there.",
+      "radiant_team_id": 1,
+      "dire_team_id": 5,
+      "players": [
+        {"name": "Stoic (swap cmds)", "side": "radiant", "hero": "Puck", "hero_level": 26, "kills": 4, "deaths": 7, "assists": 6, "net_worth": 20012, "last_hits": 481, "denies": 8, "gpm": 566},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Pudge", "hero_level": 20, "kills": 6, "deaths": 11, "assists": 10, "net_worth": 13733, "last_hits": 199, "denies": 4, "gpm": 362},
+        {"name": "vAnzO", "side": "radiant", "hero": "Ancient Apparition", "hero_level": 16, "kills": 3, "deaths": 11, "assists": 8, "net_worth": 9483, "last_hits": 70, "denies": 2, "gpm": 251},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Dark Willow", "hero_level": 16, "kills": 1, "deaths": 15, "assists": 9, "net_worth": 6381, "last_hits": 14, "denies": 1, "gpm": 214},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Juggernaut", "hero_level": 24, "kills": 3, "deaths": 4, "assists": 4, "net_worth": 23362, "last_hits": 441, "denies": 9, "gpm": 542},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Ember Spirit", "hero_level": 27, "kills": 14, "deaths": 2, "assists": 15, "net_worth": 27377, "last_hits": 396, "denies": 23, "gpm": 697},
+        {"name": "axo [EGAN]", "side": "dire", "hero": "Monkey King", "hero_level": 26, "kills": 7, "deaths": 5, "assists": 20, "net_worth": 31876, "last_hits": 466, "denies": 19, "gpm": 742},
+        {"name": "Eldritch [Горил]", "side": "dire", "hero": "Lich", "hero_level": 23, "kills": 10, "deaths": 5, "assists": 24, "net_worth": 15298, "last_hits": 58, "denies": 22, "gpm": 397},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Winter Wyvern", "hero_level": 22, "kills": 5, "deaths": 2, "assists": 23, "net_worth": 12750, "last_hits": 36, "denies": 2, "gpm": 305},
+        {"name": "-Oden", "side": "dire", "hero": "Underlord", "hero_level": 22, "kills": 11, "deaths": 5, "assists": 23, "net_worth": 21016, "last_hits": 230, "denies": 12, "gpm": 497}
+      ]
+    },
+    {
+      "source_ref": "discord-1539743542694649866",
+      "dota_match_id": null,
+      "played_on": "2026-08-19",
+      "played_at": "2026-08-19 17:11",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": "Naphunsak log",
+      "radiant_score": 50,
+      "dire_score": 54,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "Game 3 of the no_nakhra_clan vs axo_clan series, and the decider. Posted by stoicheart in #dota-league-2026, capture clock 2026.08.20-02.10 on a UTC+5 machine = 2026-08-19 17:10 for the user. Radiant side went unnamed this game. Dire kills 54 = score 54 = radiant deaths 54, all three exact, so every dire column cross-validates. Radiant kills 47 vs score 50 is a left gap of three, which this lobby does produce; re-read at 4x and confirmed at 5/6/15/7/14, dire deaths 50 exact. The twelve dots in the UGI name were measured by ink projection and match the existing alias to the pixel. Later of the two captures: the _1 filename suffix is Windows' collision suffix, and the unread-chat badge reads 36 against game 2's 34.",
+      "radiant_team_id": 1,
+      "dire_team_id": 5,
+      "players": [
+        {"name": "vAnzO", "side": "radiant", "hero": "Phoenix", "hero_level": 26, "kills": 5, "deaths": 13, "assists": 33, "net_worth": 18069, "last_hits": 217, "denies": 4, "gpm": 394},
+        {"name": "Stoic (swap cmds)", "side": "radiant", "hero": "Invoker", "hero_level": 28, "kills": 6, "deaths": 7, "assists": 27, "net_worth": 34420, "last_hits": 652, "denies": 7, "gpm": 688},
+        {"name": "beetlebum [FUBU]", "side": "radiant", "hero": "Spectre", "hero_level": 29, "kills": 15, "deaths": 8, "assists": 31, "net_worth": 28565, "last_hits": 525, "denies": 21, "gpm": 619},
+        {"name": "............ [UGI|]", "side": "radiant", "hero": "Silencer", "hero_level": 26, "kills": 7, "deaths": 16, "assists": 35, "net_worth": 12461, "last_hits": 44, "denies": 0, "gpm": 314},
+        {"name": "HURR [PK_]", "side": "radiant", "hero": "Axe", "hero_level": 26, "kills": 14, "deaths": 10, "assists": 14, "net_worth": 19667, "last_hits": 256, "denies": 12, "gpm": 435},
+        {"name": "axo [EGAN]", "side": "dire", "hero": "Viper", "hero_level": 30, "kills": 15, "deaths": 10, "assists": 24, "net_worth": 30779, "last_hits": 351, "denies": 31, "gpm": 596},
+        {"name": "Eldritch [Горил]", "side": "dire", "hero": "Lich", "hero_level": 26, "kills": 4, "deaths": 14, "assists": 26, "net_worth": 19446, "last_hits": 79, "denies": 26, "gpm": 374},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Grimstroke", "hero_level": 26, "kills": 9, "deaths": 8, "assists": 23, "net_worth": 22062, "last_hits": 104, "denies": 3, "gpm": 394},
+        {"name": "-Oden", "side": "dire", "hero": "Bristleback", "hero_level": 29, "kills": 8, "deaths": 10, "assists": 22, "net_worth": 33574, "last_hits": 415, "denies": 8, "gpm": 609},
+        {"name": "X MEN Junior :) [Mkrs.]", "side": "dire", "hero": "Drow Ranger", "hero_level": 30, "kills": 18, "deaths": 8, "assists": 13, "net_worth": 39666, "last_hits": 641, "denies": 28, "gpm": 764}
+      ]
     }
   ]
 }
