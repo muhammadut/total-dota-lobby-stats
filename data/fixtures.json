@@ -17,15 +17,15 @@
   "season": {
     "id": "2026-fall",
     "first_night": "2026-08-22",
-    "last_night": "2026-09-11",
-    "nights": 6,
+    "last_night": "2026-10-02",
+    "nights": 11,
     "night_days": [
       "Fri",
       "Sat"
     ],
     "teams": 5,
-    "meetings_per_pair": 1,
-    "carried_nights": 1,
+    "meetings_per_pair": 2,
+    "carried_nights": 2,
     "final": true,
     "reference_zone": "Asia/Karachi"
   },
@@ -42,28 +42,28 @@
     }
   ],
   "totals": {
-    "series_per_team": 4,
+    "series_per_team": 8,
     "new_series_per_team": {
-      "1": 3,
-      "2": 3,
-      "3": 4,
-      "4": 3,
-      "5": 3
+      "1": 6,
+      "2": 6,
+      "3": 7,
+      "4": 7,
+      "5": 6
     },
     "late_slots_per_team": {
+      "1": 4,
+      "2": 4,
+      "3": 4,
+      "4": 4,
+      "5": 4
+    },
+    "meetings_per_pair": 2,
+    "byes_per_team": {
       "1": 2,
       "2": 2,
-      "3": 2,
-      "4": 2,
-      "5": 2
-    },
-    "meetings_per_pair": 1,
-    "byes_per_team": {
-      "1": 1,
-      "2": 1,
-      "3": 0,
+      "3": 1,
       "4": 1,
-      "5": 1
+      "5": 2
     }
   },
   "weeks": [
@@ -118,51 +118,6 @@
           ]
         },
         {
-          "date": "2026-08-28",
-          "day": "Fri",
-          "series": [
-            {
-              "id": "2026-08-28-S1",
-              "slot": 1,
-              "teams": [
-                1,
-                2
-              ],
-              "best_of": 3,
-              "start_utc": "2026-08-28T18:00:00+00:00",
-              "end_utc": "2026-08-28T21:00:00+00:00",
-              "pkt_window": "11:00 PM - 2:00 AM",
-              "status": "scheduled",
-              "score": [
-                0,
-                0
-              ],
-              "games": []
-            },
-            {
-              "id": "2026-08-28-S2",
-              "slot": 2,
-              "teams": [
-                3,
-                4
-              ],
-              "best_of": 3,
-              "start_utc": "2026-08-28T22:00:00+00:00",
-              "end_utc": "2026-08-29T01:00:00+00:00",
-              "pkt_window": "3:00 AM - 6:00 AM",
-              "status": "scheduled",
-              "score": [
-                0,
-                0
-              ],
-              "games": []
-            }
-          ],
-          "bye": [
-            5
-          ]
-        },
-        {
           "date": "2026-08-29",
           "day": "Sat",
           "series": [
@@ -206,14 +161,7 @@
           "bye": [
             4
           ]
-        }
-      ]
-    },
-    {
-      "week": 3,
-      "phase": "Season",
-      "week_of": "2026-09-04",
-      "nights": [
+        },
         {
           "date": "2026-09-04",
           "day": "Fri",
@@ -222,8 +170,8 @@
               "id": "2026-09-04-S1",
               "slot": 1,
               "teams": [
-                3,
-                5
+                1,
+                2
               ],
               "best_of": 3,
               "start_utc": "2026-09-04T18:00:00+00:00",
@@ -240,7 +188,7 @@
               "id": "2026-09-04-S2",
               "slot": 2,
               "teams": [
-                1,
+                3,
                 4
               ],
               "best_of": 3,
@@ -256,9 +204,16 @@
             }
           ],
           "bye": [
-            2
+            5
           ]
-        },
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "phase": "Season",
+      "week_of": "2026-09-05",
+      "nights": [
         {
           "date": "2026-09-05",
           "day": "Sat",
@@ -267,7 +222,7 @@
               "id": "2026-09-05-S1",
               "slot": 1,
               "teams": [
-                4,
+                3,
                 5
               ],
               "best_of": 3,
@@ -285,12 +240,57 @@
               "id": "2026-09-05-S2",
               "slot": 2,
               "teams": [
-                2,
-                3
+                1,
+                4
               ],
               "best_of": 3,
               "start_utc": "2026-09-05T22:00:00+00:00",
               "end_utc": "2026-09-06T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            2
+          ]
+        },
+        {
+          "date": "2026-09-11",
+          "day": "Fri",
+          "series": [
+            {
+              "id": "2026-09-11-S1",
+              "slot": 1,
+              "teams": [
+                4,
+                5
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-11T18:00:00+00:00",
+              "end_utc": "2026-09-11T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-11-S2",
+              "slot": 2,
+              "teams": [
+                2,
+                3
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-11T22:00:00+00:00",
+              "end_utc": "2026-09-12T01:00:00+00:00",
               "pkt_window": "3:00 AM - 6:00 AM",
               "status": "scheduled",
               "score": [
@@ -308,11 +308,257 @@
     },
     {
       "week": 4,
-      "phase": "Final",
-      "week_of": "2026-09-11",
+      "phase": "Season",
+      "week_of": "2026-09-12",
       "nights": [
         {
-          "date": "2026-09-11",
+          "date": "2026-09-12",
+          "day": "Sat",
+          "series": [
+            {
+              "id": "2026-09-12-S1",
+              "slot": 1,
+              "teams": [
+                3,
+                5
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-12T18:00:00+00:00",
+              "end_utc": "2026-09-12T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-12-S2",
+              "slot": 2,
+              "teams": [
+                1,
+                2
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-12T22:00:00+00:00",
+              "end_utc": "2026-09-13T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            4
+          ]
+        },
+        {
+          "date": "2026-09-18",
+          "day": "Fri",
+          "series": [
+            {
+              "id": "2026-09-18-S1",
+              "slot": 1,
+              "teams": [
+                1,
+                4
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-18T18:00:00+00:00",
+              "end_utc": "2026-09-18T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-18-S2",
+              "slot": 2,
+              "teams": [
+                2,
+                5
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-18T22:00:00+00:00",
+              "end_utc": "2026-09-19T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "phase": "Season",
+      "week_of": "2026-09-19",
+      "nights": [
+        {
+          "date": "2026-09-19",
+          "day": "Sat",
+          "series": [
+            {
+              "id": "2026-09-19-S1",
+              "slot": 1,
+              "teams": [
+                2,
+                4
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-19T18:00:00+00:00",
+              "end_utc": "2026-09-19T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-19-S2",
+              "slot": 2,
+              "teams": [
+                1,
+                3
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-19T22:00:00+00:00",
+              "end_utc": "2026-09-20T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            5
+          ]
+        },
+        {
+          "date": "2026-09-25",
+          "day": "Fri",
+          "series": [
+            {
+              "id": "2026-09-25-S1",
+              "slot": 1,
+              "teams": [
+                1,
+                5
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-25T18:00:00+00:00",
+              "end_utc": "2026-09-25T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-25-S2",
+              "slot": 2,
+              "teams": [
+                3,
+                4
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-25T22:00:00+00:00",
+              "end_utc": "2026-09-26T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "phase": "Season",
+      "week_of": "2026-09-26",
+      "nights": [
+        {
+          "date": "2026-09-26",
+          "day": "Sat",
+          "series": [
+            {
+              "id": "2026-09-26-S1",
+              "slot": 1,
+              "teams": [
+                2,
+                3
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-26T18:00:00+00:00",
+              "end_utc": "2026-09-26T21:00:00+00:00",
+              "pkt_window": "11:00 PM - 2:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            },
+            {
+              "id": "2026-09-26-S2",
+              "slot": 2,
+              "teams": [
+                4,
+                5
+              ],
+              "best_of": 3,
+              "start_utc": "2026-09-26T22:00:00+00:00",
+              "end_utc": "2026-09-27T01:00:00+00:00",
+              "pkt_window": "3:00 AM - 6:00 AM",
+              "status": "scheduled",
+              "score": [
+                0,
+                0
+              ],
+              "games": []
+            }
+          ],
+          "bye": [
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "phase": "Final",
+      "week_of": "2026-09-26",
+      "nights": [
+        {
+          "date": "2026-10-02",
           "day": "Fri",
           "series": [
             {
@@ -321,8 +567,8 @@
               "teams": [],
               "decided_by": "Top two of the round robin",
               "best_of": 5,
-              "start_utc": "2026-09-11T18:00:00+00:00",
-              "end_utc": "2026-09-11T21:00:00+00:00",
+              "start_utc": "2026-10-02T18:00:00+00:00",
+              "end_utc": "2026-10-02T21:00:00+00:00",
               "pkt_window": "11:00 PM - 2:00 AM",
               "status": "scheduled",
               "score": [

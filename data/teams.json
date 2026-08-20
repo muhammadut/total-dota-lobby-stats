@@ -25,17 +25,27 @@
     "in that archive, not in the ledger. data/matches.json was not touched:",
     "the lobby is a different system and a league reset costs it nothing.",
     "",
-    "   Team 2 is recorded with FOUR starters. That is deliberate -- naming a",
-    "   fifth would be inventing a player. A Team 2 side therefore has to be",
-    "   4 starters plus a registered stand-in, which side_team accepts",
-    "   (MIN_STARTERS is 3). Fill the cell and add the player here.",
+    "2026-08-19 RESHUFFLE. Team names came from the captains and the whole",
+    "sheet moved with them: no_nakhra_clan (1), cpx_king (2), khanna_clan (3),",
+    "gillu_&_co (4), axo_clan (5). Seeker went 3->2, Vanzo 2->3, BeastMode",
+    "4->3, Bashira 3->4, Oden Jr 5->2, Germ and Tiger-Y off the stand-in",
+    "benches and into starting slots on 1 and 2. league_ingest.py",
+    "--freeze-teams was run FIRST, so the seven recorded games keep the team",
+    "they were played for -- recomputing would have read them as mixes.",
     "",
-    "!! TEAM 2 HAS THREE STARTERS. The sheet's carry cell is blank, and on",
-    "   2026-08-14 Musa was moved to stand_in after playing FOR TEAM 4 -- a",
-    "   starter on the other side makes the lineup a mix, which side_team",
-    "   refuses. Team 2's carry and second support are therefore OPEN.",
-    "   MIN_STARTERS is 3, so a Team 2 side of its three starters plus two",
-    "   registered stand-ins still resolves. Fill the slots and add them here.",
+    "!! TEAM 5 HAS FOUR STARTERS. The sheet's offlane cell says TBD, and",
+    "   naming somebody to fill it would be inventing a player. MIN_STARTERS",
+    "   is 3, so four starters plus a stand-in still resolves. Fill the cell",
+    "   and add them here.",
+    "",
+    "!! TEAM 6 IS ON THE SHEET AND NOT IN THIS FILE. It lists Narai (mid)",
+    "   and Vanilla (carry) with three TBDs, and neither name appears in",
+    "   either ledger. A sixth team changes the schedule shape -- six teams",
+    "   over two slots means TWO byes a night, not one -- so it waits until",
+    "   the roster is real and the captains say so.",
+    "",
+    "Khuni Billa came off Team 1's starting five and is a stand-in there now.",
+    "A name may map to exactly one team, so he stays on that roster.",
     "",
     "STILL UNIDENTIFIED -- no Steam name, so a game they play in cannot be",
     "attached to a series until someone says which scoreboard name is theirs:",
@@ -132,7 +142,7 @@
   "teams": [
     {
       "id": 1,
-      "name": "Team 1",
+      "name": "no_nakhra_clan",
       "roster": [
         {
           "name": "Stoic",
@@ -146,24 +156,24 @@
           ]
         },
         {
-          "name": "HURR [PK_]",
-          "role": "core",
-          "position": "carry",
-          "tier": 1,
-          "aka": [
-            "Hurr"
-          ]
-        },
-        {
           "name": "beetlebum [FUBU]",
           "role": "core",
-          "position": "offlane",
+          "position": "carry",
           "tier": 3,
           "aka": [
             "BeetleBum",
             "Beetlebum"
           ],
           "backup": "Soooze [<MC>]"
+        },
+        {
+          "name": "HURR [PK_]",
+          "role": "core",
+          "position": "offlane",
+          "tier": 1,
+          "aka": [
+            "Hurr"
+          ]
         },
         {
           "name": "I'M Still Noob",
@@ -175,21 +185,20 @@
           ]
         },
         {
-          "name": "Khuni Billa [UGI|]",
+          "name": "¤GerM¤ [LIB0G]",
           "role": "support",
           "position": "support",
-          "tier": "legend",
+          "tier": 4,
           "aka": [
-            "Khuni Billa",
-            "Khuni",
-            "............ [UGI|]"
-          ],
-          "backup": "Theekra"
+            "Germ",
+            "GerM",
+            "dotagerm"
+          ]
         },
         {
           "name": "Soooze [<MC>]",
           "role": "stand_in",
-          "position": "offlane",
+          "position": "carry",
           "tier": "legend",
           "aka": [
             "Soooze"
@@ -204,12 +213,23 @@
             "Theekra",
             "TheekRaLord"
           ]
+        },
+        {
+          "name": "Khuni Billa [UGI|]",
+          "role": "stand_in",
+          "position": "support",
+          "tier": "legend",
+          "aka": [
+            "Khuni Billa",
+            "Khuni",
+            "............ [UGI|]"
+          ]
         }
       ]
     },
     {
       "id": 2,
-      "name": "Team 2",
+      "name": "cpx_king",
       "roster": [
         {
           "name": "Mandark [<MC>]",
@@ -223,6 +243,15 @@
           ]
         },
         {
+          "name": "Seeker(swap commends) [<MC>]",
+          "role": "core",
+          "position": "carry",
+          "tier": 1,
+          "aka": [
+            "Seeker"
+          ]
+        },
+        {
           "name": "Obno[X]iouS- 不快な [M.C]",
           "role": "core",
           "position": "offlane",
@@ -233,14 +262,25 @@
           ]
         },
         {
-          "name": "vAnzO",
+          "name": "Scarface [FUBU]",
           "role": "support",
           "position": "support",
-          "tier": 2,
+          "tier": 4,
           "aka": [
-            "Vanzo",
-            "vanzo",
-            "SavaGe"
+            "Tiger-Y",
+            "TigerY",
+            "Scarface"
+          ]
+        },
+        {
+          "name": "Oden jr",
+          "role": "support",
+          "position": "support",
+          "tier": 3,
+          "aka": [
+            "Oden",
+            "Oden Jr",
+            "-Oden"
           ]
         },
         {
@@ -254,23 +294,12 @@
             "HELL-ANGEL-",
             "sroshnak01"
           ]
-        },
-        {
-          "name": "¤GerM¤ [LIB0G]",
-          "role": "stand_in",
-          "position": "support",
-          "tier": 4,
-          "aka": [
-            "Germ",
-            "GerM",
-            "dotagerm"
-          ]
         }
       ]
     },
     {
       "id": 3,
-      "name": "Team 3",
+      "name": "khanna_clan",
       "roster": [
         {
           "name": "SpArtAAAAAAAA [WEPAK]",
@@ -284,12 +313,16 @@
           ]
         },
         {
-          "name": "Seeker(swap commends) [<MC>]",
+          "name": "samundar khan",
           "role": "core",
           "position": "carry",
-          "tier": 1,
+          "tier": 2,
           "aka": [
-            "Seeker"
+            "XXX",
+            "xxx",
+            "rtz",
+            "samundar",
+            "tr!pL3.X™"
           ]
         },
         {
@@ -304,28 +337,29 @@
           ]
         },
         {
-          "name": "samundar khan",
+          "name": "vAnzO",
           "role": "support",
           "position": "support",
           "tier": 2,
           "aka": [
-            "XXX",
-            "xxx",
-            "rtz",
-            "samundar",
-            "tr!pL3.X™"
+            "Vanzo",
+            "vanzo",
+            "SavaGe"
           ]
         },
         {
-          "name": "MODE:IG.BASHIRA™",
+          "name": "Beast Mode [Mn5tR]",
           "role": "support",
           "position": "support",
           "tier": 4,
           "aka": [
-            "Bashira",
-            "BASHIRA"
-          ],
-          "backup": "Theekra"
+            "BeastMode",
+            "Beast Mode",
+            "beastmode",
+            "Beastmode",
+            "Boostmode [Mn5tR]",
+            "Boostmode"
+          ]
         },
         {
           "name": "Downlander",
@@ -340,7 +374,7 @@
     },
     {
       "id": 4,
-      "name": "Team 4",
+      "name": "gillu_&_co",
       "roster": [
         {
           "name": "X MEN Junior :) [Mkrs.]",
@@ -382,29 +416,13 @@
           ]
         },
         {
-          "name": "Beast Mode [Mn5tR]",
+          "name": "MODE:IG.BASHIRA™",
           "role": "support",
           "position": "support",
           "tier": 4,
           "aka": [
-            "BeastMode",
-            "Beast Mode",
-            "beastmode",
-            "Beastmode",
-            "Boostmode [Mn5tR]",
-            "Boostmode"
-          ],
-          "backup": "Scarface [FUBU]"
-        },
-        {
-          "name": "Scarface [FUBU]",
-          "role": "stand_in",
-          "position": "support",
-          "tier": 4,
-          "aka": [
-            "Tiger-Y",
-            "TigerY",
-            "Scarface"
+            "Bashira",
+            "BASHIRA"
           ]
         },
         {
@@ -421,7 +439,7 @@
     },
     {
       "id": 5,
-      "name": "Team 5",
+      "name": "axo_clan",
       "roster": [
         {
           "name": "axo [EGAN]",
@@ -440,17 +458,6 @@
           "tier": 1,
           "aka": [
             "Eros"
-          ]
-        },
-        {
-          "name": "Oden jr",
-          "role": "core",
-          "position": "offlane",
-          "tier": 3,
-          "aka": [
-            "Oden",
-            "Oden Jr",
-            "-Oden"
           ]
         },
         {

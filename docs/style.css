@@ -1599,6 +1599,9 @@ td.none{ padding:2.2rem 1rem; }
 .sp-badge.is-live{ color:#8a5a10; background:rgba(182,121,27,.15); }
 .sp-tbl .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
 .sp-tbd{ font-style:italic; font-weight:600; color:var(--ink-2); }
+.sp-none{
+  padding:1.1rem 1rem; font-size:.86rem; color:var(--ink-3); text-align:center;
+}
 
 /* On a phone three columns do not fit, and a sideways-scrolling table
    hides the Result column -- which is the whole reason this table

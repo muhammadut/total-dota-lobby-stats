@@ -323,7 +323,8 @@ def resolve(ref: str, explicit_series: str | None):
             errs.append(f"{label} is a mix of teams {spread} — a league game has "
                         f"one team per side. This looks like an inhouse game.")
     if rad is not None and rad == dire:
-        errs.append(f"both sides map to Team {rad} — a team cannot play itself.")
+        errs.append(f"both sides map to {team_name(teams, rad)} — a team "
+                    f"cannot play itself.")
     if errs:
         return info, errs
 
@@ -336,6 +337,11 @@ def resolve(ref: str, explicit_series: str | None):
     when = match_when_utc(match)
     info["when_utc"] = when
     same, timed = candidates(fixtures, rad, dire, when)
+    # Refusals name the teams. They used to say "Team 4", which was the
+    # only label there was; the captains have since named their teams and
+    # a message nobody can match to a roster is a message nobody acts on.
+    def TN(tid):
+        return team_name(teams, tid)
 
     if explicit_series:
         hit = [(wk, n, s) for wk, n, s in all_series(fixtures)
@@ -348,24 +354,24 @@ def resolve(ref: str, explicit_series: str | None):
         # --series, because a teamless fixture never matches an inferred
         # pair. Every other series still has to match exactly.
         if s.get("teams") and set(s["teams"]) != {rad, dire}:
-            return info, [f"series {s['id']} is Team {s['teams'][0]} vs "
-                          f"Team {s['teams'][1]}, but this match is Team {rad} vs "
-                          f"Team {dire}."]
+            return info, [f"series {s['id']} is {TN(s['teams'][0])} vs "
+                          f"{TN(s['teams'][1])}, but this match is {TN(rad)} vs "
+                          f"{TN(dire)}."]
         chosen = (wk, n, s)
     elif not same:
-        return info, [f"Team {rad} and Team {dire} have no fixture against each "
+        return info, [f"{TN(rad)} and {TN(dire)} have no fixture against each "
                       f"other anywhere in the season."]
     elif len(timed) == 1:
         chosen = timed[0]
     elif not timed:
         opts = ", ".join(s["id"] for _, _, s in same)
-        return info, [f"Team {rad} vs Team {dire} is scheduled {len(same)} time(s), "
+        return info, [f"{TN(rad)} vs {TN(dire)} is scheduled {len(same)} time(s), "
                       f"but none of those nights contains "
                       f"{when.strftime('%Y-%m-%d %H:%M UTC') if when else 'this match'}. "
                       f"Pass --series explicitly if this is a replay. Options: {opts}"]
     else:
         opts = ", ".join(s["id"] for _, _, s in timed)
-        return info, [f"{len(timed)} fixtures between Team {rad} and Team {dire} "
+        return info, [f"{len(timed)} fixtures between {TN(rad)} and {TN(dire)} "
                       f"overlap this match's time — pass --series. Options: {opts}"]
 
     wk, night, s = chosen
@@ -384,7 +390,7 @@ def resolve(ref: str, explicit_series: str | None):
         wins[g["winner"]] = wins.get(g["winner"], 0) + 1
     if wins and max(wins.values()) >= need:
         done = max(wins, key=wins.get)
-        errs.append(f"series {s['id']} is already decided — Team {done} has "
+        errs.append(f"series {s['id']} is already decided — {TN(done)} has "
                     f"{wins[done]} win(s) in a best-of-{best_of}. "
                     f"A further game cannot belong to it.")
     info["existing"] = games

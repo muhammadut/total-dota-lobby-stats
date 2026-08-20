@@ -278,22 +278,26 @@ L.do_avail(f"{_fs:%b} {_fs.day} 8PM to 11PM", "ut70", UID_UT, dp)
 r = L.do_find("")
 # Pairs, not a constant. This read "all 6 pairs" and broke the day a fifth
 # team was added, which is n*(n-1)/2 = 10 -- derive it from the roster.
+# The NAMES come from the roster too: they were hard-coded as "Team 1" and
+# broke the day the captains named their teams. A test that asserts a
+# label the league can rename is testing the wrong thing.
 _n = len(_tj["teams"])
 _pairs = _n * (_n - 1) // 2
+_tname = {t["id"]: t["name"] for t in _tj["teams"]}
+_hdr = r.count("**")  // 2
 check(f"find (no args) — lists all {_pairs} pairs",
-      r.count("**Team") == _pairs, r[:200])
+      _hdr == _pairs, r[:200])
 
+_1v3 = f"**{_tname[1]} vs {_tname[3]}**"
 r = L.do_find("1 vs 3")
 check("find '1 vs 3' — single pair",
-      "**Team 1 vs Team 3**" in r and r.count("**Team") == 1, r[:200])
+      _1v3 in r and r.count("**") // 2 == 1, r[:200])
 
-r = L.do_find("Team 1 vs Team 3")
-check("find 'Team 1 vs Team 3' — verbose form works",
-      "**Team 1 vs Team 3**" in r, r[:200])
+r = L.do_find(f"{_tname[1]} vs {_tname[3]}")
+check("find 'Team 1 vs Team 3' — verbose form works", _1v3 in r, r[:200])
 
 r = L.do_find("1v3")
-check("find '1v3' — compact form works",
-      "**Team 1 vs Team 3**" in r, r[:200])
+check("find '1v3' — compact form works", _1v3 in r, r[:200])
 
 
 # ═════════════════════════════════════════════════════════════════════
@@ -309,8 +313,8 @@ check("status — no crash, shows week + team pulse",
 group("!readiness")
 
 r = L.do_readiness()
-check("readiness — shows all 4 teams",
-      all(f"Team {i}" in r for i in (1, 2, 3, 4)), r)
+check(f"readiness — shows all {len(_tj['teams'])} teams",
+      all(t["name"] in r for t in _tj["teams"]), r)
 check("readiness — shows the week",
       "week of" in r.lower(), r)
 check("readiness — shows progress bar",

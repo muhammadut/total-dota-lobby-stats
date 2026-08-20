@@ -1298,10 +1298,16 @@
         var hit = where[nick.toLowerCase()];
         var pos = hit && hit.row.position ? hit.row.position : "";
         var bench = hit && hit.row.role === "stand_in";
+        // The chip and the name are ONE flex box. They used to be siblings,
+        // so the gap on .tt-team applied to nothing and the cell read
+        // "4gillu_&_co".
         var team = hit
-          ? '<span class="team-chip team-chip--' + hit.team.id + '">' +
-              hit.team.id + '</span><span class="tt-team">' +
-              esc(hit.team.name) + (bench ? ' <em>stand-in</em>' : "") + '</span>'
+          ? '<span class="tt-team">' +
+              '<span class="team-chip team-chip--' + hit.team.id + '">' +
+              hit.team.id + '</span>' +
+              '<span>' + esc(hit.team.name) +
+                (bench ? ' <em>stand-in</em>' : "") + '</span>' +
+            '</span>'
           : '<span class="tt-none">—</span>';
         return '<tr' + (bench ? ' class="is-bench"' : "") + '>' +
           '<td class="tt-player">' + esc(nick) + '</td>' +
@@ -1644,16 +1650,17 @@
     '</div>';
   }
 
-  /* Which matches are won, and which are left.
-     This replaced a five-by-five "who owes whom" grid. The grid answered
-     a question nobody asks -- how many series does this PAIR still owe --
-     and finding one result in it meant reading a matrix. A row per match
-     in the order they are played answers both halves of the real
-     question at a glance: what happened, and what is left.
+  /* Which matches have been PLAYED.
+     It began as a five-by-five "who owes whom" grid, which answered a
+     question nobody asks -- how many series does this PAIR still owe --
+     and made finding one result a matrix-reading exercise. Then it listed
+     every fixture, played or not, which at two meetings a pair is twenty
+     rows of "still to play" burying the three that happened.
 
-     It is built from the schedule itself, not from the progress payload,
-     so the counts in the header can never disagree with the rows under
-     them. */
+     So this table is the RESULTS only. What is still to come is the
+     schedule underneath it, which is the thing built to show it; the
+     count of what is left stays in the header, where one number does the
+     job of twenty rows. */
   function spMatch(s) {
     if (isTBD(s)) {
       return '<span class="sp-tbd">' + esc(s.decided_by || s.label || "The top two") + '</span>';
@@ -1696,16 +1703,20 @@
 
     var all = allSeries();
     var done = 0, live = 0;
-    var body = all.map(function (e) {
+    var rows = all.map(function (e) {
       var r = spResult(e.s);
       if (r.cls === "is-done") done++;
       else if (r.cls === "is-live") live++;
-      return '<tr class="' + r.cls + '">' +
-        '<td class="sp-td-m"><span class="sp-m">' + spMatch(e.s) + '</span></td>' +
-        '<td class="sp-when">' + esc(e.n.day) + ' ' + esc(dayLabel(e.n.date)) +
-          '<span class="sp-slot' + (e.s.slot === 2 ? " is-late" : "") + '">' +
-            (e.s.slot === 2 ? "Late" : "Early") + '</span></td>' +
-        '<td class="sp-td-r"><span class="sp-res">' + r.html + '</span></td>' +
+      return { e: e, r: r };
+    }).filter(function (x) { return x.r.cls !== "is-open"; });
+
+    var body = rows.map(function (x) {
+      return '<tr class="' + x.r.cls + '">' +
+        '<td class="sp-td-m"><span class="sp-m">' + spMatch(x.e.s) + '</span></td>' +
+        '<td class="sp-when">' + esc(x.e.n.day) + ' ' + esc(dayLabel(x.e.n.date)) +
+          '<span class="sp-slot' + (x.e.s.slot === 2 ? " is-late" : "") + '">' +
+            (x.e.s.slot === 2 ? "Late" : "Early") + '</span></td>' +
+        '<td class="sp-td-r"><span class="sp-res">' + x.r.html + '</span></td>' +
       '</tr>';
     }).join("");
 
@@ -1720,12 +1731,13 @@
     if (FX.season && FX.season.final) {
       foot += ' The top two then meet in the <b>final</b>.';
     }
+    foot += ' What has not been played yet is in the schedule below.';
 
     host.innerHTML =
       '<div class="sp card">' +
         '<div class="sp-head">' +
           '<div>' +
-            '<div class="sp-title">Matches won and left</div>' +
+            '<div class="sp-title">Matches played</div>' +
             '<div class="sp-sub"><b>' + done + '</b> of ' + total +
               ' played &middot; <b>' + left + '</b> still to play' +
               (live ? ' &middot; ' + live + ' in progress' : '') +
@@ -1735,10 +1747,14 @@
             '<div class="sp-meter__fill" style="width:' + pct + '%"></div>' +
           '</div>' +
         '</div>' +
-        '<div class="sp-scroll"><table class="sp-tbl">' +
-          '<thead><tr><th>Match</th><th>When</th><th>Result</th></tr></thead>' +
-          '<tbody>' + body + '</tbody>' +
-        '</table></div>' +
+        (rows.length
+          ? '<div class="sp-scroll"><table class="sp-tbl">' +
+              '<thead><tr><th>Match</th><th>When</th><th>Result</th></tr></thead>' +
+              '<tbody>' + body + '</tbody>' +
+            '</table></div>'
+          : '<div class="sp-none">No matches have been played yet. ' +
+            'Results arrive by posting the post-game screenshot in ' +
+            '<b>#dota-league-2026</b>.</div>') +
         (foot ? '<div class="sp-foot">' + foot + '</div>' : '') +
       '</div>';
   }

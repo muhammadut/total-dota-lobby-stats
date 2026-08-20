@@ -291,10 +291,32 @@ pair has met exactly once.
 ```
 Slot 1  11:00 PM – 2:00 AM PKT      Slot 2  3:00 AM – 6:00 AM PKT
 SEASON RESET 2026-08-14 — tier draft, five teams, ledger archived.
-10 round-robin nights, Fri + Sat, 14 Aug -> 12 Sep, then a
-BEST-OF-FIVE FINAL on Fri 18 Sep between the top two.
-every pair meets 2x; each team: 8 series + 2 byes over the season
+20 round-robin series over 10 nights, Fri + Sat, 22 Aug -> 26 Sep,
+then a BEST-OF-FIVE FINAL on Fri 2 Oct between the top two.
+every pair meets 2x; each team: 8 series, 4 of them at 3 AM
 ```
+
+**`--meetings` went 2 -> 1 -> 2 again (2026-08-19), on the players' ask.**
+It costs nothing to move: nights with a recorded result are carried
+verbatim, so the three played series survived both changes untouched and
+only the unplayed remainder was re-solved. Regenerate with
+`make_fixtures.py --first 2026-08-22 --meetings 2` — `--first` is the
+first night to KEEP, not the first night of the season.
+
+### Team names (2026-08-19)
+
+The captains named their teams: **1 `no_nakhra_clan`, 2 `cpx_king`,
+3 `khanna_clan`, 4 `gillu_&_co`, 5 `axo_clan`.** Names live in
+`teams.json` only — `fixtures.json`, `league_matches.json` and
+`series_results.json` all key on the **id**, so a rename is one file and
+nothing needs migrating. Anything printing `f"Team {id}"` is now showing
+a label nobody in the channel uses; `league_result.resolve` was changed
+to name the teams in its refusals for exactly that reason.
+
+**Two tests asserted the literal string `Team 1`** and failed the moment
+the names changed. They now read the names out of `teams.json`. A test
+that hard-codes a label the league can rename is testing the wrong
+thing — the same class of bug as prose with no checksum.
 
 **There IS a final now, and it is the one series with no teams.**
 `make_fixtures.py` emits it with `"teams": []` and a `decided_by` note
@@ -547,6 +569,25 @@ a league reset must cost `data/matches.json` nothing.
 Then regenerate: `make_fixtures.py --first <first night>`. With the
 results gone there is nothing to carry, so the whole season is fresh.
 
+**The 2026-08-19 reshuffle moved seven people, not just the names.**
+Seeker 3→2, Vanzo 2→3, BeastMode 4→3, Bashira 3→4, Oden Jr 5→2, and Germ
+and Tiger-Y came off the stand-in benches into starting slots on 1 and 2.
+Khuni Billa came out of Team 1's five and is a stand-in there now.
+`--freeze-teams` was run FIRST, so all seven recorded games kept the team
+they were played for — recomputing would have read them as mixes and
+dropped them out of the standings.
+
+**Team 5 now has FOUR starters** (the sheet's offlane cell says TBD) and
+**Team 2 has five for the first time**. `MIN_STARTERS` is 3, so four
+starters plus a stand-in still resolves. Do not invent a name to fill a
+TBD cell.
+
+**Team 6 is on the captains' sheet and deliberately not in the repo.** It
+lists Narai (mid) and Vanilla (carry) against three TBDs, and neither
+name appears in either ledger. Six teams over two slots is TWO byes a
+night, not one — a different schedule shape — so it waits for a real
+roster and an explicit go-ahead.
+
 **Rosters carry `position` and `tier` now** (mid/carry/offlane/support,
 and the draft pool 1–4 or `legend`). Both are **display only** — nothing
 resolves identity or team from them, so a wrong one costs a label, not a
@@ -666,17 +707,19 @@ Saturday and Sunday ran together as four identical lines. The seam
 between nights is now a full rule, alternate nights are tinted, and the
 date is stacked under the weekday.
 
-**Above both layouts sits one table: which matches are won, and which
-are left** (`app.js::drawProgress`). It replaced a five-by-five
+**Above both layouts sits one table, and it lists PLAYED matches only**
+(`app.js::drawProgress`). It replaced a five-by-five
 "who-owes-whom" grid, which answered a question nobody asks — how many
 series does this *pair* still owe — and made finding a single result a
-matrix-reading exercise. One row per match in playing order answers both
-halves at once. It is built by walking the schedule itself, not from
-`FX.progress`, so the header counts can never disagree with the rows
-beneath them; the final is a row too, so 11 rows means "of 11". Below
-620px the three columns become a two-line block per row — a
-sideways-scrolling table hid the Result column, which is the entire
-point of the table.
+matrix-reading exercise. It then listed every fixture, played
+or not, which at two meetings a pair is twenty rows of "still to play"
+burying the three that happened — so on the user's instruction it now
+shows results only, and what is left is the count in the header plus the
+schedule underneath, which is the thing built to show it. It is built by
+walking the schedule itself, not from `FX.progress`, so the header counts
+can never disagree with the rows beneath them. Below 620px the three
+columns become a two-line block per row — a sideways-scrolling table hid
+the Result column, which is the entire point of the table.
 
 `team-pill--5` did not exist until this was built: Team 5 rendered as
 white text on a transparent pill everywhere the List view drew a pill.
