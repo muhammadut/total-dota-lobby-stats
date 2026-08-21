@@ -25,8 +25,8 @@
   "name": "Mini Cup",
 
   "pools": [
-    { "id": "A", "teams": [1, 3, 5] },
-    { "id": "B", "teams": [2, 4, 6] }
+    { "id": "A", "teams": [1, 3, 6] },
+    { "id": "B", "teams": [2, 4, 5] }
   ],
   "advance_per_pool": 2,
 
