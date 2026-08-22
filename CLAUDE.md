@@ -634,10 +634,44 @@ result between two of them settles nothing. That is why the tie-break
 ladder is three deep and printed on the page rather than left to the
 night it happens.
 
-**Nothing on the tab is a result and none of it is scheduled.** If the
-league plays it, the games go through `tools/league_ingest.py` into the
-league ledger exactly as any other league game. `status` in the JSON
-flips `Proposal — nothing agreed yet` to `Agreed`.
+**None of it is scheduled**, and if the league plays it the games go
+through `tools/league_ingest.py` into the league ledger exactly as any
+other league game.
+
+**Results here are REPORTED, and that is a weaker thing than every other
+number on the site (2026-08-22).** A `results` entry in
+`data/mini_tournament.json` names a match and a winner — no scoreboard,
+no player lines, no `team kills <= team score <= enemy deaths` to check
+it against. The first four went in from a Discord message because the
+games were played and none of them was in either ledger. So the page
+**says so**: the group table's foot counts how many are unbacked, and
+the closing note leads with it. Give a result a `source_ref` naming a
+game in `data/league_matches.json` and it stops being flagged.
+
+**Team 6 cannot enter the league ledger at all**, which is why a
+screenshot would not have helped here: `league_ingest` resolves a side
+against the rosters in `teams.json`, and `narai_co` has none. Any
+`narai_co` game is unbackable until that team is real.
+
+**What IS checked: the match exists, the winner played in it, and no
+match has two results.** Those are how a typo becomes a wrong team in
+the bracket. All three refuse loudly, tested against the real file.
+
+**A pool the results do not separate is left UNDECIDED, never ordered.**
+`pool_standings()` groups on wins, splits a level group by the results
+among only those teams, and if that still does not separate them the
+whole group is flagged `tied` — the pool card says *Level — needs a
+tie-break* and the bracket slot stays empty. Verified both ways: a
+perfect 1–1–1 cycle in a pool of three refuses to rank anybody and
+leaves the upper-match slot `None`, while a two-way tie that
+head-to-head does settle fills it. Guessing there would put the wrong
+team in the bracket, weeks before anyone noticed.
+
+**The status pill is derived from the count of results, not from
+`status`.** `Proposal — nothing agreed yet` sitting above four recorded
+results is the page contradicting itself, and a hand-set flag is exactly
+how that happens. It reads Proposal at zero played, `Under way — N of
+10` in between, and Finished at the end.
 
 **A ninth tab no longer fits between a phone and a laptop.** The tab bar
 scrolled below 560px only; it now scrolls below 960px, because the row

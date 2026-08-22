@@ -42,6 +42,20 @@
     }
   ],
 
+  "_results_note": [
+    "REPORTED results -- a winner and nothing else, told to the bot rather",
+    "than read off a scoreboard. Everywhere else in this project a result",
+    "arrives as a screenshot and is checksummed before it counts. Give a",
+    "result a \"source_ref\" naming a game in data/league_matches.json and",
+    "the page stops flagging it as reported."
+  ],
+  "results": [
+    { "match": "MINI-A-1v6", "winner": 1 },
+    { "match": "MINI-B-2v4", "winner": 4 },
+    { "match": "MINI-B-4v5", "winner": 5 },
+    { "match": "MINI-B-2v5", "winner": 5 }
+  ],
+
   "tie_breaks": [
     "The result between the two teams",
     "Kill difference across the pool games",

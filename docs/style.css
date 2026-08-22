@@ -1706,12 +1706,36 @@ td.none{ padding:2.2rem 1rem; }
   margin-left:auto; font-size:.72rem; color:var(--ink-3); white-space:nowrap;
 }
 .mc-pool__teams{ padding:.45rem .55rem; }
-.mc-team{ display:flex; align-items:center; gap:.65rem; padding:.4rem .5rem; }
-.mc-team__name{ font-weight:600; font-size:.9rem; }
+.mc-team{ display:flex; align-items:center; gap:.6rem; padding:.4rem .5rem; }
+/* The name takes the slack, so the record and the tag sit hard right
+   whether or not the row carries a provisional-roster note. */
+.mc-team__name{ font-weight:600; font-size:.9rem; flex:1; min-width:0; }
 .mc-team.is-prov .mc-team__name{ color:var(--ink-2); }
-.mc-team__meta{
-  margin-left:auto; text-align:right; font-size:.72rem; color:var(--ink-3);
+.mc-team__meta{ text-align:right; font-size:.72rem; color:var(--ink-3); }
+/* Reserved even when empty, so the chips stay on one axis before the
+   first result lands and after it. */
+.mc-team__pos{
+  width:.85rem; flex:0 0 auto; text-align:right;
+  font-size:.76rem; font-weight:700; color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
 }
+.mc-team__rec{
+  font-family:var(--mono); font-size:.8rem; color:var(--ink-2);
+  font-variant-numeric:tabular-nums; flex:0 0 auto;
+}
+.mc-team.is-gone .mc-team__name, .mc-team.is-gone .mc-team__rec{
+  color:var(--ink-3);
+}
+.mc-tag{
+  flex:0 0 auto; font-size:.62rem; font-weight:800; letter-spacing:.07em;
+  text-transform:uppercase; padding:.16rem .42rem; border-radius:var(--r-pill);
+}
+.mc-tag.is-adv{ color:var(--radiant); background:var(--radiant-bg); }
+.mc-tag.is-out{ color:#a5331f; background:var(--dire-bg); }
+.mc-tag.is-tied{ color:#8a5a10; background:rgba(182,121,27,.15); }
+
+/* A bracket slot a pool has actually filled. */
+.br-team{ font-size:.84rem; font-weight:700; color:var(--ink); }
 /* The group-stage table reuses the Schedule tab's .sp component; the
    only thing it needs of its own is the pool letter in the Pool cell. */
 .mc-group{ margin:1.1rem 0 0; }

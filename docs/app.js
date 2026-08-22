@@ -2539,27 +2539,50 @@
     return out;
   }
 
+  /* One row of a pool's table. Drawn from `standings`, which the export
+     orders by rank where the results settle one and by wins otherwise --
+     so the card is a live table from the first game, and a finished pool
+     reads top to bottom in finishing order. A pool that the results do
+     NOT separate says "tie-break" rather than picking somebody. */
+  function miPoolRow(p, t, anyPlayed) {
+    var team = miTeam(t.id);
+    var meta = "";
+    if (team.provisional) {
+      meta = team.players.length
+        ? team.players.join(", ") + (team.unfilled
+            ? " · " + team.unfilled + " still to name" : "")
+        : "not confirmed";
+    }
+    var tag = t.outcome === "advances" ? '<span class="mc-tag is-adv">Through</span>'
+            : t.outcome === "out"      ? '<span class="mc-tag is-out">Out</span>'
+            : t.outcome === "tied"     ? '<span class="mc-tag is-tied">Tie-break</span>'
+            : "";
+    return '<div class="mc-team' + (team.provisional ? " is-prov" : "") +
+             (t.outcome === "out" ? " is-gone" : "") + '">' +
+      '<span class="mc-team__pos">' + (t.rank || "") + '</span>' +
+      miChip(t.id) +
+      '<span class="mc-team__name">' + esc(team.name) + '</span>' +
+      (meta ? '<span class="mc-team__meta">' + esc(meta) + '</span>' : "") +
+      (anyPlayed ? '<span class="mc-team__rec">' + t.won + '–' + t.lost +
+                   '</span>' : "") +
+      tag +
+    '</div>';
+  }
+
   function miPool(p) {
-    var teams = p.teams.map(function (t) {
-      var meta = "";
-      if (t.provisional) {
-        meta = t.players.length
-          ? t.players.join(", ") + (t.unfilled
-              ? " · " + t.unfilled + " still to name" : "")
-          : "not confirmed";
-      }
-      return '<div class="mc-team' + (t.provisional ? " is-prov" : "") + '">' +
-        miChip(t.id) +
-        '<span class="mc-team__name">' + esc(t.name) + '</span>' +
-        (meta ? '<span class="mc-team__meta">' + esc(meta) + '</span>' : "") +
-      '</div>';
+    var anyPlayed = p.matches.some(function (m) { return m.winner != null; });
+    var teams = p.standings.map(function (t) {
+      return miPoolRow(p, t, anyPlayed);
     }).join("");
 
     return '<div class="mc-pool card">' +
       '<div class="mc-pool__head">' +
         '<span class="mc-pool__badge">' + esc(p.id) + '</span>' +
         '<span class="mc-pool__title">' + esc(p.label) + '</span>' +
-        '<span class="mc-pool__adv">Top ' + p.advance + ' go through</span>' +
+        '<span class="mc-pool__adv">' + (
+          p.complete && !p.decided ? 'Level — needs a tie-break'
+          : p.complete ? 'Decided'
+          : 'Top ' + p.advance + ' go through') + '</span>' +
       '</div>' +
       '<div class="mc-pool__teams">' + teams + '</div>' +
       '<div class="mc-pool__foot">' + miExits(p).map(function (x) {
@@ -2585,17 +2608,49 @@
       p.matches.forEach(function (m) { ms.push({ p: p, m: m }); });
     });
 
+    var played = 0, reported = 0;
     var body = ms.map(function (x) {
-      return '<tr>' +
+      var w = x.m.winner;
+      if (w != null) played++;
+      if (x.m.reported) reported++;
+      var res = w != null
+        ? '<span class="sp-won">' + miChip(w) + esc(miTeam(w).name) +
+            ' won</span>'
+        : '<span class="sp-badge">Still to play</span>';
+      return '<tr' + (w != null ? ' class="is-done"' : '') + '>' +
         '<td class="sp-td-m"><span class="sp-m">' +
           miPill(x.m.teams[0]) + '<span class="sp-vs">vs</span>' +
           miPill(x.m.teams[1]) + '</span></td>' +
         '<td class="sp-when"><span class="sp-pool">' + esc(x.p.id) + '</span>' +
           esc(x.p.label) + '</td>' +
-        '<td class="sp-td-r"><span class="sp-res">' +
-          '<span class="sp-badge">Still to play</span></span></td>' +
+        '<td class="sp-td-r"><span class="sp-res">' + res + '</span></td>' +
       '</tr>';
     }).join("");
+
+    /* Where these results came from, said plainly.
+
+       Everything else on this site is transcribed from a post-game
+       screenshot and checksummed against
+       `team kills <= team score <= enemy deaths` before it counts. A
+       reported result is a name and nothing else — no scoreboard, no
+       player lines, nothing to check it against. That is a real
+       difference and the page is not going to hide it. */
+    var foot;
+    if (!played) {
+      foot = 'Nothing has been played. This is the format drawn out, ' +
+             'not a season that is running.';
+    } else {
+      foot = '<b>' + played + '</b> of ' + ms.length + ' played.';
+      if (reported) {
+        foot += ' <b>' + reported + '</b> of them ' +
+          (reported === 1 ? 'was' : 'were') + ' reported rather than read ' +
+          'from a screenshot, so there is no scoreboard behind ' +
+          (reported === 1 ? 'it' : 'them') + ' and nothing to check ' +
+          (reported === 1 ? 'it' : 'them') + ' against. Post the post-game ' +
+          'shots in <b>#dota-league-2026</b> and they become real ledger ' +
+          'games with every player\'s line behind them.';
+      }
+    }
 
     return '<div class="sp card mc-group">' +
       '<div class="sp-head">' +
@@ -2610,8 +2665,7 @@
         '<thead><tr><th>Match</th><th>Pool</th><th>Result</th></tr></thead>' +
         '<tbody>' + body + '</tbody>' +
       '</table></div>' +
-      '<div class="sp-foot">Nothing has been played. This is the format ' +
-        'drawn out, not a season that is running.</div>' +
+      '<div class="sp-foot">' + foot + '</div>' +
     '</div>';
   }
 
@@ -2624,9 +2678,15 @@
       var from = f.kind === "pool"
         ? f.label + " · Pool " + f.pool
         : f.label + " · " + miRound(f.node).toLowerCase();
-      return '<div class="br-slot" data-slot="' + i + '">' +
-        '<span class="br-ph" aria-hidden="true"></span>' +
-        '<span class="br-from">' + esc(from) + '</span>' +
+      // Filled in only where a pool has actually decided it. Everything
+      // else stays a placeholder -- see the export's feed resolution.
+      var who = f.team != null
+        ? miChip(f.team) + '<span class="br-team">' +
+            esc(miTeam(f.team).name) + '</span>'
+        : '<span class="br-ph" aria-hidden="true"></span>' +
+          '<span class="br-from">' + esc(from) + '</span>';
+      return '<div class="br-slot' + (f.team != null ? " is-set" : "") +
+               '" data-slot="' + i + '">' + who +
         '<span class="br-sc">–</span>' +
       '</div>';
     }).join("");
@@ -2739,25 +2799,41 @@
              ' nights for the season on the Schedule tab.' : '.');
     }
 
+    /* Derived, not typed. "Proposal — nothing agreed yet" sitting above
+       four recorded results is the page contradicting itself, and a
+       hand-set flag is exactly how that happens. */
     var pill = $("#miniStatus");
     if (pill) {
       var live = MINI.status === "live";
-      pill.className = "pill" + (live ? "" : " pill--draft");
-      pill.textContent = live ? "Agreed" : "Proposal — nothing agreed yet";
+      var draft = t.played === 0;
+      pill.className = "pill" + (draft ? " pill--draft" : "");
+      pill.textContent =
+        t.played === 0 ? (live ? "Agreed — not started"
+                               : "Proposal — nothing agreed yet")
+        : t.played < t.matches ? "Under way — " + t.played + " of " +
+                                 t.matches + " played"
+        : "Finished";
     }
 
     var note = $("#miniNote");
     if (note) {
-      note.innerHTML =
-        '<b>Nothing on this tab is a result.</b> It is the format drawn out, ' +
-        'not a season that is running: no match here is scheduled and none is ' +
-        'recorded. The pools, the best-of at each stage and the tie-breaks live ' +
-        'in <code>data/mini_tournament.json</code>, and every match, box and ' +
-        'count on this page is worked out from them — so moving a team between ' +
-        'pools redraws the whole page and no two numbers here can disagree. ' +
-        'If the league plays it, the games are posted in ' +
-        '<b>#dota-league-2026</b> and land in the league ledger exactly as they ' +
-        'do now.';
+      var head = t.played
+        ? '<b>These results were reported, not transcribed.</b> A result here ' +
+          'names a winner and nothing else — unlike every other number on ' +
+          'this site, which is read off a post-game screenshot and ' +
+          'checksummed before it counts. Nothing here touches the lobby ' +
+          'ledger or the league one, and no player record moves. Post the ' +
+          'screenshots in <b>#dota-league-2026</b> and these become real ' +
+          'games with the scoreboard behind them. '
+        : '<b>Nothing on this tab is a result.</b> It is the format drawn ' +
+          'out, not a season that is running: no match here is scheduled and ' +
+          'none is recorded. ';
+      note.innerHTML = head +
+        'The pools, the best-of at each stage, the tie-breaks and the results ' +
+        'live in <code>data/mini_tournament.json</code>, and every match, box, ' +
+        'placing and count on this page is worked out from them — so no two ' +
+        'numbers here can disagree. A pool the results do not separate says ' +
+        'so and leaves its bracket slot empty rather than picking somebody.';
     }
   }
 

@@ -508,6 +508,48 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
             "out": len(ids) - advance,
         })
 
+    # Results.
+    #
+    # A result here is REPORTED, not read off a scoreboard: it names a
+    # winner and nothing else. Everywhere else in this project a result
+    # arrives as a screenshot, is checksummed against
+    # `team kills <= team score <= enemy deaths` and lands in a ledger with
+    # every player's line behind it. These have none of that, so a result
+    # without a `source_ref` is carried to the browser flagged `reported`
+    # and the page says so out loud. Add a `source_ref` naming a game in
+    # data/league_matches.json and the flag clears.
+    #
+    # What IS checked: the match exists, the winner actually played in it,
+    # and no match has two results. Those are the ways a typo becomes a
+    # wrong team in the bracket.
+    all_matches = {m["id"]: m for pool in pools for m in pool["matches"]}
+    seen_res = {}
+    for r in cfg.get("results") or []:
+        mid = r.get("match")
+        if mid not in all_matches:
+            return refuse(f"a result names {mid!r}, which is not a match in "
+                          f"any pool")
+        if mid in seen_res:
+            return refuse(f"two results recorded for {mid}")
+        pair = all_matches[mid]["teams"]
+        if r.get("winner") not in pair:
+            return refuse(f"the result for {mid} says team {r.get('winner')} "
+                          f"won, but that match is team {pair[0]} v team "
+                          f"{pair[1]}")
+        seen_res[mid] = r
+
+    for mid, m in all_matches.items():
+        r = seen_res.get(mid)
+        m["winner"] = r["winner"] if r else None
+        m["loser"] = ([t for t in m["teams"] if t != r["winner"]][0]
+                      if r else None)
+        m["source_ref"] = (r or {}).get("source_ref")
+        # No screenshot behind it. The page prints this; do not drop it.
+        m["reported"] = bool(r) and not m["source_ref"]
+
+    for pool in pools:
+        pool_standings(pool)
+
     A, B = pools[0]["id"], pools[1]["id"]
 
     # The four playoff boxes. `col`/`row` is the grid the browser draws
@@ -552,6 +594,24 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
         {"from": "MINI-ELIM", "to": "MINI-LF", "slot": 1, "kind": "win"},
         {"from": "MINI-LF",   "to": "MINI-GF", "slot": 1, "kind": "win"},
     ]
+    # A decided pool answers "winner of Pool A" and "runner-up of Pool A".
+    # An UNdecided one does not, and is left alone -- a pool where two
+    # teams are level on the tie-break is exactly where guessing would put
+    # the wrong team in the bracket and nobody would notice until the
+    # night it was played.
+    pool_by_id = {pool["id"]: pool for pool in pools}
+    for n in nodes:
+        for f in n["feeds"]:
+            f["team"] = None
+            if f["kind"] != "pool":
+                continue
+            pool = pool_by_id.get(f["pool"])
+            if not pool or not pool["decided"]:
+                continue
+            hit = [t for t in pool["standings"] if t["rank"] == f["rank"]]
+            if hit:
+                f["team"] = hit[0]["id"]
+
     by_id = {n["id"]: n for n in nodes}
     for ln in links:                    # a typo here would draw a lie
         assert ln["from"] in by_id and ln["to"] in by_id, ln
@@ -585,7 +645,12 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
     k_lo, k_hi = span(3, bo_play)
     f_lo, f_hi = span(1, bo_final)
 
+    played = sum(1 for m in all_matches.values() if m["winner"])
+    hearsay = sum(1 for m in all_matches.values() if m["reported"])
+
     totals = {
+        "played": played,
+        "reported": hearsay,
         "pool_matches": len(pool_matches),
         "playoff_matches": len(nodes),
         "matches": len(pool_matches) + len(nodes),
@@ -625,6 +690,71 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
         "totals": totals,
         "season": season,
     }
+
+
+def pool_standings(pool: dict) -> None:
+    """
+    Work out a pool's table, and its finishing order where the results
+    actually settle one.
+
+    Teams are grouped by wins. A group of more than one is split by the
+    results among ONLY those teams; if that still does not separate them
+    the whole group is left UNDECIDED rather than ordered arbitrarily.
+    Three teams playing one game each can all finish 1-1, and then nothing
+    on the sheet tells them apart -- which is why the tie-break ladder is
+    printed on the page. Inventing an order here would silently send the
+    wrong team into the bracket.
+
+    Sets `standings`, `complete` and `decided` on the pool in place.
+    """
+    ids = [t["id"] for t in pool["teams"]]
+    rec = {i: {"id": i, "played": 0, "won": 0, "lost": 0} for i in ids}
+    beat = {i: set() for i in ids}          # who each team has beaten
+
+    for m in pool["matches"]:
+        if m["winner"] is None:
+            continue
+        w, l = m["winner"], m["loser"]
+        rec[w]["played"] += 1
+        rec[w]["won"] += 1
+        rec[l]["played"] += 1
+        rec[l]["lost"] += 1
+        beat[w].add(l)
+
+    pool["complete"] = all(m["winner"] is not None for m in pool["matches"])
+
+    order, undecided = [], False
+    if pool["complete"]:
+        for _, group in sorted(
+                {w: [i for i in ids if rec[i]["won"] == w]
+                 for w in {rec[i]["won"] for i in ids}}.items(),
+                key=lambda kv: -kv[0]):
+            if len(group) == 1:
+                order.append(group)
+                continue
+            # Head to head, counted only among the teams that are level.
+            inner = {i: len(beat[i] & set(group)) for i in group}
+            if len(set(inner.values())) == len(group):
+                order += [[i] for i in sorted(group, key=lambda i: -inner[i])]
+            else:
+                order.append(group)          # genuinely level; say so
+                undecided = True
+
+    pool["decided"] = pool["complete"] and not undecided
+
+    rank = 1
+    for group in order:
+        for i in group:
+            rec[i]["rank"] = rank
+            rec[i]["tied"] = len(group) > 1
+            rec[i]["outcome"] = ("tied" if len(group) > 1 else
+                                 "advances" if rank <= pool["advance"] else
+                                 "out")
+        rank += len(group)
+
+    pool["standings"] = sorted(
+        rec.values(),
+        key=lambda r: (r.get("rank", 99), -r["won"], ids.index(r["id"])))
 
 
 def season_progress(data: dict, league: dict | None) -> dict | None:
