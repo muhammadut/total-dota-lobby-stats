@@ -30,7 +30,7 @@
   ],
   "advance_per_pool": 2,
 
-  "best_of": { "pool": 1, "playoff": 3, "final": 3 },
+  "best_of": { "pool": 1, "playoff": 1, "final": 1 },
 
   "provisional_teams": [
     {

@@ -2872,9 +2872,11 @@
           '</div>' +
           '<div class="hud__cell">' +
             '<div class="hud__label">Games</div>' +
-            '<div class="hud__value">' + t.games_min + '–' + t.games_max + '</div>' +
+            '<div class="hud__value">' + (t.games_min === t.games_max
+              ? t.games_min : t.games_min + '–' + t.games_max) + '</div>' +
             '<div class="hud__sub">' + (s ? 'season is ' + s.games_min + '–' +
-              s.games_max : 'depending on how the matches go') + '</div>' +
+              s.games_max : '') + (t.games_min === t.games_max
+              ? (s ? ' · ' : '') + 'every match a single game' : '') + '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
