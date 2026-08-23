@@ -2669,6 +2669,68 @@
     '</div>';
   }
 
+  /* The replay.
+
+     A tie-break only exists where the group stage left teams level, so
+     these fixtures are generated rather than configured, and the card
+     only appears when there is one. Same .sp table as the group stage --
+     it is the same kind of thing, a short list of matches and who won
+     them, and a third table style would be a third thing to keep in step.
+
+     A replay can circle too. If it does, the card says so and the pool
+     stays undecided; it does not fall through to picking somebody. */
+  function miTieBreak(g) {
+    var done = g.matches.filter(function (m) { return m.winner != null; }).length;
+    var body = g.matches.map(function (m) {
+      var w = m.winner;
+      return '<tr' + (w != null ? ' class="is-done"' : '') + '>' +
+        '<td class="sp-td-m"><span class="sp-m">' +
+          miPill(m.teams[0]) + '<span class="sp-vs">vs</span>' +
+          miPill(m.teams[1]) + '</span></td>' +
+        '<td class="sp-td-r"><span class="sp-res">' + (w != null
+          ? '<span class="sp-won">' + miChip(w) + esc(miTeam(w).name) +
+            ' won</span>'
+          : '<span class="sp-badge">Still to play</span>') +
+        '</span></td>' +
+      '</tr>';
+    }).join("");
+
+    var foot;
+    if (!g.complete) {
+      foot = 'Until all ' + g.matches.length + ' are played the pool has no ' +
+             'order, and its two bracket slots stay empty.';
+    } else if (g.resolved) {
+      foot = 'The replay separated them. The pool order above is settled.';
+    } else {
+      foot = '<b>The replay circled too</b> — every team won one and lost ' +
+             'one again, so it still separates nobody. The pool stays ' +
+             'undecided and the bracket slots stay empty until the teams ' +
+             'agree how to break it.';
+    }
+
+    return '<div class="sp card mc-group">' +
+      '<div class="sp-head"><div>' +
+        '<div class="sp-title">Tie-break · Pool ' + esc(g.pool) + '</div>' +
+        '<div class="sp-sub"><b>' + g.teams.length + '</b> teams finished ' +
+          'level · one game each · <b>' + done + '</b> of ' +
+          g.matches.length + ' played</div>' +
+      '</div></div>' +
+      '<div class="sp-scroll"><table class="sp-tbl">' +
+        '<thead><tr><th>Match</th><th>Result</th></tr></thead>' +
+        '<tbody>' + body + '</tbody>' +
+      '</table></div>' +
+      '<div class="sp-foot">' + foot + '</div>' +
+    '</div>';
+  }
+
+  function miTieBreaks() {
+    var out = [];
+    MINI.pools.forEach(function (p) {
+      (p.tie_breaks || []).forEach(function (g) { out.push(miTieBreak(g)); });
+    });
+    return out.join("");
+  }
+
   /* One bracket box: the round, the best-of, its two slots and what is
      at stake. A slot is drawn as a waiting placeholder because nobody
      has qualified — the label under it says where its occupant will
@@ -2861,7 +2923,9 @@
             '<div class="hud__label">Matches</div>' +
             '<div class="hud__value">' + t.matches + '</div>' +
             '<div class="hud__sub">' + t.pool_matches + ' in the pools · ' +
-              t.playoff_matches + ' in the bracket</div>' +
+              t.playoff_matches + ' in the bracket' +
+              (t.tie_break_matches ? ' · +' + t.tie_break_matches +
+               ' to break a tie' : '') + '</div>' +
           '</div>' +
           '<div class="hud__cell">' +
             '<div class="hud__label">Nights</div>' +
@@ -2887,9 +2951,11 @@
           '<ol class="mc-tie__list">' + MINI.tie_breaks.map(function (x) {
             return '<li>' + esc(x) + '</li>'; }).join("") + '</ol>' +
           '<p class="mc-tie__why">Three teams playing ' +
-            miBo(MINI.best_of.pool) + ' each can all finish 1–1, and then the ' +
-            'result between two of them settles nothing. That is what the ' +
-            'rest of the ladder is for.</p>' +
+            miBo(MINI.best_of.pool) + ' each can all finish 1–1 with the ' +
+            'head-to-head running in a circle — A beat B, B beat C, C beat ' +
+            'A — and then nothing on the sheet tells them apart. That is ' +
+            'what the replay is for. A replay can circle as well, and the ' +
+            'page will say so rather than pick somebody.</p>' +
         '</div>'
       : "";
 
@@ -2898,7 +2964,7 @@
       '<p>Everyone plays everyone inside their own pool. Nobody meets the ' +
       'other pool until the bracket.</p></div>' +
       '<div class="mc-pools">' + MINI.pools.map(miPool).join("") + '</div>' +
-      miGroupTable() + tie;
+      miGroupTable() + miTieBreaks() + tie;
 
     var bracket =
       '<div class="sec-sub"><h3>The bracket</h3>' +

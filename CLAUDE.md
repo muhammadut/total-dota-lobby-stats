@@ -657,6 +657,38 @@ against the rosters in `teams.json`, and `narai_co` has none. Any
 match has two results.** Those are how a typo becomes a wrong team in
 the bracket. All three refuse loudly, tested against the real file.
 
+**A reported result was wrong, and nothing could catch it (2026-08-23).**
+`no_nakhra_clan vs khanna_clan` went in as a no_nakhra win off the
+message *"for no_nakhra vs khanna -> no nakhra won"*. It was actually
+khanna's win in the group and no_nakhra's win in the **replay** —
+same two teams, two different games. The pool read 2-0/1-1/0-2 and
+looked perfectly decided for two days. Nothing detected it; the user
+did, because the standings did not match what he had watched. **This is
+exactly what "reported, not transcribed" costs** — a screenshot would
+have carried a date and ten player lines and could not have been filed
+against the wrong game. Ask which stage a result belongs to whenever a
+pairing can occur twice.
+
+**A tie-break is a REPLAY, and its fixtures are generated, not
+configured.** Where the group stage leaves teams level, `pool_standings`
+emits a round robin among just those teams (`TB-<pool>-<a>v<b>`) and
+reads `tie_break_results` for it. A result naming a game no pool needs
+is refused and the refusal lists the tie-breaks that do exist — the
+alternative is a recorded result silently going nowhere. The printed
+ladder was changed to match what the league actually does: head-to-head,
+then a replay. It used to promise "kill difference across the pool
+games", which nothing on this page can compute.
+
+**The replay can circle too.** Three teams, one game each, A beat B, B
+beat C, C beat A — again. `_split_level` returns the group intact, the
+pool stays undecided, the card says *The replay circled too* and the
+bracket slots stay empty. Verified both endings: a decisive replay
+resolves the pool and fills the bracket, a circular one fills nothing.
+
+**Tie-break games are counted apart from the ten.** They are not part of
+the format's promise, so `totals.tie_break_matches` is its own number and
+the HUD reads "+3 to break a tie" rather than quietly making it 13.
+
 **A pool the results do not separate is left UNDECIDED, never ordered.**
 `pool_standings()` groups on wins, splits a level group by the results
 among only those teams, and if that still does not separate them the

@@ -547,8 +547,31 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
         # No screenshot behind it. The page prints this; do not drop it.
         m["reported"] = bool(r) and not m["source_ref"]
 
+    # Tie-break results. A tie-break only EXISTS where the group stage
+    # left teams level, so its fixtures are generated, not configured --
+    # and a recorded result that matches none of them is refused below
+    # rather than silently ignored, which is how a result disappears.
+    tb = {}
+    for r in cfg.get("tie_break_results") or []:
+        mid = r.get("match")
+        if mid in tb:
+            return refuse(f"two tie-break results recorded for {mid}")
+        tb[mid] = r.get("winner")
+
     for pool in pools:
-        pool_standings(pool)
+        pool_standings(pool, tb)
+
+    tb_ids = {m["id"]: m for pool in pools
+              for grp in pool["tie_breaks"] for m in grp["matches"]}
+    for mid, w in tb.items():
+        if mid not in tb_ids:
+            return refuse(f"a tie-break result names {mid!r}, which is not a "
+                          f"tie-break any pool needs. Tie-breaks that exist: "
+                          + (", ".join(sorted(tb_ids)) or "none"))
+        if w not in tb_ids[mid]["teams"]:
+            return refuse(f"the tie-break result for {mid} says team {w} won, "
+                          f"but that game is team {tb_ids[mid]['teams'][0]} v "
+                          f"team {tb_ids[mid]['teams'][1]}")
 
     A, B = pools[0]["id"], pools[1]["id"]
 
@@ -648,9 +671,19 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
     played = sum(1 for m in all_matches.values() if m["winner"])
     hearsay = sum(1 for m in all_matches.values() if m["reported"])
 
+    # Tie-break games are EXTRA -- they are not part of the ten the format
+    # promises, so they are counted apart from it rather than quietly
+    # inflating "10 matches over 5 nights".
+    tb_all = [m for pool in pools for g in pool["tie_breaks"]
+              for m in g["matches"]]
+    tb_done = [m for m in tb_all if m["winner"]]
+    hearsay += len(tb_done)
+
     totals = {
         "played": played,
         "reported": hearsay,
+        "tie_break_matches": len(tb_all),
+        "tie_break_played": len(tb_done),
         "pool_matches": len(pool_matches),
         "playoff_matches": len(nodes),
         "matches": len(pool_matches) + len(nodes),
@@ -692,21 +725,48 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
     }
 
 
-def pool_standings(pool: dict) -> None:
+def _split_level(group: list, beat: dict) -> list:
+    """
+    Order a set of teams that are level, using only the results among
+    those teams. Returns a list of sub-groups, best first; a sub-group
+    with more than one member is genuinely inseparable.
+
+    In a group of three each pair has met, so the counts come out either
+    all different (someone beat both, someone beat one, someone beat
+    none) or all equal, which is the circle: A beat B, B beat C, C beat
+    A. There is no third shape, and the circle is the one that has to be
+    refused.
+    """
+    if len(group) == 1:
+        return [group]
+    inner = {i: len(beat[i] & set(group)) for i in group}
+    if len(set(inner.values())) == 1:
+        return [group]
+    return [[i for i in group if inner[i] == c]
+            for c in sorted(set(inner.values()), reverse=True)]
+
+
+def pool_standings(pool: dict, tb: dict | None = None) -> None:
     """
     Work out a pool's table, and its finishing order where the results
     actually settle one.
 
     Teams are grouped by wins. A group of more than one is split by the
-    results among ONLY those teams; if that still does not separate them
-    the whole group is left UNDECIDED rather than ordered arbitrarily.
-    Three teams playing one game each can all finish 1-1, and then nothing
-    on the sheet tells them apart -- which is why the tie-break ladder is
-    printed on the page. Inventing an order here would silently send the
-    wrong team into the bracket.
+    results among ONLY those teams. If that still does not separate them
+    the tied teams REPLAY -- a single-game round robin between just them,
+    whose fixtures are generated here and whose results arrive in
+    `tie_break_results`. Until that replay is both complete and decisive
+    the group stays UNDECIDED and the pool's bracket slots stay empty.
 
-    Sets `standings`, `complete` and `decided` on the pool in place.
+    Three teams playing one game each can all finish 1-1 with head to
+    head running in a circle, and then nothing on the sheet tells them
+    apart. Inventing an order at that point would silently send the wrong
+    team into the bracket. A replay can circle too, and that is handled
+    the same way: say so, decide nothing.
+
+    Sets `standings`, `complete`, `decided` and `tie_breaks` in place.
     """
+    tb = tb or {}
     ids = [t["id"] for t in pool["teams"]]
     rec = {i: {"id": i, "played": 0, "won": 0, "lost": 0} for i in ids}
     beat = {i: set() for i in ids}          # who each team has beaten
@@ -723,24 +783,51 @@ def pool_standings(pool: dict) -> None:
 
     pool["complete"] = all(m["winner"] is not None for m in pool["matches"])
 
-    order, undecided = [], False
+    # Pass one: the group stage on its own.
+    groups = []
     if pool["complete"]:
-        for _, group in sorted(
-                {w: [i for i in ids if rec[i]["won"] == w]
-                 for w in {rec[i]["won"] for i in ids}}.items(),
-                key=lambda kv: -kv[0]):
-            if len(group) == 1:
-                order.append(group)
-                continue
-            # Head to head, counted only among the teams that are level.
-            inner = {i: len(beat[i] & set(group)) for i in group}
-            if len(set(inner.values())) == len(group):
-                order += [[i] for i in sorted(group, key=lambda i: -inner[i])]
-            else:
-                order.append(group)          # genuinely level; say so
-                undecided = True
+        for wins in sorted({rec[i]["won"] for i in ids}, reverse=True):
+            groups += _split_level([i for i in ids if rec[i]["won"] == wins],
+                                   beat)
 
-    pool["decided"] = pool["complete"] and not undecided
+    # Pass two: anything still level replays.
+    order, tie_breaks = [], []
+    for g in groups:
+        if len(g) == 1:
+            order.append(g)
+            continue
+
+        fixtures, tb_beat, tb_rec = [], {i: set() for i in g}, {
+            i: {"id": i, "won": 0, "lost": 0} for i in g}
+        for x, a in enumerate(g):
+            for b in g[x + 1:]:
+                mid = f"TB-{pool['id']}-{a}v{b}"
+                w = tb.get(mid)
+                lose = None
+                if w in (a, b):
+                    lose = b if w == a else a
+                    tb_beat[w].add(lose)
+                    tb_rec[w]["won"] += 1
+                    tb_rec[lose]["lost"] += 1
+                else:
+                    w = None
+                fixtures.append({"id": mid, "teams": [a, b], "winner": w,
+                                 "loser": lose, "reported": w is not None})
+
+        done = all(f["winner"] is not None for f in fixtures)
+        split = _split_level(g, tb_beat) if done else [g]
+        resolved = done and all(len(x) == 1 for x in split)
+        order += split if resolved else [g]
+
+        tie_breaks.append({
+            "pool": pool["id"], "teams": g, "matches": fixtures,
+            "complete": done, "resolved": resolved,
+            "standings": [tb_rec[i] for i in
+                          (sum(split, []) if resolved else g)],
+        })
+
+    pool["tie_breaks"] = tie_breaks
+    pool["decided"] = pool["complete"] and all(len(g) == 1 for g in order)
 
     rank = 1
     for group in order:
