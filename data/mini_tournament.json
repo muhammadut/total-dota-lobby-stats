@@ -51,6 +51,7 @@
   ],
   "results": [
     { "match": "MINI-A-1v6", "winner": 1 },
+    { "match": "MINI-A-1v3", "winner": 1 },
     { "match": "MINI-A-3v6", "winner": 6 },
     { "match": "MINI-B-2v4", "winner": 4 },
     { "match": "MINI-B-4v5", "winner": 5 },
