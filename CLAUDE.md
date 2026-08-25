@@ -592,6 +592,13 @@ The tab only hides when nothing at all can be built. Duplicate season
 ids refuse the lot, because two seasons sharing an id collide in the
 switcher; a `current` pointing at nothing falls back to the newest.
 
+**A player on two rosters in the same cup is warned about, not
+refused.** It is the one thing that cannot be true of a tournament, but
+this league shares stand-ins for real and a slot written `A / B` is a
+single string that cannot collide by accident — so it prints and keeps
+drawing. It would have caught UT moving from Team Toxic to CPX's Return
+had Trollmitsu not replaced him in the same edit.
+
 **Rosters are drawn under the team name on the pool card**, wrapping
 rather than truncating — a roster missing a name off the end is worse
 than a taller card. Captains carry a `C`; an unfilled slot renders as

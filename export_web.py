@@ -521,6 +521,23 @@ def build_mini_season(cfg: dict, league: dict | None,
               f"teams, data/teams.json or provisional_teams -- it will "
               f"show as 'Team {tid}' with no players")
 
+    # The same person on two rosters in the same cup -- the one thing that
+    # cannot be true of a tournament. Warned rather than refused, because
+    # this league genuinely shares stand-ins and a slot written "A / B" is
+    # a single string that cannot collide by accident. UT moving from Team
+    # Toxic to CPX's Return is exactly the edit this would have caught had
+    # Trollmitsu not replaced him in the same breath.
+    where = {}
+    for tid, t in own.items():
+        for r in t.get("roster") or []:
+            n = (r.get("name") or "").strip().lower()
+            if n:
+                where.setdefault(n, []).append(tid)
+    for n, tids in sorted(where.items()):
+        if len(tids) > 1:
+            print(f"  ! {label}: {n!r} is on {len(tids)} rosters -- "
+                  + ", ".join(str(own[i].get("name") or i) for i in tids))
+
     def team(tid):
         o = own.get(tid)
         if o:

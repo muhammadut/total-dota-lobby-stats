@@ -23,34 +23,49 @@
     "team 1. Nothing crosses between seasons: results, tie-breaks and",
     "standings all live inside their own season object."
   ],
-
   "current": 2,
-
   "seasons": [
     {
       "id": 1,
       "name": "Season 1",
       "status": "live",
       "note": "Played by the league's registered teams, so its ids resolve against data/teams.json.",
-
       "pools": [
-        { "id": "A", "teams": [1, 3, 6] },
-        { "id": "B", "teams": [2, 4, 5] }
+        {
+          "id": "A",
+          "teams": [
+            1,
+            3,
+            6
+          ]
+        },
+        {
+          "id": "B",
+          "teams": [
+            2,
+            4,
+            5
+          ]
+        }
       ],
       "advance_per_pool": 2,
-
-      "best_of": { "pool": 1, "playoff": 1, "final": 1 },
-
+      "best_of": {
+        "pool": 1,
+        "playoff": 1,
+        "final": 1
+      },
       "provisional_teams": [
         {
           "id": 6,
           "name": "narai_co",
-          "players": ["Narai", "Vanilla"],
+          "players": [
+            "Narai",
+            "Vanilla"
+          ],
           "unfilled": 3,
           "note": "On the captains' sheet only -- two players named, three chairs empty."
         }
       ],
-
       "_results_note": [
         "REPORTED results -- a winner and nothing else, told to the bot",
         "rather than read off a scoreboard. Everywhere else in this project",
@@ -63,30 +78,47 @@
         "Always establish which stage a reported result belongs to."
       ],
       "results": [
-        { "match": "MINI-A-1v6", "winner": 1 },
-        { "match": "MINI-A-1v3", "winner": 3 },
-        { "match": "MINI-A-3v6", "winner": 6 },
-        { "match": "MINI-B-2v4", "winner": 4 },
-        { "match": "MINI-B-4v5", "winner": 5 },
-        { "match": "MINI-B-2v5", "winner": 5 }
+        {
+          "match": "MINI-A-1v6",
+          "winner": 1
+        },
+        {
+          "match": "MINI-A-1v3",
+          "winner": 3
+        },
+        {
+          "match": "MINI-A-3v6",
+          "winner": 6
+        },
+        {
+          "match": "MINI-B-2v4",
+          "winner": 4
+        },
+        {
+          "match": "MINI-B-4v5",
+          "winner": 5
+        },
+        {
+          "match": "MINI-B-2v5",
+          "winner": 5
+        }
       ],
-
       "tie_break_results": [
-        { "match": "TB-A-1v3", "winner": 1 }
+        {
+          "match": "TB-A-1v3",
+          "winner": 1
+        }
       ],
-
       "tie_breaks": [
         "The result between the two teams",
         "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
       ]
     },
-
     {
       "id": 2,
       "name": "Season 2",
       "status": "proposal",
       "note": "Six new teams off the captains' sheet. Pools drawn at random.",
-
       "_draw": [
         "The pools were DRAWN, not chosen, and the draw is reproducible:",
         "",
@@ -97,89 +129,196 @@
         "arranged. Re-run that line to check this one."
       ],
       "draw_seed": 20260824,
-
       "teams": [
         {
           "id": 1,
           "name": "Team Toxic",
           "roster": [
-            { "pos": "mid",     "name": "Stoic", "captain": true },
-            { "pos": "carry",   "name": "Shami" },
-            { "pos": "offlane", "name": "UT" },
-            { "pos": "support", "name": "Hurr" },
-            { "pos": "support", "name": "Asta" }
+            {
+              "pos": "mid",
+              "name": "Stoic",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Shami"
+            },
+            {
+              "pos": "offlane",
+              "name": "Trollmitsu"
+            },
+            {
+              "pos": "support",
+              "name": "Hurr"
+            },
+            {
+              "pos": "support",
+              "name": "Asta"
+            }
           ]
         },
         {
           "id": 2,
           "name": "Khanna Re-born",
           "roster": [
-            { "pos": "mid",     "name": "Gillu", "captain": true },
-            { "pos": "carry",   "name": "X-Men" },
-            { "pos": "offlane", "name": "Pronto Serra / Shelby GT" },
-            { "pos": "support", "name": "Triple" },
-            { "pos": "support", "name": "Oden Jr" }
+            {
+              "pos": "mid",
+              "name": "Gillu",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "X-Men"
+            },
+            {
+              "pos": "offlane",
+              "name": "Pronto Serra / Shelby GT"
+            },
+            {
+              "pos": "support",
+              "name": "Triple"
+            },
+            {
+              "pos": "support",
+              "name": "Oden Jr"
+            }
           ]
         },
         {
           "id": 3,
           "name": "Rusty Niggs",
           "roster": [
-            { "pos": "mid",     "name": "Narai", "captain": true },
-            { "pos": "carry",   "name": "Vanilla" },
-            { "pos": "offlane", "name": "Sherlock" },
-            { "pos": "support", "name": "Ranger" },
-            { "pos": "support", "name": null }
+            {
+              "pos": "mid",
+              "name": "Narai",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Vanilla"
+            },
+            {
+              "pos": "offlane",
+              "name": "Sherlock"
+            },
+            {
+              "pos": "support",
+              "name": "Ranger"
+            },
+            {
+              "pos": "support",
+              "name": null
+            }
           ]
         },
         {
           "id": 4,
           "name": "Dreamers",
           "roster": [
-            { "pos": "mid",     "name": "Eros", "captain": true },
-            { "pos": "carry",   "name": "Eldritch" },
-            { "pos": "offlane", "name": "Soma" },
-            { "pos": "support", "name": "Rouge Agent" },
-            { "pos": "support", "name": "Musa / Zalan" }
+            {
+              "pos": "mid",
+              "name": "Eros",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Eldritch"
+            },
+            {
+              "pos": "offlane",
+              "name": "Soma"
+            },
+            {
+              "pos": "support",
+              "name": "Rouge Agent"
+            },
+            {
+              "pos": "support",
+              "name": "Musa / Zalan"
+            }
           ]
         },
         {
           "id": 5,
           "name": "PlayForFun",
           "roster": [
-            { "pos": "mid",     "name": "Downlander", "captain": true },
-            { "pos": "carry",   "name": "Obnoxious" },
-            { "pos": "offlane", "name": "Zuko" },
-            { "pos": "support", "name": "Joan" },
-            { "pos": "support", "name": "Primrose" }
+            {
+              "pos": "mid",
+              "name": "Downlander",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Obnoxious"
+            },
+            {
+              "pos": "offlane",
+              "name": "Zuko"
+            },
+            {
+              "pos": "support",
+              "name": "Joan"
+            },
+            {
+              "pos": "support",
+              "name": "Primrose"
+            }
           ]
         },
         {
           "id": 6,
-          "name": "Seeker's Return",
-          "provisional": true,
-          "note": "Seeker's five, none of them named on the sheet yet.",
+          "name": "CPX's Return",
           "roster": [
-            { "pos": "mid",     "name": null },
-            { "pos": "carry",   "name": null },
-            { "pos": "offlane", "name": null },
-            { "pos": "support", "name": null },
-            { "pos": "support", "name": null }
+            {
+              "pos": "mid",
+              "name": "CPX",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Seeker"
+            },
+            {
+              "pos": "offlane",
+              "name": "UT"
+            },
+            {
+              "pos": "support",
+              "name": "Germ / Seeker's support"
+            },
+            {
+              "pos": "support",
+              "name": "Vanzo / Seeker's support"
+            }
           ]
         }
       ],
-
       "pools": [
-        { "id": "A", "teams": [2, 5, 6] },
-        { "id": "B", "teams": [1, 3, 4] }
+        {
+          "id": "A",
+          "teams": [
+            2,
+            5,
+            6
+          ]
+        },
+        {
+          "id": "B",
+          "teams": [
+            1,
+            3,
+            4
+          ]
+        }
       ],
       "advance_per_pool": 2,
-
-      "best_of": { "pool": 1, "playoff": 1, "final": 1 },
-
+      "best_of": {
+        "pool": 1,
+        "playoff": 1,
+        "final": 1
+      },
       "results": [],
       "tie_break_results": [],
-
       "tie_breaks": [
         "The result between the two teams",
         "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
