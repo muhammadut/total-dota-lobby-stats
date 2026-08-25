@@ -1,69 +1,189 @@
 {
   "_comment": [
-    "The SHORT format, under consideration -- two pools of three, then a",
-    "four-team double-elimination playoff. Nothing here is a result and",
-    "nothing here enters any ledger; it is a proposal drawn on the site so",
-    "the captains can look at it before anyone commits.",
+    "The SHORT format: two pools of three, then a four-team",
+    "double-elimination playoff. This file now holds MORE THAN ONE of",
+    "them -- `seasons` is a list, oldest first, and `current` names the",
+    "one the tab opens on.",
     "",
     "UNLIKE data/fixtures.json this file is HAND-AUTHORED. It is an input,",
     "not an output: only the parts that cannot be worked out are written",
-    "down. The six pool matches, the four playoff boxes, who feeds which",
-    "box, the final placings and every count on the page are DERIVED by",
-    "export_web.build_mini() -- so a pool edited here redraws the whole",
-    "page and no two numbers can disagree.",
+    "down. The pool matches, the playoff boxes, who feeds which box, the",
+    "tie-break fixtures, the final placings and every count on the page",
+    "are DERIVED by export_web.build_mini() -- so a pool edited here",
+    "redraws the whole page and no two numbers can disagree.",
     "",
-    "Team 6 is NOT in data/teams.json on purpose: a roster row there is",
-    "what resolves a player to a team, and Team 6 is two named people and",
-    "three empty chairs. It is named here instead, display-only, so it can",
-    "appear on the bracket without becoming a name that could quietly",
-    "claim a league result.",
+    "A season either names its own teams inline (`teams`) or leaves it out",
+    "and resolves ids against data/teams.json. Season 1 does the latter,",
+    "because it was played by the league's registered teams. Season 2 does",
+    "the former: its six teams are new, they are not on any roster in",
+    "teams.json, and a team named here can never claim a league result --",
+    "which is exactly what keeps it safe to name them here.",
     "",
-    "Set \"status\" to \"live\" once the league agrees to play it."
+    "Team ids are SCOPED TO A SEASON. Season 2's team 1 is not Season 1's",
+    "team 1. Nothing crosses between seasons: results, tie-breaks and",
+    "standings all live inside their own season object."
   ],
 
-  "status": "proposal",
-  "name": "Mini Cup",
+  "current": 2,
 
-  "pools": [
-    { "id": "A", "teams": [1, 3, 6] },
-    { "id": "B", "teams": [2, 4, 5] }
-  ],
-  "advance_per_pool": 2,
-
-  "best_of": { "pool": 1, "playoff": 1, "final": 1 },
-
-  "provisional_teams": [
+  "seasons": [
     {
-      "id": 6,
-      "name": "narai_co",
-      "players": ["Narai", "Vanilla"],
-      "unfilled": 3,
-      "note": "On the captains' sheet only -- two players named, three chairs empty."
+      "id": 1,
+      "name": "Season 1",
+      "status": "live",
+      "note": "Played by the league's registered teams, so its ids resolve against data/teams.json.",
+
+      "pools": [
+        { "id": "A", "teams": [1, 3, 6] },
+        { "id": "B", "teams": [2, 4, 5] }
+      ],
+      "advance_per_pool": 2,
+
+      "best_of": { "pool": 1, "playoff": 1, "final": 1 },
+
+      "provisional_teams": [
+        {
+          "id": 6,
+          "name": "narai_co",
+          "players": ["Narai", "Vanilla"],
+          "unfilled": 3,
+          "note": "On the captains' sheet only -- two players named, three chairs empty."
+        }
+      ],
+
+      "_results_note": [
+        "REPORTED results -- a winner and nothing else, told to the bot",
+        "rather than read off a scoreboard. Everywhere else in this project",
+        "a result arrives as a screenshot and is checksummed before it",
+        "counts. Give a result a \"source_ref\" naming a game in",
+        "data/league_matches.json and the page stops flagging it.",
+        "",
+        "A pairing can occur TWICE -- once in the group, once in the replay",
+        "-- and one result was filed against the wrong one for two days.",
+        "Always establish which stage a reported result belongs to."
+      ],
+      "results": [
+        { "match": "MINI-A-1v6", "winner": 1 },
+        { "match": "MINI-A-1v3", "winner": 3 },
+        { "match": "MINI-A-3v6", "winner": 6 },
+        { "match": "MINI-B-2v4", "winner": 4 },
+        { "match": "MINI-B-4v5", "winner": 5 },
+        { "match": "MINI-B-2v5", "winner": 5 }
+      ],
+
+      "tie_break_results": [
+        { "match": "TB-A-1v3", "winner": 1 }
+      ],
+
+      "tie_breaks": [
+        "The result between the two teams",
+        "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
+      ]
+    },
+
+    {
+      "id": 2,
+      "name": "Season 2",
+      "status": "proposal",
+      "note": "Six new teams off the captains' sheet. Pools drawn at random.",
+
+      "_draw": [
+        "The pools were DRAWN, not chosen, and the draw is reproducible:",
+        "",
+        "    random.Random(20260824).shuffle([1, 2, 3, 4, 5, 6])",
+        "    -> [5, 6, 2, 1, 3, 4]   first three = Pool A, last three = Pool B",
+        "",
+        "A draw nobody can re-run is indistinguishable from one that was",
+        "arranged. Re-run that line to check this one."
+      ],
+      "draw_seed": 20260824,
+
+      "teams": [
+        {
+          "id": 1,
+          "name": "Team Toxic",
+          "roster": [
+            { "pos": "mid",     "name": "Stoic", "captain": true },
+            { "pos": "carry",   "name": "Shami" },
+            { "pos": "offlane", "name": "UT" },
+            { "pos": "support", "name": "Hurr" },
+            { "pos": "support", "name": "Asta" }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "Khanna Re-born",
+          "roster": [
+            { "pos": "mid",     "name": "Gillu", "captain": true },
+            { "pos": "carry",   "name": "X-Men" },
+            { "pos": "offlane", "name": "Pronto Serra / Shelby GT" },
+            { "pos": "support", "name": "Triple" },
+            { "pos": "support", "name": "Oden Jr" }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "Rusty Niggs",
+          "roster": [
+            { "pos": "mid",     "name": "Narai", "captain": true },
+            { "pos": "carry",   "name": "Vanilla" },
+            { "pos": "offlane", "name": "Sherlock" },
+            { "pos": "support", "name": "Ranger" },
+            { "pos": "support", "name": null }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "Dreamers",
+          "roster": [
+            { "pos": "mid",     "name": "Eros", "captain": true },
+            { "pos": "carry",   "name": "Eldritch" },
+            { "pos": "offlane", "name": "Soma" },
+            { "pos": "support", "name": "Rouge Agent" },
+            { "pos": "support", "name": "Musa / Zalan" }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "PlayForFun",
+          "roster": [
+            { "pos": "mid",     "name": "Downlander", "captain": true },
+            { "pos": "carry",   "name": "Obnoxious" },
+            { "pos": "offlane", "name": "Zuko" },
+            { "pos": "support", "name": "Joan" },
+            { "pos": "support", "name": "Primrose" }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "Seeker's Return",
+          "provisional": true,
+          "note": "Seeker's five, none of them named on the sheet yet.",
+          "roster": [
+            { "pos": "mid",     "name": null },
+            { "pos": "carry",   "name": null },
+            { "pos": "offlane", "name": null },
+            { "pos": "support", "name": null },
+            { "pos": "support", "name": null }
+          ]
+        }
+      ],
+
+      "pools": [
+        { "id": "A", "teams": [2, 5, 6] },
+        { "id": "B", "teams": [1, 3, 4] }
+      ],
+      "advance_per_pool": 2,
+
+      "best_of": { "pool": 1, "playoff": 1, "final": 1 },
+
+      "results": [],
+      "tie_break_results": [],
+
+      "tie_breaks": [
+        "The result between the two teams",
+        "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
+      ]
     }
-  ],
-
-  "_results_note": [
-    "REPORTED results -- a winner and nothing else, told to the bot rather",
-    "than read off a scoreboard. Everywhere else in this project a result",
-    "arrives as a screenshot and is checksummed before it counts. Give a",
-    "result a \"source_ref\" naming a game in data/league_matches.json and",
-    "the page stops flagging it as reported."
-  ],
-  "results": [
-    { "match": "MINI-A-1v6", "winner": 1 },
-    { "match": "MINI-A-1v3", "winner": 3 },
-    { "match": "MINI-A-3v6", "winner": 6 },
-    { "match": "MINI-B-2v4", "winner": 4 },
-    { "match": "MINI-B-4v5", "winner": 5 },
-    { "match": "MINI-B-2v5", "winner": 5 }
-  ],
-
-  "tie_break_results": [
-    { "match": "TB-A-1v3", "winner": 1 }
-  ],
-
-  "tie_breaks": [
-    "The result between the two teams",
-    "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
   ]
 }

@@ -410,8 +410,13 @@ def build_fixtures(league: dict | None = None) -> dict | None:
 
 def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None:
     """
-    Emit LOBBY.mini: the SHORT format -- two pools of three, then a
+    Emit LOBBY.mini: EVERY mini tournament, oldest first, plus which one
+    the tab should open on. Each is two pools of three followed by a
     four-team double-elimination playoff.
+
+    A season that cannot be drawn is skipped with a message and the other
+    seasons still render -- one bad config should not take the tab down
+    with it.
 
     data/mini_tournament.json holds only what cannot be worked out: which
     teams are in which pool, how many advance, the best-of at each stage,
@@ -433,14 +438,46 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
     """
     if not MINI.exists():
         return None
-    cfg = json.loads(MINI.read_text(encoding="utf-8"))
+    raw = json.loads(MINI.read_text(encoding="utf-8"))
+
+    seasons = []
+    for entry in raw.get("seasons") or []:
+        built = build_mini_season(entry, league, fixtures)
+        if built is None:
+            print(f"  ! season {entry.get('id')} was refused; the rest of the "
+                  f"tab is still drawn")
+            continue
+        seasons.append(built)
+    if not seasons:
+        return None
+
+    ids = [s["id"] for s in seasons]
+    if len(set(ids)) != len(ids):
+        print(f"  ! mini tournament not drawn: duplicate season ids {ids}")
+        return None
+
+    current = raw.get("current")
+    if current not in ids:
+        current = ids[-1]          # newest, which is what it always means
+    return {"seasons": seasons, "current": current}
+
+
+def build_mini_season(cfg: dict, league: dict | None,
+                      fixtures: dict | None) -> dict | None:
+    """
+    One mini tournament. See build_mini for the contract; everything here
+    is scoped to a single season, ids included -- Season 2's team 1 is
+    not Season 1's team 1, and nothing crosses between them.
+    """
     cfg = {k: v for k, v in cfg.items() if not k.startswith("_")}
 
     pools_in = cfg.get("pools") or []
     advance = cfg.get("advance_per_pool", 2)
 
+    label = cfg.get("name") or f"season {cfg.get('id')}"
+
     def refuse(why):
-        print(f"  ! mini tournament not drawn: {why}")
+        print(f"  ! {label} not drawn: {why}")
         print("    Fix data/mini_tournament.json and re-run export_web.py.")
         return None
 
@@ -465,23 +502,48 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
     bo_play = bo.get("playoff", 3)
     bo_final = bo.get("final", bo_play)
 
-    # Names. A team in data/teams.json is a real roster; anything else is
-    # provisional and is marked as such all the way to the browser, so the
-    # page can never present three empty chairs as a settled team.
+    # Names.
+    #
+    # A season either names its own teams inline or resolves ids against
+    # data/teams.json. Inline wins where both exist.
+    #
+    # `provisional` means the ROSTER is not settled -- not "absent from
+    # teams.json". Season 2's six teams are all new and none of them is in
+    # teams.json, and drawing all six as unconfirmed would say something
+    # false. A team that names its own five is settled; one carrying
+    # placeholders is not, and says so with a dashed outline everywhere.
+    own = {t["id"]: t for t in cfg.get("teams") or []}
     real = {t["id"]: t["name"] for t in (league or {}).get("teams", [])}
     prov = {t["id"]: t for t in cfg.get("provisional_teams", [])}
-    for tid in sorted(t for t in seen if t not in real and t not in prov):
-        print(f"  ! mini tournament: team {tid} is in neither "
-              f"data/teams.json nor provisional_teams -- it will show as "
-              f"'Team {tid}' with no players")
+    for tid in sorted(t for t in seen
+                      if t not in own and t not in real and t not in prov):
+        print(f"  ! {label}: team {tid} is in none of the season's own "
+              f"teams, data/teams.json or provisional_teams -- it will "
+              f"show as 'Team {tid}' with no players")
 
     def team(tid):
+        o = own.get(tid)
+        if o:
+            roster = o.get("roster") or []
+            named = [r for r in roster if r.get("name")]
+            explicit = o.get("provisional")
+            return {
+                "id": tid,
+                "name": o.get("name") or f"Team {tid}",
+                "provisional": (explicit if explicit is not None
+                                else not named),
+                "players": [r["name"] for r in named],
+                "roster": roster,
+                "unfilled": len(roster) - len(named),
+                "note": o.get("note"),
+            }
         p = prov.get(tid) or {}
         return {
             "id": tid,
             "name": real.get(tid) or p.get("name") or f"Team {tid}",
             "provisional": tid not in real,
             "players": p.get("players", []),
+            "roster": [],
             "unfilled": p.get("unfilled", 0),
             "note": p.get("note"),
         }
@@ -712,8 +774,11 @@ def build_mini(league: dict | None, fixtures: dict | None = None) -> dict | None
                   "games_min": s_lo, "games_max": s_hi}
 
     return {
+        "id": cfg.get("id"),
         "status": cfg.get("status", "proposal"),
         "name": cfg.get("name", "Mini Cup"),
+        "note": cfg.get("note"),
+        "draw_seed": cfg.get("draw_seed"),
         "pools": pools,
         "bracket": nodes,
         "links": links,

@@ -555,7 +555,50 @@ being true, this rule is not enough on its own.
 iteration order. Scarface therefore stays on Team 1's roster and Team 3
 merely lists him under `backup`, which is display-only.
 
-### The Mini Cup tab — a format proposal, not a season (2026-08-19)
+### The Mini Cups tab — MORE THAN ONE cup (2026-08-24)
+
+`data/mini_tournament.json` holds a **list** of them now: `seasons`,
+oldest first, plus `current` naming the one the tab opens on. A
+segmented control switches between them and it hides itself at one
+season, because a control that cannot change anything is furniture.
+
+**Team ids are SCOPED TO A SEASON.** Season 2's team 1 (Team Toxic) is
+not Season 1's team 1 (no_nakhra_clan). Results, tie-breaks, standings
+and the bracket all live inside their own season object and nothing
+crosses; `MI_TEAM` in the browser is rebuilt on every switch rather than
+merged, for exactly that reason.
+
+**A season either names its own teams inline or resolves ids against
+`teams.json`.** Season 1 does the latter — it was played by the
+league's registered teams. Season 2 does the former: its six are new,
+none is on any roster in `teams.json`, and a team named in this file can
+never claim a league result, which is what makes naming them here safe.
+
+**`provisional` had to stop meaning "absent from `teams.json`".** Under
+the old rule all six of Season 2's teams would have drawn as unconfirmed,
+which is false — five of them name a full five. It now means the ROSTER
+is not settled: explicit if the season says so, otherwise "has no named
+players". Only `Seeker's Return` (five unnamed slots) is provisional.
+
+**Season 2's pools were DRAWN, and the draw is reproducible.**
+`random.Random(20260824).shuffle([1..6])` → first three Pool A, last
+three Pool B. The seed is in the file and printed on the page. A draw
+nobody can re-run is indistinguishable from one that was arranged —
+same class of problem as a result with no screenshot.
+
+**One bad season does not take the tab down.** A season that fails its
+checks is skipped with a message naming it, and the others still draw.
+The tab only hides when nothing at all can be built. Duplicate season
+ids refuse the lot, because two seasons sharing an id collide in the
+switcher; a `current` pointing at nothing falls back to the newest.
+
+**Rosters are drawn under the team name on the pool card**, wrapping
+rather than truncating — a roster missing a name off the end is worse
+than a taller card. Captains carry a `C`; an unfilled slot renders as
+`TBD` rather than being skipped, because four names and a gap is a
+different thing from four names.
+
+### The Mini Cup format — a proposal, then a thing being played (2026-08-19)
 
 A shorter way to run the league, drawn on the site so the captains can
 look at it before anyone commits. **Two pools of three** play a round

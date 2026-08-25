@@ -2480,13 +2480,28 @@
      this, the games go through tools/league_ingest.py into the league
      ledger like any other league game. */
 
-  var MINI = D.mini || null;
-
+  /* LOBBY.mini holds EVERY mini tournament now, oldest first. MINI is
+     whichever one the tab is showing; everything below reads it and knows
+     nothing about the others, so a season is still one self-contained
+     thing. Team ids are scoped to a season — Season 2's team 1 is not
+     Season 1's team 1 — which is why MI_TEAM is rebuilt on every switch
+     rather than merged. */
+  var MINI_ALL = D.mini || null;
+  var MINI = null;
   var MI_TEAM = {};
-  if (MINI) {
+
+  function miSelect(id) {
+    if (!MINI_ALL || !MINI_ALL.seasons.length) return;
+    var hit = MINI_ALL.seasons.filter(function (x) { return x.id === id; })[0];
+    MINI = hit || MINI_ALL.seasons[MINI_ALL.seasons.length - 1];
+    MI_TEAM = {};
     MINI.pools.forEach(function (p) {
       p.teams.forEach(function (t) { MI_TEAM[t.id] = t; });
     });
+  }
+  if (MINI_ALL) {
+    state.miSeason = MINI_ALL.current;
+    miSelect(state.miSeason);
   }
 
   function miTeam(id) {
@@ -2547,11 +2562,19 @@
   function miPoolRow(p, t, anyPlayed) {
     var team = miTeam(t.id);
     var meta = "";
-    if (team.provisional) {
+    if (team.roster && team.roster.length) {
+      meta = team.roster.map(function (r) {
+        return r.name
+          ? esc(r.name) + (r.captain
+              ? '<i class="mc-cap" title="Captain">C</i>' : "")
+          : '<i class="mc-open">TBD</i>';
+      }).join('<i class="mc-sep">·</i>');
+    } else if (team.provisional) {
       meta = team.players.length
-        ? team.players.join(", ") + (team.unfilled
-            ? " · " + team.unfilled + " still to name" : "")
-        : "not confirmed";
+        ? esc(team.players.join(", ")) + (team.unfilled
+            ? '<i class="mc-sep">·</i><i class="mc-open">' + team.unfilled +
+              ' still to name</i>' : "")
+        : '<i class="mc-open">not confirmed</i>';
     }
     var tag = t.outcome === "advances" ? '<span class="mc-tag is-adv">Through</span>'
             : t.outcome === "out"      ? '<span class="mc-tag is-out">Out</span>'
@@ -2561,8 +2584,10 @@
              (t.outcome === "out" ? " is-gone" : "") + '">' +
       '<span class="mc-team__pos">' + (t.rank || "") + '</span>' +
       miChip(t.id) +
-      '<span class="mc-team__name">' + esc(team.name) + '</span>' +
-      (meta ? '<span class="mc-team__meta">' + esc(meta) + '</span>' : "") +
+      '<span class="mc-team__main">' +
+        '<span class="mc-team__name">' + esc(team.name) + '</span>' +
+        (meta ? '<span class="mc-team__sub">' + meta + '</span>' : "") +
+      '</span>' +
       (anyPlayed ? '<span class="mc-team__rec">' + t.won + '–' + t.lost +
                    '</span>' : "") +
       tag +
@@ -2845,7 +2870,11 @@
 
   function miCopy() {
     var t = MINI.totals, s = MINI.season;
-    var title = $("#miniTitle"); if (title) title.textContent = MINI.name;
+    var title = $("#miniTitle");
+    if (title) {
+      title.textContent = MINI_ALL.seasons.length > 1
+        ? "Mini Cups · " + MINI.name : MINI.name;
+    }
 
     var lede = $("#miniLede");
     if (lede) {
@@ -2900,13 +2929,27 @@
   }
 
   function drawMini() {
-    var tab = $("#miniTab"), host = $("#miniBody");
+    var tab = $("#miniTab"), host = $("#miniBody"), bar = $("#miSeason");
     if (!MINI) {                       // no config, or a config it refused
       if (tab) tab.hidden = true;
       if (host) host.innerHTML = "";
+      if (bar) bar.innerHTML = "";
       return;
     }
     if (!host) return;
+
+    /* One button per season. Hidden at one season, because a control that
+       cannot change anything is furniture. */
+    if (bar) {
+      var many = MINI_ALL.seasons.length > 1;
+      bar.hidden = !many;
+      bar.innerHTML = many
+        ? '<span class="seg-label">Cup</span>' + MINI_ALL.seasons.map(function (x) {
+            return '<button class="seg' + (x.id === MINI.id ? " is-on" : "") +
+              '" data-season="' + x.id + '">' + esc(x.name) + '</button>';
+          }).join("")
+        : "";
+    }
     miCopy();
 
     var t = MINI.totals, s = MINI.season;
@@ -2962,7 +3005,12 @@
     var pools =
       '<div class="sec-sub"><h3>The pools</h3>' +
       '<p>Everyone plays everyone inside their own pool. Nobody meets the ' +
-      'other pool until the bracket.</p></div>' +
+      'other pool until the bracket.' +
+      (MINI.draw_seed
+        ? ' These two were <b>drawn at random</b>, not picked — seed <code>' +
+          MINI.draw_seed + '</code>, so the draw can be re-run and checked.'
+        : '') +
+      '</p></div>' +
       '<div class="mc-pools">' + MINI.pools.map(miPool).join("") + '</div>' +
       miGroupTable() + miTieBreaks() + tie;
 
@@ -3040,6 +3088,11 @@
   segment("matchSort", "sort", "matchSort", drawMatches);
   segment("duoSort",   "sort", "duoSort",   drawDuos);
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
+  segment("miSeason", "season", "miSeason", function () {
+    miSelect(state.miSeason);
+    drawMini();
+    miLines();                 // the new season's bracket is a new drawing
+  }, Number);
   segment("fxView", "fxview", "fxView", drawSchedule);
   segment("srView", "srview", "srView", drawSeries);
   segment("tourMin", "min", "tourMin", drawSeries, Number);
