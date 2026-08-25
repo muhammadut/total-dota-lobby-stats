@@ -197,5 +197,59 @@
     "file": "1535031559277772932_F6511139-B312-4C80-9977-3ECCFC337CA1.png",
     "posted": "2026-08-06 17:07",
     "status": "ingested"
+  },
+  "1537821160883101787": {
+    "author": "ut70",
+    "file": "1537821160883101787_Screenshot_41.png",
+    "posted": "2026-08-14 09:52",
+    "status": "ingested"
+  },
+  "1537821187214938113": {
+    "author": "ut70",
+    "file": "1537821187214938113_Screenshot_40.png",
+    "posted": "2026-08-14 09:52",
+    "status": "ingested"
+  },
+  "1538255219488587816": {
+    "author": "soooze",
+    "duplicate_of": "discord-1538995536063893685",
+    "file": "1538255219488587816_image.png",
+    "posted": "2026-08-15 14:37",
+    "status": "duplicate"
+  },
+  "1538255252128665621": {
+    "author": "soooze",
+    "duplicate_of": "discord-1538995514274746378",
+    "file": "1538255252128665621_image.png",
+    "posted": "2026-08-15 14:37",
+    "status": "duplicate"
+  },
+  "1538255285229977682": {
+    "author": "soooze",
+    "duplicate_of": "discord-1538995464802799738",
+    "file": "1538255285229977682_image.png",
+    "posted": "2026-08-15 14:37",
+    "status": "duplicate"
+  },
+  "1538308046470651934": {
+    "author": "ramos6689",
+    "duplicate_of": "discord-1539743542694649866",
+    "file": "1538308046470651934_image.png",
+    "posted": "2026-08-15 18:06",
+    "status": "duplicate"
+  },
+  "1538308279019765800": {
+    "author": "ramos6689",
+    "duplicate_of": "discord-1538995870874210314",
+    "file": "1538308279019765800_image.png",
+    "posted": "2026-08-15 18:07",
+    "status": "duplicate"
+  },
+  "1538308770449457254": {
+    "author": "ramos6689",
+    "duplicate_of": "discord-1539743589049962596",
+    "file": "1538308770449457254_image.png",
+    "posted": "2026-08-15 18:09",
+    "status": "duplicate"
   }
 }

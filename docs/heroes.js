@@ -8,6 +8,7 @@ window.HERO_SLUG = {
 "Bane": "bane",
 "Centaur Warrunner": "centaur",
 "Chaos Knight": "chaos_knight",
+"Clockwerk": "rattletrap",
 "Dark Seer": "dark_seer",
 "Dark Willow": "dark_willow",
 "Dawnbreaker": "dawnbreaker",

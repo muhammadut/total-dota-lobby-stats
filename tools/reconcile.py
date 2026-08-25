@@ -49,6 +49,24 @@ from discord_pull import SOURCES, load_seen, save_seen      # noqa: E402
 SEEN = SOURCES["lobby"]["seen"]
 
 DATA = ROOT / "data" / "matches.json"
+# A screenshot posted to #lobby-stats can be a re-capture of a game that
+# was recorded from the LEAGUE channel instead. It is still a duplicate --
+# the game is on the site, just in the other ledger -- so --of has to be
+# able to name a league source_ref. Without this the image has no valid
+# state, gets marked failed, and a real person is asked to repost a
+# screenshot that was perfectly readable. That has happened before; it is
+# the whole reason the `duplicate` state exists.
+LEAGUE_DATA = ROOT / "data" / "league_matches.json"
+
+
+def known_refs() -> set:
+    """Every source_ref on the site, from BOTH ledgers."""
+    refs = {m.get("source_ref", "") for m in
+            json.loads(DATA.read_text(encoding="utf-8"))["matches"]}
+    if LEAGUE_DATA.exists():
+        refs |= {m.get("source_ref", "") for m in
+                 json.loads(LEAGUE_DATA.read_text(encoding="utf-8"))["matches"]}
+    return refs
 
 
 def main() -> int:
@@ -71,12 +89,12 @@ def main() -> int:
         if mid not in seen:
             print(f"  no downloaded image with message id {mid}", file=sys.stderr)
             return 1
-        refs = {m.get("source_ref", "") for m in
-                json.loads(DATA.read_text(encoding="utf-8"))["matches"]}
+        refs = known_refs()
         if args.of not in refs:
             # Refuse to point at a match that does not exist -- otherwise
             # this becomes a way to silence a real failure by typo.
-            print(f"  {args.of!r} is not a source_ref in the ledger", file=sys.stderr)
+            print(f"  {args.of!r} is not a source_ref in either ledger",
+                  file=sys.stderr)
             return 1
         seen[mid]["status"] = "duplicate"
         seen[mid]["duplicate_of"] = args.of
@@ -100,8 +118,7 @@ def main() -> int:
 
     # A Discord-sourced match is recorded as source_ref "discord-<message id>",
     # so presence in the ledger is the proof that it landed.
-    refs = {m.get("source_ref", "") for m in
-            json.loads(DATA.read_text(encoding="utf-8"))["matches"]}
+    refs = known_refs()
     got = {r[len("discord-"):] for r in refs if r.startswith("discord-")}
 
     ingested, failed = [], []

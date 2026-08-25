@@ -48,7 +48,9 @@
     {"canonical": "Stoic", "alias": "Sameed", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
     {"canonical": "Obno[X]iouS- 不快な [M.C]", "alias": "Faraz [M.C]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
     {"canonical": "Lord_TheePa [UGI|]", "alias": "Thekra [UGI|]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
-    {"canonical": "Scarface [FUBU]", "alias": "420 [FUBU]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"}
+    {"canonical": "Scarface [FUBU]", "alias": "420 [FUBU]", "note": "auto-merged: confirmed by a human; the automatic bar cannot judge these two names"},
+    {"canonical": "Stoic", "alias": "Stoic (swap cmds)", "note": "auto-merged: 'stoic' is a prefix of 'stoicswapcmds'"},
+    {"canonical": "X MEN Junior :) [Mkrs.]", "alias": "X MEN [Mkrs.]", "note": "auto-merged: 'xmen' is a prefix of 'xmenjunior'"}
   ],
 
   "matches": [
@@ -1292,6 +1294,60 @@
         {"name": "I'M Still Noob", "side": "dire", "hero": "Io", "hero_level": 24, "kills": 2, "deaths": 8, "assists": 30, "net_worth": 13710, "last_hits": 127, "denies": 2, "gpm": 357},
         {"name": "............ [UGI|]", "side": "dire", "hero": "Dark Willow", "hero_level": 20, "kills": 8, "deaths": 15, "assists": 15, "net_worth": 9770, "last_hits": 19, "denies": 3, "gpm": 296},
         {"name": "Mandark [<MC>]", "side": "dire", "hero": "Mirana", "hero_level": 26, "kills": 11, "deaths": 8, "assists": 17, "net_worth": 20836, "last_hits": 345, "denies": 3, "gpm": 541}
+      ]
+    },
+    {
+      "source_ref": "discord-1537821160883101787",
+      "dota_match_id": null,
+      "played_on": "2026-08-14",
+      "played_at": "2026-08-14 09:52",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": null,
+      "radiant_score": 32,
+      "dire_score": 59,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to #lobby-stats by ut70 and pulled by tools/discord_pull.py (message 1537821160883101787, file Screenshot_41.png). The Dire carries an explicit WINNER badge; neither side was named, both read the generic 'The Radiant'/'The Dire'. 5120x2160 capture, so every column through RAW damage is present. No match id or duration -- the scoreboard tab has no match header; played_at is the Discord upload time, server-side and absolute, and an upper bound on the game itself. Checksums: radiant 30 kills <= score 32 <= dire deaths 32, two tower-credited kills; dire 59 kills = score 59 <= radiant deaths 60. Both chains hold. '____Tiger X____ [GB]' and '............ [UGI|]' were measured at zoom rather than eyeballed -- four underscores each side, and twelve dots at a 9.0px pitch.",
+      "players": [
+        {"name": "UT", "side": "radiant", "hero": "Viper", "hero_level": 26, "kills": 7, "deaths": 8, "assists": 15, "net_worth": 19658, "last_hits": 287, "denies": 15, "gpm": 451, "xpm": 743, "hero_damage": 42039, "building_damage": 859, "healing": 0, "bounty_runes": 2, "outposts": 0},
+        {"name": "Stoic", "side": "radiant", "hero": "Earthshaker", "hero_level": 27, "kills": 9, "deaths": 11, "assists": 8, "net_worth": 25637, "last_hits": 471, "denies": 11, "gpm": 609, "xpm": 893, "hero_damage": 37407, "building_damage": 457, "healing": 0, "bounty_runes": 1, "outposts": 0},
+        {"name": "SavaGe!", "side": "radiant", "hero": "Clockwerk", "hero_level": 22, "kills": 7, "deaths": 11, "assists": 15, "net_worth": 13363, "last_hits": 56, "denies": 2, "gpm": 313, "xpm": 499, "hero_damage": 30796, "building_damage": 0, "healing": 0, "bounty_runes": 2, "outposts": 0},
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Lifestealer", "hero_level": 24, "kills": 3, "deaths": 10, "assists": 6, "net_worth": 24745, "last_hits": 434, "denies": 8, "gpm": 494, "xpm": 584, "hero_damage": 21733, "building_damage": 867, "healing": 866, "bounty_runes": 1, "outposts": 0},
+        {"name": "____Tiger X____ [GB]", "side": "radiant", "hero": "Pudge", "hero_level": 25, "kills": 4, "deaths": 20, "assists": 8, "net_worth": 14842, "last_hits": 92, "denies": 4, "gpm": 339, "xpm": 655, "hero_damage": 15530, "building_damage": 87, "healing": 0, "bounty_runes": 2, "outposts": 0},
+        {"name": "............ [UGI|]", "side": "dire", "hero": "Faceless Void", "hero_level": 30, "kills": 9, "deaths": 5, "assists": 15, "net_worth": 38935, "last_hits": 618, "denies": 11, "gpm": 758, "xpm": 1271, "hero_damage": 36563, "building_damage": 13769, "healing": 0, "bounty_runes": 5, "outposts": 0},
+        {"name": "X MEN [Mkrs.]", "side": "dire", "hero": "Lina", "hero_level": 30, "kills": 21, "deaths": 6, "assists": 19, "net_worth": 44905, "last_hits": 585, "denies": 13, "gpm": 841, "xpm": 1242, "hero_damage": 76923, "building_damage": 10927, "healing": 900, "bounty_runes": 3, "outposts": 0},
+        {"name": "SOMA [L3vi]", "side": "dire", "hero": "Disruptor", "hero_level": 24, "kills": 1, "deaths": 7, "assists": 31, "net_worth": 15295, "last_hits": 40, "denies": 1, "gpm": 303, "xpm": 580, "hero_damage": 18564, "building_damage": 39, "healing": 0, "bounty_runes": 4, "outposts": 1},
+        {"name": "-Oden", "side": "dire", "hero": "Dark Willow", "hero_level": 24, "kills": 5, "deaths": 11, "assists": 40, "net_worth": 12183, "last_hits": 27, "denies": 7, "gpm": 330, "xpm": 604, "hero_damage": 20170, "building_damage": 373, "healing": 0, "bounty_runes": 2, "outposts": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Axe", "hero_level": 28, "kills": 23, "deaths": 3, "assists": 19, "net_worth": 27197, "last_hits": 312, "denies": 13, "gpm": 601, "xpm": 978, "hero_damage": 42022, "building_damage": 2507, "healing": 0, "bounty_runes": 3, "outposts": 0}
+      ]
+    },
+    {
+      "source_ref": "discord-1537821187214938113",
+      "dota_match_id": null,
+      "played_on": "2026-08-14",
+      "played_at": "2026-08-14 09:52",
+      "duration_seconds": null,
+      "game_mode": null,
+      "radiant_team_name": null,
+      "dire_team_name": "Hello Madafaka!",
+      "radiant_score": 41,
+      "dire_score": 53,
+      "winning_side": "dire",
+      "result_confidence": "confirmed",
+      "notes": "SCOREBOARD tab, posted to #lobby-stats by ut70 and pulled by tools/discord_pull.py (message 1537821187214938113, file Screenshot_40.png). The Dire played as 'Hello Madafaka!' and carries the WINNER badge; the Radiant was unnamed. 5120x2160 capture. No match id or duration; played_at is the Discord upload time, an upper bound on the game. Checksums: radiant 41 kills = score 41 = dire deaths 41, exact; dire 52 kills <= score 53 <= radiant deaths 53, one tower-credited kill. Both chains hold.",
+      "players": [
+        {"name": "HELL-ANGEL-", "side": "radiant", "hero": "Centaur Warrunner", "hero_level": 25, "kills": 3, "deaths": 12, "assists": 15, "net_worth": 18092, "last_hits": 323, "denies": 3, "gpm": 435, "xpm": 729, "hero_damage": 19916, "building_damage": 633, "healing": 0, "bounty_runes": 1, "outposts": 0},
+        {"name": "SavaGe!", "side": "radiant", "hero": "Rubick", "hero_level": 19, "kills": 4, "deaths": 10, "assists": 21, "net_worth": 13336, "last_hits": 66, "denies": 3, "gpm": 297, "xpm": 392, "hero_damage": 22862, "building_damage": 60, "healing": 0, "bounty_runes": 5, "outposts": 0},
+        {"name": "Stoic (swap cmds)", "side": "radiant", "hero": "Invoker", "hero_level": 25, "kills": 9, "deaths": 8, "assists": 13, "net_worth": 21790, "last_hits": 407, "denies": 11, "gpm": 580, "xpm": 719, "hero_damage": 44498, "building_damage": 6234, "healing": 0, "bounty_runes": 0, "outposts": 0},
+        {"name": "Downlander", "side": "radiant", "hero": "Morphling", "hero_level": 27, "kills": 20, "deaths": 8, "assists": 8, "net_worth": 28156, "last_hits": 502, "denies": 22, "gpm": 690, "xpm": 891, "hero_damage": 49241, "building_damage": 6160, "healing": 611, "bounty_runes": 2, "outposts": 0},
+        {"name": "-Oden", "side": "radiant", "hero": "Hoodwink", "hero_level": 21, "kills": 5, "deaths": 15, "assists": 19, "net_worth": 10404, "last_hits": 59, "denies": 1, "gpm": 289, "xpm": 470, "hero_damage": 20699, "building_damage": 309, "healing": 0, "bounty_runes": 1, "outposts": 0},
+        {"name": "Eldritch", "side": "dire", "hero": "Grimstroke", "hero_level": 24, "kills": 11, "deaths": 8, "assists": 26, "net_worth": 19612, "last_hits": 52, "denies": 0, "gpm": 407, "xpm": 614, "hero_damage": 26838, "building_damage": 614, "healing": 3128, "bounty_runes": 1, "outposts": 0},
+        {"name": "TigerX [GB]", "side": "dire", "hero": "Lich", "hero_level": 24, "kills": 6, "deaths": 13, "assists": 24, "net_worth": 20789, "last_hits": 160, "denies": 8, "gpm": 463, "xpm": 626, "hero_damage": 27579, "building_damage": 48, "healing": 900, "bounty_runes": 0, "outposts": 0},
+        {"name": "axo [EGAN]", "side": "dire", "hero": "Axe", "hero_level": 27, "kills": 15, "deaths": 8, "assists": 19, "net_worth": 23444, "last_hits": 263, "denies": 25, "gpm": 568, "xpm": 853, "hero_damage": 45088, "building_damage": 2499, "healing": 320, "bounty_runes": 5, "outposts": 0},
+        {"name": "HURR [PK_]", "side": "dire", "hero": "Pudge", "hero_level": 29, "kills": 10, "deaths": 3, "assists": 29, "net_worth": 31865, "last_hits": 382, "denies": 19, "gpm": 653, "xpm": 1124, "hero_damage": 47529, "building_damage": 7108, "healing": 0, "bounty_runes": 2, "outposts": 0},
+        {"name": "UT", "side": "dire", "hero": "Slardar", "hero_level": 27, "kills": 10, "deaths": 9, "assists": 16, "net_worth": 24776, "last_hits": 285, "denies": 2, "gpm": 519, "xpm": 841, "hero_damage": 24039, "building_damage": 3162, "healing": 0, "bounty_runes": 9, "outposts": 1}
       ]
     }
   ]
