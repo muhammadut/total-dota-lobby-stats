@@ -118,7 +118,7 @@
       "id": 2,
       "name": "Season 2",
       "status": "proposal",
-      "note": "Six new teams off the captains' sheet. Pools drawn at random.",
+      "note": "Six new teams off the captains' sheet. Pools drawn at random. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took the slot; it keeps team id 6, so the drawn pool placement is unchanged and still reproducible from the seed. No season-2 result had been recorded, so nothing was orphaned.",
       "_draw": [
         "The pools were DRAWN, not chosen, and the draw is reproducible:",
         "",
@@ -145,7 +145,7 @@
             },
             {
               "pos": "offlane",
-              "name": "Trollmitsu"
+              "name": "UT"
             },
             {
               "pos": "support",
@@ -159,7 +159,7 @@
         },
         {
           "id": 2,
-          "name": "Khanna Re-born",
+          "name": "Team Khamosh",
           "roster": [
             {
               "pos": "mid",
@@ -176,7 +176,7 @@
             },
             {
               "pos": "support",
-              "name": "Triple"
+              "name": "Trollmitsu"
             },
             {
               "pos": "support",
@@ -186,7 +186,7 @@
         },
         {
           "id": 3,
-          "name": "RustyN",
+          "name": "Rusty Niggs",
           "roster": [
             {
               "pos": "mid",
@@ -240,7 +240,7 @@
         },
         {
           "id": 5,
-          "name": "PlayForFun",
+          "name": "Downladner's Return",
           "roster": [
             {
               "pos": "mid",
@@ -267,28 +267,28 @@
         },
         {
           "id": 6,
-          "name": "CPX's Return",
+          "name": "Beast_Yona_Co",
           "roster": [
             {
               "pos": "mid",
-              "name": "CPX",
+              "name": "Yona",
               "captain": true
             },
             {
               "pos": "carry",
-              "name": "Seeker"
+              "name": "Toji"
             },
             {
               "pos": "offlane",
-              "name": "UT"
+              "name": null
             },
             {
               "pos": "support",
-              "name": "Germ / Seeker's support"
+              "name": "Beast"
             },
             {
               "pos": "support",
-              "name": "Vanzo / Seeker's support"
+              "name": "Invoker"
             }
           ]
         }
