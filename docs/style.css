@@ -1665,6 +1665,15 @@ td.none{ padding:2.2rem 1rem; }
 .team-chip--6{ background:#2f6b7d; }
 .team-pill--6{ background:#2f6b7d; }
 
+/* 7 and 8 arrived when Season 2 went to eight teams (2026-08-27). Same
+   muted family and lightness as 1-6, and picked from the two hues the
+   palette had left: olive and dusty mauve. Deliberately NOT a warm red --
+   that reads as Dire/eliminated, and colour stays rationed here. */
+.team-chip--7{ background:#6b6236; }
+.team-pill--7{ background:#6b6236; }
+.team-chip--8{ background:#7a5270; }
+.team-pill--8{ background:#7a5270; }
+
 /* A team that is not on a roster in data/teams.json. Outlined, never
    filled, so it cannot be mistaken for a settled side. */
 .team-chip.is-prov{

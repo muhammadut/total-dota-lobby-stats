@@ -3006,10 +3006,21 @@
       '<div class="sec-sub"><h3>The pools</h3>' +
       '<p>Everyone plays everyone inside their own pool. Nobody meets the ' +
       'other pool until the bracket.' +
-      (MINI.draw_seed
-        ? ' These two were <b>drawn at random</b>, not picked — seed <code>' +
-          MINI.draw_seed + '</code>, so the draw can be re-run and checked.'
-        : '') +
+      (function () {
+        // Name every seed the pools were drawn with. A season that gained
+        // teams later was drawn twice, and citing only the first would
+        // describe a draw that leaves the newcomers unaccounted for.
+        var s = MINI.draw_seeds || (MINI.draw_seed ? [MINI.draw_seed] : []);
+        if (!s.length) return '';
+        var codes = s.map(function (x) { return '<code>' + x + '</code>'; });
+        return ' These were <b>drawn at random</b>, not picked — seed' +
+          (s.length > 1 ? 's ' : ' ') +
+          (s.length > 1
+            ? codes.slice(0, -1).join(', ') + ' and ' + codes[codes.length - 1] +
+              ' (the second for the teams added later)'
+            : codes[0]) +
+          ', so the draw can be re-run and checked.';
+      })() +
       '</p></div>' +
       '<div class="mc-pools">' + MINI.pools.map(miPool).join("") + '</div>' +
       miGroupTable() + miTieBreaks() + tie;

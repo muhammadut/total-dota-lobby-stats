@@ -719,14 +719,44 @@ def build_mini_season(cfg: dict, league: dict | None,
         assert ln["from"] in by_id and ln["to"] in by_id, ln
         assert 0 <= ln["slot"] < len(by_id[ln["to"]]["feeds"]), ln
 
+    # The bracket always seats four, so places 1-4 are fixed. Everything
+    # below that is however many teams the pools leave behind, which moves
+    # the moment a pool changes size -- this line read "5th & 6th, third in
+    # a pool" and went false the day season 2 went from pools of three to
+    # pools of four. Derive it, and check it against the team count.
+    def _ord(n):
+        return f"{n}{'th' if 10 <= n % 100 <= 20 else {1:'st',2:'nd',3:'rd'}.get(n % 10, 'th')}"
+
+    missed = sorted({p for pool in pools_in
+                     for p in range(advance + 1, len(pool["teams"]) + 1)})
+    out_n = sum(len(pool["teams"]) - advance for pool in pools_in)
+
     placings = [
         {"place": "1st", "from": "Wins the grand final"},
         {"place": "2nd", "from": "Loses the grand final"},
         {"place": "3rd", "from": "Loses the lower final"},
         {"place": "4th", "from": "Loses the elimination match"},
-        {"place": "5th & 6th", "from": "Third in a pool \u2014 out before the "
-                                       "bracket starts"},
     ]
+    if out_n:
+        lo, hi = 5, 4 + out_n
+        band = (_ord(lo) if lo == hi else
+                f"{_ord(lo)} & {_ord(hi)}" if hi == lo + 1 else
+                f"{_ord(lo)}\u2013{_ord(hi)}")
+        # Words, not numerals, for the pool places -- the original copy read
+        # "Third in a pool" and this line is prose, not a table cell.
+        WORD = {1: "first", 2: "second", 3: "third", 4: "fourth",
+                5: "fifth", 6: "sixth", 7: "seventh", 8: "eighth"}
+        where = " or ".join(WORD.get(p, _ord(p)) for p in missed)
+        placings.append({
+            "place": band,
+            "from": f"{where[0].upper()}{where[1:]} in a pool \u2014 out before "
+                    f"the bracket starts",
+        })
+
+    # Every team must land in exactly one band, or the page is describing a
+    # tournament with a different number of teams than it just drew.
+    assert 4 + out_n == len(seen), (
+        f"placings cover {4 + out_n} teams but the season has {len(seen)}")
 
     # Two matches a night, the way the season already runs. Matches are
     # played in the order above and none starts before the ones it depends
@@ -795,6 +825,12 @@ def build_mini_season(cfg: dict, league: dict | None,
         "status": cfg.get("status", "proposal"),
         "name": cfg.get("name", "Mini Cup"),
         "note": cfg.get("note"),
+        # Every seed the pools were drawn with, in order. A season that adds
+        # teams later draws again, and the page has to name BOTH -- printing
+        # only the first would describe a draw that does not account for two
+        # of the eight teams, and prose has no checksum to catch that.
+        "draw_seeds": [s for s in (cfg.get("draw_seed"),
+                                   cfg.get("draw_seed_newcomers")) if s],
         "draw_seed": cfg.get("draw_seed"),
         "pools": pools,
         "bracket": nodes,

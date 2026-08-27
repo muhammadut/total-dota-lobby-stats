@@ -118,15 +118,21 @@
       "id": 2,
       "name": "Season 2",
       "status": "proposal",
-      "note": "Six new teams off the captains' sheet. Pools drawn at random. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took the slot; it keeps team id 6, so the drawn pool placement is unchanged and still reproducible from the seed. No season-2 result had been recorded, so nothing was orphaned.",
+      "note": "Eight teams off the captains' sheet, in two pools of four. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took its slot and its id. Team Seeker and Team Chainskooter were added on 2026-08-27 and drawn one into each pool. Top two of each pool still advance, so the four-team double-elimination bracket is unchanged in shape.",
       "_draw": [
-        "The pools were DRAWN, not chosen, and the draw is reproducible:",
+        "The pools were DRAWN, not chosen, and both draws are reproducible:",
         "",
-        "    random.Random(20260824).shuffle([1, 2, 3, 4, 5, 6])",
-        "    -> [5, 6, 2, 1, 3, 4]   first three = Pool A, last three = Pool B",
+        "  1) the original six, 2026-08-24:",
+        "       random.Random(20260824).shuffle([1, 2, 3, 4, 5, 6])",
+        "       -> [5, 6, 2, 1, 3, 4]   first three = Pool A, last three = Pool B",
+        "",
+        "  2) the two teams added 2026-08-27, one into each pool so the",
+        "     pools stay 4 and 4, leaving the first draw untouched:",
+        "       random.Random(20260827).shuffle([7, 8])",
+        "       -> [8, 7]   first = Pool A, second = Pool B",
         "",
         "A draw nobody can re-run is indistinguishable from one that was",
-        "arranged. Re-run that line to check this one."
+        "arranged. Re-run those two lines to check this one."
       ],
       "draw_seed": 20260824,
       "teams": [
@@ -291,6 +297,60 @@
               "name": "Invoker"
             }
           ]
+        },
+        {
+          "id": 7,
+          "name": "Team Seeker",
+          "roster": [
+            {
+              "pos": "mid",
+              "name": "Seeker",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Muzammil"
+            },
+            {
+              "pos": "offlane",
+              "name": "Noor"
+            },
+            {
+              "pos": "support",
+              "name": "Faiz"
+            },
+            {
+              "pos": "support",
+              "name": null
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "Team Chainskooter",
+          "roster": [
+            {
+              "pos": "mid",
+              "name": "Chainskooter",
+              "captain": true
+            },
+            {
+              "pos": "carry",
+              "name": "Umais"
+            },
+            {
+              "pos": "offlane",
+              "name": "Sherry"
+            },
+            {
+              "pos": "support",
+              "name": "Juker"
+            },
+            {
+              "pos": "support",
+              "name": "Ibbe"
+            }
+          ]
         }
       ],
       "pools": [
@@ -299,7 +359,8 @@
           "teams": [
             2,
             5,
-            6
+            6,
+            8
           ]
         },
         {
@@ -307,7 +368,8 @@
           "teams": [
             1,
             3,
-            4
+            4,
+            7
           ]
         }
       ],
@@ -322,7 +384,8 @@
       "tie_breaks": [
         "The result between the two teams",
         "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
-      ]
+      ],
+      "draw_seed_newcomers": 20260827
     }
   ]
 }
