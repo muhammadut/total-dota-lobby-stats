@@ -383,13 +383,16 @@
         "go on claiming a finished game is still under way."
       ],
       "in_progress": [
-        "MINI-A-2v5",
         "MINI-A-1v6"
       ],
       "results": [
         {
           "match": "MINI-B-3v7",
           "winner": 3
+        },
+        {
+          "match": "MINI-A-2v5",
+          "winner": 2
         }
       ],
       "tie_break_results": [],
