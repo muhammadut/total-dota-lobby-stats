@@ -2788,8 +2788,11 @@
           'from a screenshot, so there is no scoreboard behind ' +
           (reported === 1 ? 'it' : 'them') + ' and nothing to check ' +
           (reported === 1 ? 'it' : 'them') + ' against. Post the post-game ' +
-          'shots in <b>#dota-league-2026</b> and they become real ledger ' +
-          'games with every player\'s line behind them.';
+          (reported === 1
+            ? 'shot in <b>#dota-league-2026</b> and it becomes a real ledger ' +
+              'game with every player\'s line behind it.'
+            : 'shots in <b>#dota-league-2026</b> and they become real ledger ' +
+              'games with every player\'s line behind them.');
       }
     }
 

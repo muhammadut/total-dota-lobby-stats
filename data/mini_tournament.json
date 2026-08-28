@@ -384,10 +384,14 @@
       ],
       "in_progress": [
         "MINI-A-2v5",
-        "MINI-A-1v6",
-        "MINI-B-3v7"
+        "MINI-A-1v6"
       ],
-      "results": [],
+      "results": [
+        {
+          "match": "MINI-B-3v7",
+          "winner": 3
+        }
+      ],
       "tie_break_results": [],
       "tie_breaks": [
         "The result between the two teams",
