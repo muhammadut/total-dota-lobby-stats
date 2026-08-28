@@ -118,7 +118,7 @@
       "id": 2,
       "name": "Season 2",
       "status": "proposal",
-      "note": "Eight teams off the captains' sheet, in two pools of four. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took its slot and its id. Team Seeker and Team Chainskooter were added on 2026-08-27 and drawn one into each pool. Top two of each pool still advance, so the four-team double-elimination bracket is unchanged in shape.",
+      "note": "Seven teams: a pool of three and a pool of four, two advancing from each. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took its slot and id. Team Seeker and Team Chainskooter were added on 2026-08-27, one drawn into each pool; Chainskooter withdrew on 2026-08-28 before playing a game, leaving Pool A with three. Two of three advance in Pool A against two of four in Pool B -- an uneven shot at the bracket, and the price of running seven teams in a format built for even pools.",
       "_draw": [
         "The pools were DRAWN, not chosen, and both draws are reproducible:",
         "",
@@ -126,10 +126,14 @@
         "       random.Random(20260824).shuffle([1, 2, 3, 4, 5, 6])",
         "       -> [5, 6, 2, 1, 3, 4]   first three = Pool A, last three = Pool B",
         "",
-        "  2) the two teams added 2026-08-27, one into each pool so the",
-        "     pools stay 4 and 4, leaving the first draw untouched:",
+        "  2) the two teams added 2026-08-27:",
         "       random.Random(20260827).shuffle([7, 8])",
         "       -> [8, 7]   first = Pool A, second = Pool B",
+        "",
+        "Team Chainskooter (8) withdrew on 2026-08-28 before playing, which is",
+        "why Pool A is the short one -- that is where the draw had put them,",
+        "not a choice. Pool A therefore plays a three-team round robin and",
+        "Pool B a four-team one; two still advance from each.",
         "",
         "A draw nobody can re-run is indistinguishable from one that was",
         "arranged. Re-run those two lines to check this one."
@@ -324,33 +328,6 @@
               "name": null
             }
           ]
-        },
-        {
-          "id": 8,
-          "name": "Team Chainskooter",
-          "roster": [
-            {
-              "pos": "mid",
-              "name": "Chainskooter",
-              "captain": true
-            },
-            {
-              "pos": "carry",
-              "name": "Umais"
-            },
-            {
-              "pos": "offlane",
-              "name": "Sherry"
-            },
-            {
-              "pos": "support",
-              "name": "Juker"
-            },
-            {
-              "pos": "support",
-              "name": "Ibbe"
-            }
-          ]
         }
       ],
       "pools": [
@@ -359,8 +336,7 @@
           "teams": [
             2,
             5,
-            6,
-            8
+            6
           ]
         },
         {

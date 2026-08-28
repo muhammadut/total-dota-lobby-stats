@@ -925,11 +925,68 @@
      The tab lives in location.hash so a view can be linked to — "look
      at #duos=HURR%20%5BPK_%5D" is the natural way to share a finding
      with the person it is about, and it costs one line to support. */
-  function showTab(name) {
+  /* Two levels of navigation. The top row picks a GROUP -- the inhouse
+     league, or the cups -- and the row under it picks a page inside it.
+     The league's pages are fixed; the cup's are one per season, read off
+     the payload, so adding a season adds a subtab and nothing here has to
+     be edited. That is the same reason the pool matches are derived
+     rather than listed. */
+  var NAV = {
+    league: [
+      { view: "standings", label: "Standings" },
+      { view: "duos",      label: "Duos" },
+      { view: "matches",   label: "Matches" },
+      { view: "heroes",    label: "Heroes" }
+    ],
+    tournament: []          // filled from MINI_ALL.seasons below
+  };
+
+  function navSubs(group) {
+    if (group !== "tournament") return NAV[group] || [];
+    if (!MINI_ALL || !MINI_ALL.seasons.length) return [];
+    return MINI_ALL.seasons.map(function (s) {
+      return { view: "mini", season: s.id, label: s.name };
+    });
+  }
+
+  function drawSubtabs(group, activeView, activeSeason) {
+    var bar = $("#subtabs");
+    if (!bar) return;
+    var subs = navSubs(group);
+    // One page in a group needs no chooser -- the same reason the old
+    // season control hid itself at one season.
+    bar.hidden = subs.length < 2;
+    bar.innerHTML = subs.map(function (s) {
+      var on = s.view === activeView &&
+        (s.season === undefined || s.season === activeSeason);
+      return '<button class="subtab' + (on ? " is-active" : "") +
+        '" role="tab" aria-selected="' + (on ? "true" : "false") +
+        '" data-view="' + s.view + '"' +
+        (s.season !== undefined ? ' data-season="' + s.season + '"' : "") +
+        ">" + esc(s.label) + "</button>";
+    }).join("");
+  }
+
+  function groupOf(view) {
+    return view === "mini" ? "tournament" : "league";
+  }
+
+  function showTab(name, season) {
     var view = $("#view-" + name);
     if (!view) return false;
+    var group = groupOf(name);
+
+    if (name === "mini" && MINI_ALL) {
+      if (season === undefined) season = state.miSeason;
+      if (season !== state.miSeason) {
+        state.miSeason = season;
+        miSelect(season);
+        drawMini();
+      }
+    }
+
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (o) {
-      var on = o.getAttribute("data-view") === name;
+      var on = o.getAttribute("data-group") === group;
       o.classList.toggle("is-active", on);
       o.setAttribute("aria-selected", on ? "true" : "false");
     });
@@ -937,35 +994,68 @@
       v.classList.remove("is-active");
     });
     view.classList.add("is-active");
+    drawSubtabs(group, name, state.miSeason);
+
     // Measured layout: the bracket's connector lines cannot be drawn while
     // its tab is hidden, because every box rect is 0x0 there.
     if (name === "mini") miLines();
     return true;
   }
 
+  /* #standings, #duos=HURR, #mini, #mini=2 all route. The season form
+     matters because a cup subtab is a linkable thing now. */
   function fromHash() {
     var raw = decodeURIComponent(String(location.hash || "").replace(/^#/, ""));
     if (!raw) return;
     var eq = raw.indexOf("="), name = eq === -1 ? raw : raw.slice(0, eq);
-    if (eq !== -1 && name === "duos") {
+    var arg = eq === -1 ? "" : raw.slice(eq + 1);
+    if (name === "duos" && arg) {
       // Names can contain commas? None do, but split on the pipe instead
       // so a future "Fear, Inc" cannot silently become two players.
-      state.duoPick = raw.slice(eq + 1).split("|").filter(Boolean);
+      state.duoPick = arg.split("|").filter(Boolean);
     }
-    if (showTab(name)) drawDuos();
+    var season = name === "mini" && arg ? Number(arg) : undefined;
+    if (showTab(name, season)) drawDuos();
+  }
+
+  function fragFor(name, season) {
+    if (name === "duos" && state.duoPick.length) {
+      return "duos=" + state.duoPick.map(encodeURIComponent).join("|");
+    }
+    if (name === "mini" && MINI_ALL && MINI_ALL.seasons.length > 1) {
+      return "mini=" + (season === undefined ? state.miSeason : season);
+    }
+    return name;
   }
 
   function wireTabs() {
+    // Top row: pick a group, land on its first page.
     Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
       t.addEventListener("click", function () {
-        var name = t.getAttribute("data-view");
-        showTab(name);
-        var frag = name === "duos" && state.duoPick.length
-          ? "duos=" + state.duoPick.map(encodeURIComponent).join("|") : name;
+        var subs = navSubs(t.getAttribute("data-group"));
+        if (!subs.length) return;
+        showTab(subs[0].view, subs[0].season);
+        var frag = fragFor(subs[0].view, subs[0].season);
         if (history.replaceState) history.replaceState(null, "", "#" + frag);
         else location.hash = frag;
       });
     });
+
+    // Second row is rebuilt on every switch, so listen on the container.
+    var bar = $("#subtabs");
+    if (bar) {
+      bar.addEventListener("click", function (e) {
+        var b = e.target.closest(".subtab");
+        if (!b) return;
+        var name = b.getAttribute("data-view");
+        var sRaw = b.getAttribute("data-season");
+        var season = sRaw === null ? undefined : Number(sRaw);
+        showTab(name, season);
+        var frag = fragFor(name, season);
+        if (history.replaceState) history.replaceState(null, "", "#" + frag);
+        else location.hash = frag;
+      });
+    }
     window.addEventListener("hashchange", fromHash);
   }
 
@@ -2876,18 +2966,37 @@
         ? "Mini Cups · " + MINI.name : MINI.name;
     }
 
+    /* This sentence described the pools by reading pools[0] and assuming
+       every pool matched it -- fine while both held three, and wrong the
+       moment season 2 ran a three and a four: it would have said "2 pools
+       of 3" above a pool of four, and "the last one is out" where two are.
+       Both halves are derived from the actual sizes now. */
     var lede = $("#miniLede");
     if (lede) {
+      var sizes = MINI.pools.map(function (p) { return p.teams.length; });
+      var adv = MINI.pools[0].advance;
+      var uniqSize = sizes.filter(function (v, i) { return sizes.indexOf(v) === i; });
+      var poolPhrase = uniqSize.length === 1
+        ? MINI.pools.length + ' pools of ' + uniqSize[0]
+        : 'A pool of ' + sizes.slice(0, -1).join(', a pool of ') +
+          ' and a pool of ' + sizes[sizes.length - 1];
+
+      var outs = sizes.map(function (n) { return n - adv; });
+      var uniqOut = outs.filter(function (v, i) { return outs.indexOf(v) === i; });
+      var outPhrase = uniqOut.length === 1
+        ? (uniqOut[0] === 1 ? 'the last one is out'
+                            : 'the bottom ' + uniqOut[0] + ' are out')
+        : 'everyone below that is out';
+
       lede.innerHTML =
-        'A shorter way to run the league. ' + MINI.pools.length +
-        ' pools of ' + MINI.pools[0].teams.length +
-        ' play a round robin; the top ' + MINI.pools[0].advance +
-        ' of each go through and the last one is out. Then a ' +
-        (MINI.pools.length * MINI.pools[0].advance) +
+        'A shorter way to run the league. ' + poolPhrase +
+        ' play a round robin; the top ' + adv +
+        ' of each go through and ' + outPhrase + '. Then a ' +
+        (MINI.pools.length * adv) +
         '-team bracket where a team has to lose <b>twice</b> to be knocked out. ' +
         '<b>' + t.matches + ' matches over ' + t.nights + ' nights</b>' +
         (s ? ', against ' + s.matches + ' matches over ' + s.nights +
-             ' nights for the season on the Schedule tab.' : '.');
+             ' nights for a full league season.' : '.');
     }
 
     /* Derived, not typed. "Proposal — nothing agreed yet" sitting above
@@ -3067,12 +3176,11 @@
     drawMatches();
     drawHeroes();
     drawDuos();
-    drawTeams();
-    drawCoord();
-    drawZonePicker();
-    drawSchedule();
-    drawSeries();
     drawMini();
+    // The Teams, Coord, Schedule and Tournament(series) pages were retired
+    // on 2026-08-28: the site is the inhouse league and the cups now. Their
+    // builders are still in this file and their payloads are still exported,
+    // but nothing renders them -- see the note in export_web.build_payload.
     var none = cur.matches.length === 0;
     $("#empty").hidden = !none;
     Array.prototype.forEach.call(document.querySelectorAll(".view"), function (v) {
@@ -3088,6 +3196,10 @@
   renderAll();
   wireSort();
   wireTabs();
+  // Draw the subtab row for the page we open on. fromHash() only fires when
+  // there IS a hash, so without this a bare load shows the group pills and
+  // an empty second row.
+  drawSubtabs("league", "standings", state.miSeason);
   fromHash();
 
   searchBox("qPlayers", "qPlayers", drawStandings);
@@ -3099,20 +3211,13 @@
   segment("matchSort", "sort", "matchSort", drawMatches);
   segment("duoSort",   "sort", "duoSort",   drawDuos);
   segment("duoMin",    "min",  "duoMin",    drawDuos, Number);
-  segment("miSeason", "season", "miSeason", function () {
-    miSelect(state.miSeason);
-    drawMini();
-    miLines();                 // the new season's bracket is a new drawing
-  }, Number);
-  segment("fxView", "fxview", "fxView", drawSchedule);
-  segment("srView", "srview", "srView", drawSeries);
-  segment("tourMin", "min", "tourMin", drawSeries, Number);
-  searchBox("qTour", "qTour", drawSeries);
+  // The season control, the Schedule view toggles and the Tournament board
+  // filters all belonged to pages retired on 2026-08-28. Season switching
+  // is the subtab row now; the rest have no page to redraw.
   segment("evidence",  "z", "evidence", function () {
     rescore();
     drawStandings();
     drawDuos();          // the Duos header prints the rating too
-    drawSeries();        // ...and so does the tournament board
   }, Number);
 
   var clr = $("#duoClear");

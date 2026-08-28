@@ -155,9 +155,28 @@ header,main,footer,.tabbar{ position:relative; z-index:1; }
 
 /* ── Tab bar ────────────────────────────────────────────────────── */
 .tabbar{
-  position:sticky; top:0; z-index:30; display:flex; justify-content:center;
+  position:sticky; top:0; z-index:30;
+  display:flex; flex-direction:column; align-items:center; gap:.45rem;
   padding:.7rem var(--gutter) .85rem;
-  background:linear-gradient(to bottom, var(--paper) 40%, rgba(244,244,241,0));
+  background:linear-gradient(to bottom, var(--paper) 55%, rgba(244,244,241,0));
+}
+
+/* Second level: the pages inside the open group. Deliberately quieter than
+   the pills above -- an underline, not a fill -- so the two rows read as a
+   hierarchy rather than as eight tabs of equal weight. */
+.subtabs{ display:flex; justify-content:center; flex-wrap:wrap; gap:.1rem; }
+.subtabs[hidden]{ display:none; }
+.subtab{
+  appearance:none; border:0; background:none; cursor:pointer;
+  font-family:var(--sans); font-size:.79rem; font-weight:600;
+  color:var(--ink-3); padding:.32rem .78rem .42rem; border-radius:6px;
+  position:relative; transition:color .18s ease;
+}
+.subtab:hover{ color:var(--ink); }
+.subtab.is-active{ color:var(--ink); }
+.subtab.is-active::after{
+  content:""; position:absolute; left:.78rem; right:.78rem; bottom:0;
+  height:2px; border-radius:2px; background:var(--ink);
 }
 .tabs{ display:inline-flex; gap:.2rem; padding:.3rem; border-radius:var(--r-pill); }
 .tab{
