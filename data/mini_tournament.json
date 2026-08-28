@@ -117,7 +117,7 @@
     {
       "id": 2,
       "name": "Season 2",
-      "status": "proposal",
+      "status": "live",
       "note": "Seven teams: a pool of four and a pool of three, two advancing from each. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took its slot and id. Team Seeker and Team Chainskooter were added on 2026-08-27, one drawn into each pool; Chainskooter withdrew on 2026-08-28 before playing a game. Team Toxic was moved from Pool B to Pool A on 2026-08-28, by request rather than by draw. Two of four advance in Pool A against two of three in Pool B -- an uneven shot at the bracket, and the price of running seven teams in a format built for even pools.",
       "_draw": [
         "The pools were DRAWN, not chosen, and both draws are reproducible:",
@@ -146,6 +146,15 @@
         "which is 2-of-4 against 2-of-3."
       ],
       "draw_seed": 20260824,
+      "placed_by_hand": [
+        {
+          "team": 1,
+          "pool": "A",
+          "from": "B",
+          "on": "2026-08-28",
+          "why": "moved by request, not drawn"
+        }
+      ],
       "teams": [
         {
           "id": 1,
@@ -362,6 +371,22 @@
         "playoff": 1,
         "final": 1
       },
+      "_in_progress_note": [
+        "Matches being played RIGHT NOW -- started, no winner yet. This is",
+        "NOT a result and moves nothing: no standing, no pool order, no",
+        "bracket slot. It only changes what the page says is happening,",
+        "because the alternative was a board reading \"nothing has been",
+        "played\" while three games were live.",
+        "",
+        "CLEAR AN ENTRY WHEN THE GAME ENDS. A match listed here that also",
+        "has a result is refused at build -- a stale entry cannot quietly",
+        "go on claiming a finished game is still under way."
+      ],
+      "in_progress": [
+        "MINI-A-2v5",
+        "MINI-A-1v6",
+        "MINI-B-3v7"
+      ],
       "results": [],
       "tie_break_results": [],
       "tie_breaks": [

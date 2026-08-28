@@ -2717,22 +2717,41 @@
      each pool card -- six matches stated twice is two things to keep in
      step, and the pool card's job is the roster and where each place
      goes next. */
+  /* "2026-08-28" -> "28 Aug". Built from the string rather than
+     `new Date(...)`, which would parse the ISO form as UTC midnight and
+     print the previous day for anyone west of Greenwich -- the user is
+     UTC-4, so it would be wrong for him every time. */
+  var MI_MON = ["Jan","Feb","Mar","Apr","May","Jun",
+                "Jul","Aug","Sep","Oct","Nov","Dec"];
+  function miDay(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+    if (!m) return esc(String(iso || ""));
+    return (+m[3]) + " " + MI_MON[(+m[2]) - 1];
+  }
+
   function miGroupTable() {
     var ms = [];
     MINI.pools.forEach(function (p) {
       p.matches.forEach(function (m) { ms.push({ p: p, m: m }); });
     });
 
-    var played = 0, reported = 0;
+    var played = 0, reported = 0, live = 0;
     var body = ms.map(function (x) {
       var w = x.m.winner;
       if (w != null) played++;
       if (x.m.reported) reported++;
+      if (x.m.playing) live++;
+      /* Three states, not two. A game that has started but has no winner
+         yet used to render as "Still to play", which is the table saying
+         nothing is happening while it is being played. */
       var res = w != null
         ? '<span class="sp-won">' + miChip(w) + esc(miTeam(w).name) +
             ' won</span>'
+        : x.m.playing
+        ? '<span class="sp-badge is-live"><i class="sp-dot"></i>Playing now</span>'
         : '<span class="sp-badge">Still to play</span>';
-      return '<tr' + (w != null ? ' class="is-done"' : '') + '>' +
+      var cls = w != null ? "is-done" : x.m.playing ? "is-live" : "";
+      return '<tr' + (cls ? ' class="' + cls + '"' : '') + '>' +
         '<td class="sp-td-m"><span class="sp-m">' +
           miPill(x.m.teams[0]) + '<span class="sp-vs">vs</span>' +
           miPill(x.m.teams[1]) + '</span></td>' +
@@ -2752,10 +2771,17 @@
        difference and the page is not going to hide it. */
     var foot;
     if (!played) {
-      foot = 'Nothing has been played. This is the format drawn out, ' +
-             'not a season that is running.';
+      foot = live
+        ? '<b>' + live + '</b> of ' + ms.length + ' being played right now. ' +
+          'Nothing has finished yet, so every standing below is still 0–0.'
+        : 'Nothing has been played. This is the format drawn out, ' +
+          'not a season that is running.';
     } else {
       foot = '<b>' + played + '</b> of ' + ms.length + ' played.';
+      if (live) {
+        foot += ' <b>' + live + '</b> more ' + (live === 1 ? 'is' : 'are') +
+          ' being played right now.';
+      }
       if (reported) {
         foot += ' <b>' + reported + '</b> of them ' +
           (reported === 1 ? 'was' : 'were') + ' reported rather than read ' +
@@ -3004,27 +3030,42 @@
        hand-set flag is exactly how that happens. */
     var pill = $("#miniStatus");
     if (pill) {
-      var live = MINI.status === "live";
-      var draft = t.played === 0;
-      pill.className = "pill" + (draft ? " pill--draft" : "");
+      var agreed = MINI.status === "live";
+      var live = t.playing || 0;
+      /* A season with games ON RIGHT NOW is not a draft, whatever the
+         played count says — that was the one state neither the count nor
+         the flag could express on its own. */
+      var draft = t.played === 0 && !live;
+      pill.className = "pill" + (draft ? " pill--draft" : "") +
+                       (live ? " pill--live" : "");
       pill.textContent =
-        t.played === 0 ? (live ? "Agreed — not started"
-                               : "Proposal — nothing agreed yet")
-        : t.played < t.matches ? "Under way — " + t.played + " of " +
-                                 t.matches + " played"
+        t.played === 0
+          ? (live ? "Playing now — " + live + " match" + (live === 1 ? "" : "es") + " on"
+             : agreed ? "Agreed — not started"
+             : "Proposal — nothing agreed yet")
+        : t.played < t.matches
+          ? "Under way — " + t.played + " of " + t.matches + " played" +
+            (live ? ", " + live + " on now" : "")
         : "Finished";
     }
 
     var note = $("#miniNote");
     if (note) {
-      var head = t.played
-        ? '<b>These results were reported, not transcribed.</b> A result here ' +
+      var head = (t.played || t.playing)
+        ? (t.played
+           ? '<b>These results were reported, not transcribed.</b> A result here ' +
           'names a winner and nothing else — unlike every other number on ' +
           'this site, which is read off a post-game screenshot and ' +
           'checksummed before it counts. Nothing here touches the lobby ' +
           'ledger or the league one, and no player record moves. Post the ' +
           'screenshots in <b>#dota-league-2026</b> and these become real ' +
           'games with the scoreboard behind them. '
+           : '<b>The cup is being played right now.</b> The matches marked ' +
+             '<b>Playing now</b> have started and have no winner yet, so ' +
+             'nothing below them has moved — every standing is still 0–0 ' +
+             'and the bracket is still empty. A match here is marked by ' +
+             'hand, not detected, so it stays marked until somebody clears ' +
+             'it. ')
         : '<b>Nothing on this tab is a result.</b> It is the format drawn ' +
           'out, not a season that is running: no match here is scheduled and ' +
           'none is recorded. ';
@@ -3120,7 +3161,24 @@
         // teams later was drawn twice, and citing only the first would
         // describe a draw that leaves the newcomers unaccounted for.
         var s = MINI.draw_seeds || (MINI.draw_seed ? [MINI.draw_seed] : []);
-        if (!s.length) return '';
+        /* A team somebody MOVED is a team the seeds no longer account
+           for. Saying "drawn at random, so it can be re-run and checked"
+           above a pool that would not come back the same is a fairness
+           claim that has gone false — and those are the ones worth
+           spending a sentence on. */
+        var ph = MINI.placed_by_hand || [];
+        var hand = !ph.length ? '' :
+          ' <b>' + (ph.length === 1 ? 'One exception' : ph.length + ' exceptions') +
+          ':</b> ' +
+          ph.map(function (x) {
+            return esc(x.name) + (x.from ? ' was moved from Pool ' + esc(x.from) +
+                   ' to Pool ' + esc(x.pool) : ' was placed in Pool ' + esc(x.pool)) +
+                   ' by hand' + (x.on ? ' on ' + miDay(x.on) : '') +
+                   (x.why ? ' (' + esc(x.why) + ')' : '');
+          }).join('; ') +
+          '. Re-running the seed' + (s.length > 1 ? 's' : '') + ' reproduces every ' +
+          'other team, but not ' + (ph.length === 1 ? 'that one' : 'those') + '.';
+        if (!s.length) return hand;
         var codes = s.map(function (x) { return '<code>' + x + '</code>'; });
         return ' These were <b>drawn at random</b>, not picked — seed' +
           (s.length > 1 ? 's ' : ' ') +
@@ -3128,7 +3186,7 @@
             ? codes.slice(0, -1).join(', ') + ' and ' + codes[codes.length - 1] +
               ' (the second for the teams added later)'
             : codes[0]) +
-          ', so the draw can be re-run and checked.';
+          ', so the draw can be re-run and checked.' + hand;
       })() +
       '</p></div>' +
       '<div class="mc-pools">' + MINI.pools.map(miPool).join("") + '</div>' +

@@ -1620,6 +1620,33 @@ td.none{ padding:2.2rem 1rem; }
   border-radius:var(--r-pill); padding:.18rem .5rem;
 }
 .sp-badge.is-live{ color:#8a5a10; background:rgba(182,121,27,.15); }
+
+/* A match being played RIGHT NOW. Amber, because the two colours that
+   already mean something here are Radiant green (won) and Dire red
+   (knocked out) -- a live game is neither, and borrowing either would
+   say something false about a result that does not exist yet.
+
+   The dot pulses, and that is the only animated thing on the page. It
+   earns it: "Playing now" is the one label that stops being true without
+   anybody reloading, and a still badge reads exactly like a stale one. */
+.sp-dot{
+  width:.42rem; height:.42rem; border-radius:50%;
+  background:currentColor; display:inline-block;
+  margin-right:.36rem; vertical-align:.04em;
+  animation:live-pulse 1.9s ease-in-out infinite;
+}
+@keyframes live-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.28; } }
+@media (prefers-reduced-motion:reduce){ .sp-dot{ animation:none; } }
+
+.sp-tbl tr.is-live{ background:rgba(182,121,27,.07); }
+
+/* The status pill, when games are on. Filled rather than outlined --
+   the draft pill is dashed and quiet on purpose, and this is its
+   opposite. */
+.pill--live{
+  background:rgba(182,121,27,.16); border-color:rgba(182,121,27,.42);
+  color:#8a5a10; box-shadow:none;
+}
 .sp-tbl .team-chip{ width:1.5rem; height:1.5rem; font-size:.76rem; }
 .sp-tbd{ font-style:italic; font-weight:600; color:var(--ink-2); }
 .sp-none{
@@ -1718,7 +1745,13 @@ td.none{ padding:2.2rem 1rem; }
   display:grid; grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
   gap:1rem;
 }
-.mc-pool{ overflow:hidden; }
+/* Pools of different sizes make cards of different heights, and the
+   grid stretches the short one to match. Without this the foot -- the
+   line saying where each place goes next -- floated in the middle of
+   Pool B with blank card under it, reading as a card that had lost its
+   bottom rather than one with fewer teams. */
+.mc-pool{ overflow:hidden; display:flex; flex-direction:column; }
+.mc-pool__foot{ margin-top:auto; }
 .mc-pool__head{
   display:flex; align-items:center; gap:.65rem;
   padding:.8rem 1rem; border-bottom:1px solid var(--line-2);

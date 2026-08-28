@@ -587,6 +587,23 @@ def build_mini_season(cfg: dict, league: dict | None,
             "out": len(ids) - advance,
         })
 
+    # Teams placed by hand rather than drawn. Checked against the pools
+    # so the page cannot name a move that did not happen, or miss one that
+    # did: the team must exist and must actually be in the pool claimed.
+    placed = []
+    for e in cfg.get("placed_by_hand") or []:
+        tid, pid = e.get("team"), e.get("pool")
+        pool = next((p for p in pools if p["id"] == pid), None)
+        if pool is None:
+            return refuse(f"placed_by_hand says team {tid} was put in pool "
+                          f"{pid!r}, which is not a pool in this season")
+        if tid not in [t["id"] for t in pool["teams"]]:
+            return refuse(f"placed_by_hand says team {tid} was put in pool "
+                          f"{pid}, but team {tid} is not in pool {pid}")
+        placed.append({"team": tid, "name": team(tid)["name"],
+                       "pool": pid, "from": e.get("from"),
+                       "on": e.get("on"), "why": e.get("why")})
+
     # Results.
     #
     # A result here is REPORTED, not read off a scoreboard: it names a
@@ -617,6 +634,29 @@ def build_mini_season(cfg: dict, league: dict | None,
                           f"{pair[1]}")
         seen_res[mid] = r
 
+    # Matches being played RIGHT NOW. A third state, and the file could not
+    # express it before: `results` carries a winner, so a game that has
+    # started but not finished had to masquerade as "still to play" -- which
+    # is the page saying nothing is happening while three games are live.
+    #
+    # It is deliberately NOT a result. Nothing about a standing, a pool
+    # order or a bracket slot moves because a game is in progress; the only
+    # thing that changes is what the page says is happening.
+    playing = []
+    for mid in cfg.get("in_progress") or []:
+        if mid not in all_matches:
+            return refuse(f"in_progress names {mid!r}, which is not a match "
+                          f"in any pool")
+        if mid in playing:
+            return refuse(f"{mid} is listed twice in in_progress")
+        # The contradiction that matters: a game cannot be under way and
+        # already won. Left unchecked, a stale in_progress entry would sit
+        # there claiming a finished match is still being played.
+        if mid in seen_res:
+            return refuse(f"{mid} is in in_progress but already has a "
+                          f"result -- remove it from one of the two")
+        playing.append(mid)
+
     for mid, m in all_matches.items():
         r = seen_res.get(mid)
         m["winner"] = r["winner"] if r else None
@@ -625,6 +665,7 @@ def build_mini_season(cfg: dict, league: dict | None,
         m["source_ref"] = (r or {}).get("source_ref")
         # No screenshot behind it. The page prints this; do not drop it.
         m["reported"] = bool(r) and not m["source_ref"]
+        m["playing"] = mid in playing
 
     # Tie-break results. A tie-break only EXISTS where the group stage
     # left teams level, so its fixtures are generated, not configured --
@@ -790,6 +831,7 @@ def build_mini_season(cfg: dict, league: dict | None,
 
     totals = {
         "played": played,
+        "playing": len(playing),
         "reported": hearsay,
         "tie_break_matches": len(tb_all),
         "tie_break_played": len(tb_done),
@@ -832,6 +874,11 @@ def build_mini_season(cfg: dict, league: dict | None,
         "draw_seeds": [s for s in (cfg.get("draw_seed"),
                                    cfg.get("draw_seed_newcomers")) if s],
         "draw_seed": cfg.get("draw_seed"),
+        # Teams the seeds do NOT account for, because somebody moved them.
+        # Without this the page goes on advertising a reproducible draw
+        # that no longer reproduces the pools -- a fairness claim that has
+        # quietly gone false, which is the worst kind to leave standing.
+        "placed_by_hand": placed,
         "pools": pools,
         "bracket": nodes,
         "links": links,
