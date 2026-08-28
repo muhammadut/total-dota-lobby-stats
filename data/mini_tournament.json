@@ -395,6 +395,10 @@
         {
           "match": "MINI-A-1v6",
           "winner": 1
+        },
+        {
+          "match": "MINI-B-4v7",
+          "winner": 7
         }
       ],
       "tie_break_results": [],
