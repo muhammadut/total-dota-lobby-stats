@@ -382,9 +382,7 @@
         "has a result is refused at build -- a stale entry cannot quietly",
         "go on claiming a finished game is still under way."
       ],
-      "in_progress": [
-        "MINI-A-1v6"
-      ],
+      "in_progress": [],
       "results": [
         {
           "match": "MINI-B-3v7",
@@ -393,6 +391,10 @@
         {
           "match": "MINI-A-2v5",
           "winner": 2
+        },
+        {
+          "match": "MINI-A-1v6",
+          "winner": 1
         }
       ],
       "tie_break_results": [],
