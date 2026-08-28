@@ -403,6 +403,10 @@
         {
           "match": "MINI-A-5v6",
           "winner": 6
+        },
+        {
+          "match": "MINI-A-2v6",
+          "winner": 6
         }
       ],
       "tie_break_results": [],
