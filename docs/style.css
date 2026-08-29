@@ -1640,6 +1640,17 @@ td.none{ padding:2.2rem 1rem; }
 
 .sp-tbl tr.is-live{ background:rgba(182,121,27,.07); }
 
+/* A walkover: the win is real, the game never happened. Set in small
+   caps beside the winner rather than given a colour of its own --
+   Radiant green already means "won" and that part is true here. */
+.sp-wo{
+  font-style:normal; font-size:.62rem; font-weight:700;
+  letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); border:1px solid var(--line-2);
+  border-radius:var(--r-pill); padding:.06rem .34rem; margin-left:.3rem;
+  vertical-align:.06em;
+}
+
 /* The status pill, when games are on. Filled rather than outlined --
    the draft pill is dashed and quiet on purpose, and this is its
    opposite. */

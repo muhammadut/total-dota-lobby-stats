@@ -632,6 +632,15 @@ def build_mini_season(cfg: dict, league: dict | None,
             return refuse(f"the result for {mid} says team {r.get('winner')} "
                           f"won, but that match is team {pair[0]} v team "
                           f"{pair[1]}")
+        # A WALKOVER is a result with no game behind it -- somebody
+        # conceded. It counts for the standings exactly like a win, and
+        # it is NOT "reported pending a screenshot": there is no
+        # scoreboard to post, now or ever, so telling people to go and
+        # find one would be chasing a game that was never played.
+        if r.get("walkover") and r.get("source_ref"):
+            return refuse(f"{mid} is marked walkover but carries a "
+                          f"source_ref -- a conceded match has no game in "
+                          f"the ledger to point at")
         seen_res[mid] = r
 
     # Matches being played RIGHT NOW. A third state, and the file could not
@@ -663,8 +672,10 @@ def build_mini_season(cfg: dict, league: dict | None,
         m["loser"] = ([t for t in m["teams"] if t != r["winner"]][0]
                       if r else None)
         m["source_ref"] = (r or {}).get("source_ref")
-        # No screenshot behind it. The page prints this; do not drop it.
-        m["reported"] = bool(r) and not m["source_ref"]
+        m["walkover"] = bool(r) and bool(r.get("walkover"))
+        # No screenshot behind it, but one COULD exist. A walkover never
+        # can, so it is counted apart rather than folded in here.
+        m["reported"] = bool(r) and not m["source_ref"] and not m["walkover"]
         m["playing"] = mid in playing
 
     # Tie-break results. A tie-break only EXISTS where the group stage
@@ -832,6 +843,7 @@ def build_mini_season(cfg: dict, league: dict | None,
     totals = {
         "played": played,
         "playing": len(playing),
+        "walkovers": sum(1 for m in all_matches.values() if m["walkover"]),
         "reported": hearsay,
         "tie_break_matches": len(tb_all),
         "tie_break_played": len(tb_done),

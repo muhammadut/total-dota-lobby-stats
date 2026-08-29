@@ -411,6 +411,12 @@
         {
           "match": "MINI-B-3v4",
           "winner": 3
+        },
+        {
+          "match": "MINI-A-1v5",
+          "winner": 1,
+          "walkover": true,
+          "note": "Downladner's Return conceded, 2026-08-29."
         }
       ],
       "tie_break_results": [],

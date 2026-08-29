@@ -2735,18 +2735,20 @@
       p.matches.forEach(function (m) { ms.push({ p: p, m: m }); });
     });
 
-    var played = 0, reported = 0, live = 0;
+    var played = 0, reported = 0, live = 0, wo = 0;
     var body = ms.map(function (x) {
       var w = x.m.winner;
       if (w != null) played++;
       if (x.m.reported) reported++;
       if (x.m.playing) live++;
+      if (x.m.walkover) wo++;
       /* Three states, not two. A game that has started but has no winner
          yet used to render as "Still to play", which is the table saying
          nothing is happening while it is being played. */
       var res = w != null
         ? '<span class="sp-won">' + miChip(w) + esc(miTeam(w).name) +
-            ' won</span>'
+            (x.m.walkover ? ' won <i class="sp-wo">walkover</i>' : ' won') +
+          '</span>'
         : x.m.playing
         ? '<span class="sp-badge is-live"><i class="sp-dot"></i>Playing now</span>'
         : '<span class="sp-badge">Still to play</span>';
@@ -2777,7 +2779,13 @@
         : 'Nothing has been played. This is the format drawn out, ' +
           'not a season that is running.';
     } else {
-      foot = '<b>' + played + '</b> of ' + ms.length + ' played.';
+      foot = '<b>' + (played - wo) + '</b> of ' + ms.length + ' played';
+      foot += wo
+        ? ', and <b>' + wo + '</b> ' + (wo === 1 ? 'was a walkover' :
+            'were walkovers') + ' — conceded, so there was no game. ' +
+          (wo === 1 ? 'It counts' : 'They count') + ' in the table and ' +
+          'there is no scoreboard to come.'
+        : '.';
       if (live) {
         foot += ' <b>' + live + '</b> more ' + (live === 1 ? 'is' : 'are') +
           ' being played right now.';
@@ -3047,7 +3055,11 @@
              : agreed ? "Agreed — not started"
              : "Proposal — nothing agreed yet")
         : t.played < t.matches
-          ? "Under way — " + t.played + " of " + t.matches + " played" +
+          /* "settled", not "played" -- a walkover is settled and was
+             never played, and the group foot counts the two apart. The
+             pill saying "8 of 13 played" over a foot saying "7 played
+             and 1 walkover" is the page contradicting itself. */
+          ? "Under way — " + t.played + " of " + t.matches + " settled" +
             (live ? ", " + live + " on now" : "")
         : "Finished";
     }
