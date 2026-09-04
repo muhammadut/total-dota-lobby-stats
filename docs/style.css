@@ -1643,6 +1643,21 @@ td.none{ padding:2.2rem 1rem; }
 /* A walkover: the win is real, the game never happened. Set in small
    caps beside the winner rather than given a colour of its own --
    Radiant green already means "won" and that part is true here. */
+/* A decided bracket box. Green won, red lost -- the same two meanings
+   they carry everywhere else here, so nothing new has to be learned. */
+.br-slot.is-won{ background:var(--radiant-bg); }
+.br-slot.is-won .br-team{ font-weight:700; }
+.br-slot.is-won .br-sc{ color:var(--radiant); font-weight:800; }
+.br-slot.is-lost{ opacity:.62; }
+.br-slot.is-lost .br-sc{ color:var(--dire); font-weight:800; }
+
+/* The winner beside a finishing place. */
+.mc-place__who{
+  display:inline-flex; align-items:center; gap:.34rem;
+  margin-left:.5rem; font-weight:700; color:var(--ink-1);
+}
+.mc-place__who .team-chip{ width:1.25rem; height:1.25rem; font-size:.66rem; }
+
 .sp-wo{
   font-style:normal; font-size:.62rem; font-weight:700;
   letter-spacing:.06em; text-transform:uppercase;

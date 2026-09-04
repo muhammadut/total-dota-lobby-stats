@@ -2899,9 +2899,14 @@
             esc(miTeam(f.team).name) + '</span>'
         : '<span class="br-ph" aria-hidden="true"></span>' +
           '<span class="br-from">' + esc(from) + '</span>';
+      /* Won / lost, once the box has a result. Radiant green and Dire
+         red mean exactly what they mean everywhere else on the site. */
+      var won  = n.winner != null && f.team === n.winner;
+      var lost = n.winner != null && f.team === n.loser;
       return '<div class="br-slot' + (f.team != null ? " is-set" : "") +
+               (won ? " is-won" : "") + (lost ? " is-lost" : "") +
                '" data-slot="' + i + '">' + who +
-        '<span class="br-sc">–</span>' +
+        '<span class="br-sc">' + (won ? 'W' : lost ? 'L' : '–') + '</span>' +
       '</div>';
     }).join("");
 
@@ -2915,7 +2920,13 @@
         '<span class="br-bo">' + miBo(n.best_of) + '</span>' +
       '</div>' +
       slots +
-      '<div class="br-box__foot">' + esc(n.stakes) + '</div>' +
+      '<div class="br-box__foot">' +
+        (n.route_unrecorded
+          /* The result is known, the road to it is not. Saying nothing
+             here would let empty boxes upstream read as "never played". */
+          ? 'Result recorded; the rounds feeding this box were not.'
+          : esc(n.stakes)) +
+      '</div>' +
     '</div>';
   }
 
@@ -3043,30 +3054,51 @@
     if (pill) {
       var agreed = MINI.status === "live";
       var live = t.playing || 0;
+      /* The bracket counts. `played` is pool games only, so without this
+         a season could never reach its own match total and the pill
+         would read "Under way" over a crowned champion. */
+      var done = (t.played || 0) + (t.playoff_played || 0);
       /* A season with games ON RIGHT NOW is not a draft, whatever the
          played count says — that was the one state neither the count nor
          the flag could express on its own. */
-      var draft = t.played === 0 && !live;
+      var draft = done === 0 && !live;
       pill.className = "pill" + (draft ? " pill--draft" : "") +
                        (live ? " pill--live" : "");
       pill.textContent =
-        t.played === 0
+        MINI.champion != null
+          ? "Won by " + miTeam(MINI.champion).name
+        : done === 0
           ? (live ? "Playing now — " + live + " match" + (live === 1 ? "" : "es") + " on"
              : agreed ? "Agreed — not started"
              : "Proposal — nothing agreed yet")
-        : t.played < t.matches
+        : done < t.matches
           /* "settled", not "played" -- a walkover is settled and was
              never played, and the group foot counts the two apart. The
              pill saying "8 of 13 played" over a foot saying "7 played
              and 1 walkover" is the page contradicting itself. */
-          ? "Under way — " + t.played + " of " + t.matches + " settled" +
+          ? "Under way — " + done + " of " + t.matches + " settled" +
             (live ? ", " + live + " on now" : "")
         : "Finished";
     }
 
     var note = $("#miniNote");
     if (note) {
-      var head = (t.played || t.playing)
+      /* A crowned champion above matches reading "Still to play" is the
+         page contradicting itself, and it is TRUE here: only the finals
+         were reported and the rest of the record never arrived. Say it
+         outright -- the alternative is a reader deciding the site is
+         broken, or worse, believing the gaps were never played. */
+      var done2 = (t.played || 0) + (t.playoff_played || 0);
+      var gap = MINI.champion != null && done2 < t.matches
+        ? '<b>The record of this cup is incomplete.</b> It was won by ' +
+          esc(miTeam(MINI.champion).name) + ', and ' + (t.matches - done2) +
+          ' of its ' + t.matches + ' matches were never reported — so ' +
+          'anything still reading <b>Still to play</b> below was almost ' +
+          'certainly played, just not written down. Nothing here guesses ' +
+          'at those, which is why a pool can show a champion above it and ' +
+          'no order beneath it. '
+        : '';
+      var head = gap + ((t.played || t.playing)
         ? (t.played
            ? '<b>These results were reported, not transcribed.</b> A result here ' +
           'names a winner and nothing else — unlike every other number on ' +
@@ -3083,7 +3115,7 @@
              'it. ')
         : '<b>Nothing on this tab is a result.</b> It is the format drawn ' +
           'out, not a season that is running: no match here is scheduled and ' +
-          'none is recorded. ';
+          'none is recorded. ');
       note.innerHTML = head +
         'The pools, the best-of at each stage, the tie-breaks and the results ' +
         'live in <code>data/mini_tournament.json</code>, and every match, box, ' +
@@ -3231,7 +3263,11 @@
         '<div class="mc-place__lbl">Where everyone finishes</div>' +
         '<ol class="mc-place__list">' + MINI.placings.map(function (p) {
           return '<li><span class="mc-place__pos">' + esc(p.place) + '</span>' +
-            '<span>' + esc(p.from) + '</span></li>'; }).join("") + '</ol>' +
+            '<span>' + esc(p.from) + '</span>' +
+            (p.team != null
+              ? '<span class="mc-place__who">' + miChip(p.team) +
+                esc(miTeam(p.team).name) + '</span>' : '') +
+          '</li>'; }).join("") + '</ol>' +
       '</div>';
 
     host.innerHTML = hud + pools + bracket + placings;

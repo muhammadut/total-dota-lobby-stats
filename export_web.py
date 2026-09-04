@@ -754,19 +754,108 @@ def build_mini_season(cfg: dict, league: dict | None,
     # the wrong team in the bracket and nobody would notice until the
     # night it was played.
     pool_by_id = {pool["id"]: pool for pool in pools}
+    by_id = {n["id"]: n for n in nodes}
+
+    # Playoff results.
+    #
+    # Until this existed the bracket could only ever be a drawing: pool
+    # winners reached the first two boxes and nothing could progress past
+    # them, so a season had no way to finish and no way to name a
+    # champion.
+    #
+    # A result may name its own `teams`. That is for the case that
+    # actually turned up -- somebody reports the FINAL and not the route
+    # to it. Where the bracket can work the pair out for itself the named
+    # pair must agree with it, so a recorded result can never quietly
+    # contradict the boxes feeding into it; where it cannot, the named
+    # pair fills the box and the node is flagged so the page can say the
+    # earlier rounds were not recorded rather than implying they were
+    # never played.
+    po = {}
+    for r in cfg.get("playoff_results") or []:
+        mid = r.get("match")
+        if mid not in by_id:
+            return refuse(f"a playoff result names {mid!r}, which is not a "
+                          f"box in this bracket. Boxes: "
+                          + ", ".join(n["id"] for n in nodes))
+        if mid in po:
+            return refuse(f"two playoff results recorded for {mid}")
+        po[mid] = r
+
+    # Upstream first -- `nodes` is written in that order, so one pass
+    # carries a winner all the way from the upper match to the final.
     for n in nodes:
+        n["winner"] = n["loser"] = None
+        n["walkover"] = False
+        n["route_unrecorded"] = False
         for f in n["feeds"]:
             f["team"] = None
-            if f["kind"] != "pool":
-                continue
-            pool = pool_by_id.get(f["pool"])
-            if not pool or not pool["decided"]:
-                continue
-            hit = [t for t in pool["standings"] if t["rank"] == f["rank"]]
-            if hit:
-                f["team"] = hit[0]["id"]
+            if f["kind"] == "pool":
+                pool = pool_by_id.get(f["pool"])
+                # An UNdecided pool answers nothing. A pool where teams
+                # are level on the tie-break is exactly where guessing
+                # would put the wrong team in the bracket and nobody
+                # would notice until the night it was played.
+                if pool and pool["decided"]:
+                    hit = [t for t in pool["standings"]
+                           if t["rank"] == f["rank"]]
+                    if hit:
+                        f["team"] = hit[0]["id"]
+            else:
+                up = by_id[f["node"]]
+                f["team"] = up["winner"] if f["side"] == "winner"                     else up["loser"]
 
-    by_id = {n["id"]: n for n in nodes}
+        r = po.get(n["id"])
+        if not r:
+            continue
+        derived = [f["team"] for f in n["feeds"]]
+        named = r.get("teams")
+        if named:
+            if len(named) != 2 or named[0] == named[1]:
+                return refuse(f"the result for {n['id']} names {named!r}; a "
+                              f"box holds exactly two different teams")
+            for t in named:
+                if t not in seen:
+                    return refuse(f"the result for {n['id']} names team {t}, "
+                                  f"which is not in this season")
+            # Every team the bracket HAS worked out must appear in the
+            # named pair. Checking only the fully-resolved case would let
+            # a half-filled box be overwritten: the elimination match
+            # knows its Pool B side long before its Pool A one, and a
+            # result naming two other teams would have sailed through.
+            for t in derived:
+                if t is not None and t not in named:
+                    return refuse(
+                        f"the result for {n['id']} says it was played "
+                        f"between {named}, but the bracket feeds team {t} "
+                        f"into it -- one of the two is wrong")
+            if any(t is None for t in derived):
+                n["route_unrecorded"] = True
+            # Fill only the empty slots, and only with teams not already
+            # seated. Assigning named[i] positionally would seat the same
+            # team twice whenever the named pair is written in the
+            # opposite order to the slots.
+            spare = [t for t in named if t not in derived]
+            for f in n["feeds"]:
+                if f["team"] is None:
+                    f["team"] = spare.pop(0)
+        pair = [f["team"] for f in n["feeds"]]
+        if any(t is None for t in pair):
+            return refuse(
+                f"{n['id']} has a result but the bracket cannot say who "
+                f"played in it -- record the boxes feeding it, or give this "
+                f"one an explicit \"teams\": [a, b]")
+        if r.get("winner") not in pair:
+            return refuse(f"the result for {n['id']} says team "
+                          f"{r.get('winner')} won, but that box is team "
+                          f"{pair[0]} v team {pair[1]}")
+        if r.get("walkover") and r.get("source_ref"):
+            return refuse(f"{n['id']} is marked walkover but carries a "
+                          f"source_ref")
+        n["winner"] = r["winner"]
+        n["loser"] = [t for t in pair if t != r["winner"]][0]
+        n["walkover"] = bool(r.get("walkover"))
+        n["reported"] = not r.get("source_ref") and not r.get("walkover")
     for ln in links:                    # a typo here would draw a lie
         assert ln["from"] in by_id and ln["to"] in by_id, ln
         assert 0 <= ln["slot"] < len(by_id[ln["to"]]["feeds"]), ln
@@ -783,11 +872,19 @@ def build_mini_season(cfg: dict, league: dict | None,
                      for p in range(advance + 1, len(pool["teams"]) + 1)})
     out_n = sum(len(pool["teams"]) - advance for pool in pools_in)
 
+    # Who each place belongs to, once the box that decides it has a
+    # result. Derived from the bracket rather than written down, so a
+    # recorded winner cannot disagree with the placing beside it.
+    gf, lf, el = by_id["MINI-GF"], by_id["MINI-LF"], by_id["MINI-ELIM"]
     placings = [
-        {"place": "1st", "from": "Wins the grand final"},
-        {"place": "2nd", "from": "Loses the grand final"},
-        {"place": "3rd", "from": "Loses the lower final"},
-        {"place": "4th", "from": "Loses the elimination match"},
+        {"place": "1st", "from": "Wins the grand final",
+         "team": gf["winner"]},
+        {"place": "2nd", "from": "Loses the grand final",
+         "team": gf["loser"]},
+        {"place": "3rd", "from": "Loses the lower final",
+         "team": lf["loser"]},
+        {"place": "4th", "from": "Loses the elimination match",
+         "team": el["loser"]},
     ]
     if out_n:
         lo, hi = 5, 4 + out_n
@@ -844,6 +941,7 @@ def build_mini_season(cfg: dict, league: dict | None,
         "played": played,
         "playing": len(playing),
         "walkovers": sum(1 for m in all_matches.values() if m["walkover"]),
+        "playoff_played": sum(1 for n in nodes if n["winner"]),
         "reported": hearsay,
         "tie_break_matches": len(tb_all),
         "tie_break_played": len(tb_done),
@@ -883,6 +981,9 @@ def build_mini_season(cfg: dict, league: dict | None,
         # teams later draws again, and the page has to name BOTH -- printing
         # only the first would describe a draw that does not account for two
         # of the eight teams, and prose has no checksum to catch that.
+        # The team that won the grand final, or None while it is unplayed.
+        # Everything that says "champion" on the page reads this one field.
+        "champion": by_id["MINI-GF"]["winner"],
         "draw_seeds": [s for s in (cfg.get("draw_seed"),
                                    cfg.get("draw_seed_newcomers")) if s],
         "draw_seed": cfg.get("draw_seed"),

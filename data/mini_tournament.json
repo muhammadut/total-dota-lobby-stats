@@ -28,7 +28,7 @@
     {
       "id": 1,
       "name": "Season 1",
-      "status": "live",
+      "status": "finished",
       "note": "Played by the league's registered teams, so its ids resolve against data/teams.json.",
       "pools": [
         {
@@ -109,6 +109,26 @@
           "winner": 1
         }
       ],
+      "_playoff_note": [
+        "Only the FINAL was reported. The boxes feeding it were played",
+        "and their results never reached anybody, so this entry names its",
+        "own two teams; the bracket cannot work them out because Pool A",
+        "never resolved its three-way tie in the record either.",
+        "",
+        "The page says so on the box rather than leaving the upstream",
+        "boxes empty, which would read as 'never played'."
+      ],
+      "playoff_results": [
+        {
+          "match": "MINI-GF",
+          "teams": [
+            6,
+            5
+          ],
+          "winner": 6,
+          "note": "narai_co beat axo_clan in the final."
+        }
+      ],
       "tie_breaks": [
         "The result between the two teams",
         "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
@@ -117,7 +137,7 @@
     {
       "id": 2,
       "name": "Season 2",
-      "status": "live",
+      "status": "finished",
       "note": "Seven teams: a pool of four and a pool of three, two advancing from each. CPX's Return withdrew on 2026-08-26 and Beast_Yona_Co took its slot and id. Team Seeker and Team Chainskooter were added on 2026-08-27, one drawn into each pool; Chainskooter withdrew on 2026-08-28 before playing a game. Team Toxic was moved from Pool B to Pool A on 2026-08-28, by request rather than by draw. Two of four advance in Pool A against two of three in Pool B -- an uneven shot at the bracket, and the price of running seven teams in a format built for even pools.",
       "_draw": [
         "The pools were DRAWN, not chosen, and both draws are reproducible:",
@@ -420,6 +440,17 @@
         }
       ],
       "tie_break_results": [],
+      "playoff_results": [
+        {
+          "match": "MINI-GF",
+          "teams": [
+            6,
+            7
+          ],
+          "winner": 6,
+          "note": "Beast_Yona_Co beat Team Seeker in the final. Only the final was reported."
+        }
+      ],
       "tie_breaks": [
         "The result between the two teams",
         "If that settles nothing, the tied teams replay it — a single-game round robin between just them"
