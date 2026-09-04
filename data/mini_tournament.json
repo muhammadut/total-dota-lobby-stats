@@ -120,6 +120,29 @@
       ],
       "playoff_results": [
         {
+          "match": "MINI-UB",
+          "teams": [
+            6,
+            5
+          ],
+          "winner": 5,
+          "note": "axo_clan beat narai_co; narai_co drops to the lower final."
+        },
+        {
+          "match": "MINI-ELIM",
+          "teams": [
+            3,
+            4
+          ],
+          "winner": 4,
+          "note": "gillu_&_co beat khanna_clan, who go out in 4th."
+        },
+        {
+          "match": "MINI-LF",
+          "winner": 6,
+          "note": "narai_co beat gillu_&_co. Teams are DERIVED here -- loser of the upper match against the winner of the elimination match -- so no pair is named."
+        },
+        {
           "match": "MINI-GF",
           "teams": [
             6,

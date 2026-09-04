@@ -2923,8 +2923,10 @@
       '<div class="br-box__foot">' +
         (n.route_unrecorded
           /* The result is known, the road to it is not. Saying nothing
-             here would let empty boxes upstream read as "never played". */
-          ? 'Result recorded; the rounds feeding this box were not.'
+             here would let empty boxes upstream read as "never played".
+             The export words it, because what was missing differs: an
+             unresolved POOL is not an unrecorded ROUND. */
+          ? esc(n.route_note || 'Recorded directly.')
           : esc(n.stakes)) +
       '</div>' +
     '</div>';

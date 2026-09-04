@@ -829,8 +829,25 @@ def build_mini_season(cfg: dict, league: dict | None,
                         f"the result for {n['id']} says it was played "
                         f"between {named}, but the bracket feeds team {t} "
                         f"into it -- one of the two is wrong")
-            if any(t is None for t in derived):
+            # Name what was missing. "The rounds feeding this box were
+            # not recorded" is wrong when the gap is a POOL that never
+            # resolved -- which is the usual case for the first two
+            # boxes, and a different thing to tell the reader.
+            gaps = [n["feeds"][i] for i, t in enumerate(derived)
+                    if t is None]
+            if gaps:
                 n["route_unrecorded"] = True
+                pool_gaps = [g["pool"] for g in gaps if g["kind"] == "pool"]
+                if len(pool_gaps) == len(gaps):
+                    n["route_note"] = (
+                        "Recorded directly: Pool "
+                        + " and Pool ".join(pool_gaps)
+                        + (" never resolved" if len(pool_gaps) == 1
+                           else " never resolved")
+                        + " in the record.")
+                else:
+                    n["route_note"] = ("Recorded directly; the rounds "
+                                       "feeding this box were not.")
             # Fill only the empty slots, and only with teams not already
             # seated. Assigning named[i] positionally would seat the same
             # team twice whenever the named pair is written in the
